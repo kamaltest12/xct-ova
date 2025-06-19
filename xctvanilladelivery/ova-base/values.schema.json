@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "http://clear2pay.com/opf/values.schema.json",
+  "title": "Umbrella OPF kubernetes deployment schema for values.yaml",
+  "description": "Main umbrella schema which describes values.yaml for OPF kubernetes deployment",
+  "type": "object",
+  "properties": {
+    "global": {
+      "description": "Placeholder for global values when the chart is used as a sub-chart. If not there it fails to install.",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "enabled": {
+      "description": "Should OPF dev umbrella chart be enabled as a sub-chart.",
+      "type": "boolean"
+    },
+    "nameOverride" : {
+      "description": "Name of the application. By default, it uses the name of the chart.",
+      "type": "string"
+    },
+    "fullnameOverride" : {
+      "description": "Fully qualified app name used for naming the kubernetes objects. By default, it uses the release name followed by te app name except if the release name already contains the app name.",
+      "type": "string"
+    },
+    "secrets": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "ova": {
+          "type": "object",
+          "properties": {
+            "serverConfig": {
+              "description": "Technical user credentials.",
+              "type": "object",
+              "properties": {
+                "admin": {
+                  "description": "Server administrator credentials.",
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password"
+                  ]
+                }
+              },
+              "required": [
+                "admin"
+              ]
+            },
+            "openid": {
+              "type": "object",
+              "properties": {
+                "clientId": {
+                  "type": "string"
+                },
+                "clientSecret": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "clientId",
+                "clientSecret"
+              ]
+            },
+            "tls": {
+              "type": "object",
+              "properties": {
+                "keystore": {
+                  "type": "object",
+                  "properties": {
+                    "password": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "password"
+                  ]
+                },
+                "truststore": {
+                  "type": "object",
+                  "properties": {
+                    "password": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "password"
+                  ]
+                }
+              },
+              "required": [
+                "keystore",
+                "truststore"
+              ]
+            }
+          },
+          "required": [
+            "serverConfig", "openid", "tls"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "anyOf": [
+        {
+          "properties": {
+            "enabled": { "const": true }
+          },
+          "required": [
+            "ova"
+          ]
+        },
+        {
+          "properties": {
+            "enabled": { "const": false }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "keystores": {
+      "type": "object"
+    },
+    "service-account": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "required": ["secrets", "service-account"],
+  "additionalProperties": false
+}

@@ -1,0 +1,12 @@
+# Specific values for starting the dev-environment.
+secrets:
+  opf:
+    db:
+      username: BPH
+      password: password
+      compat:
+        username: BPHCompat
+        password: password
+      tranlog:
+        username: BPHTranlog
+        password: password

@@ -1,0 +1,2728 @@
+{
+  "$schema" : "https://json-schema.org/draft-07/schema#",
+  "$id" : "http://clear2pay.com/xct.opf/values.schema.json",
+  "title" : "XCT kubernetes deployment schema for values.yaml",
+  "description" : "Schema describes values.yaml for XCT kubernetes deployment.",
+  "type" : "object",
+  "definitions" : {
+    "probe" : {
+      "description" : "Single probe configuration.",
+      "type" : "object",
+      "properties" : {
+        "enabled" : {
+          "description" : "Should the probe be enabled. Default value is true.",
+          "type" : "boolean"
+        },
+        "httpGet" : {
+          "description" : "HTTP GET endpoint configuration.",
+          "type" : "object",
+          "properties" : {
+            "path" : {
+              "description" : "Path to access on the HTTP server.",
+              "type" : "string"
+            },
+            "port" : {
+              "description" : "Name or number of the port to access on the container. Number must be in the range 1 to 65535.",
+              "type" : "integer",
+              "exclusiveMinimum" : 0,
+              "maximum" : 65535
+            },
+            "scheme" : {
+              "description" : "Scheme to use for connecting to the host (HTTP or HTTPS). Default value is HTTPS.",
+              "type" : "string",
+              "enum" : [ "HTTP", "HTTPS" ]
+            }
+          },
+          "required" : [ "path", "port" ],
+          "additionalProperties" : false
+        },
+        "initialDelaySeconds" : {
+          "description" : "Number of seconds after the container has started before liveness or readiness probes are initiated. Defaults to 0 seconds.",
+          "type" : "integer",
+          "minimum" : 0
+        },
+        "periodSeconds" : {
+          "description" : "How often (in seconds) to perform the probe.",
+          "type" : "integer",
+          "minimum" : 1
+        },
+        "timeoutSeconds" : {
+          "description" : "Number of seconds after which the probe times out.",
+          "type" : "integer",
+          "minimum" : 1
+        },
+        "successThreshold" : {
+          "description" : "Minimum consecutive successes for the probe to be considered successful after having failed. Defaults to 1. Must be 1 for liveness and startup Probes.",
+          "type" : "integer",
+          "minimum" : 1
+        },
+        "failureThreshold" : {
+          "description" : "When a probe fails, Kubernetes will try failureThreshold times before giving up. Giving up in case of liveness probe means restarting the container. In case of readiness probe the Pod will be marked Unready.",
+          "type" : "integer",
+          "minimum" : 1
+        }
+      },
+      "anyOf" : [ {
+        "properties" : {
+          "enabled" : {
+            "const" : true
+          }
+        },
+        "required" : [ "httpGet" ]
+      }, {
+        "properties" : {
+          "enabled" : {
+            "const" : false
+          }
+        }
+      } ],
+      "additionalProperties" : false
+    },
+    "connectionManagerConfig" : {
+      "type" : "object",
+      "properties" : {
+        "minPoolSize" : {
+          "description" : "Minimum number of connections in the connections pool.",
+          "type" : "integer",
+          "minimum" : 0
+        },
+        "maxPoolSize" : {
+          "description" : "Maximum number of connections in the connections pool.",
+          "type" : "integer",
+          "minimum" : 0
+        },
+        "purgePolicy" : {
+          "description" : "Specifies which connections to destroy when a stale connection is detected in a pool. Possible values are : EntirePool, FailingConnectionOnly or ValidateAllConnections. Default value is EntirePool.",
+          "type" : "string",
+          "enum" : [ "EntirePool", "FailingConnectionOnly", "ValidateAllConnections" ]
+        },
+        "agedTimeout" : {
+          "description" : "Amount of time before a connection can be discarded by pool maintenance. A value of -1 disables this timeout. A value of 0 discards every connection, which disables connection pooling. Specify a positive integer followed by a unit of time, which can be hours (h), minutes (m), or seconds (s). Default value is -1.",
+          "type" : "string"
+        },
+        "maxIdleTime" : {
+          "description" : "Amount of time a connection can be unused or idle until it can be discarded during pool maintenance, if doing so does not reduce the pool below the minimum size. A value of -1 disables this timeout. Specify a positive integer followed by a unit of time, which can be hours (h), minutes (m), or seconds (s).",
+          "type" : "string"
+        },
+        "connectionTimeout" : {
+          "description" : "Amount of time after which a connection request times out. A value of -1 disables this timeout, meaning infinite wait. A value of 0 is immediate, meaning no wait. Specify a positive integer followed by a unit of time, which can be hours (h), minutes (m), or seconds (s).",
+          "type" : "string"
+        },
+        "reapTime" : {
+          "description" : "Amount of time between runs of the pool maintenance thread. A value of -1 disables pool maintenance. Specify a positive integer followed by a unit of time, which can be hours (h), minutes (m), or seconds (s). For example, specify 30 seconds as 30s.",
+          "type" : "string"
+        }
+      },
+      "additionalProperties" : false
+    },
+    "mqConnectionFactory" : {
+      "type" : "object",
+      "properties" : {
+        "hostname" : {
+          "description" : "Hostname of the messaging server.",
+          "type" : "string"
+        },
+        "port" : {
+          "description" : "Port number. Default is 1414.",
+          "type" : "integer",
+          "exclusiveMinimum" : 0,
+          "maximum" : 65535
+        },
+        "channel" : {
+          "description" : "Default value is channel1.",
+          "type" : "string"
+        },
+        "queueManager" : {
+          "description" : "Default value is MQ.QUEUE.MANAGER.",
+          "type" : "string"
+        },
+        "sslCipherSuite" : {
+          "description" : "SSL CipherSuite for a connection.",
+          "type" : "string"
+        },
+        "connectionManagerConfig" : {
+          "$ref" : "#/definitions/connectionManagerConfig"
+        }
+      },
+      "additionalProperties" : false
+    },
+    "kafkaConnectionFactory" : {
+      "type" : "object",
+      "properties" : {
+        "bootstrapServers" : {
+          "description" : "A list of host/port pairs to use for establishing the initial connection to the Kafka cluster. This list should be in the form \"host1:port1,host2:port2,...\"",
+          "type" : "string"
+        },
+        "clientId" : {
+          "description" : "An id string to pass to the server when making requests. The purpose of this is to be able to track the source of requests beyond just ip/port by allowing a logical application name to be included in server-side request logging.",
+          "type" : "string"
+        },
+        "protocol" : {
+          "description" : "Protocol used to communicate with brokers. Valid values are: PLAINTEXT, SSL, SASL_PLAINTEXT, SASL_SSL.",
+          "type" : "string",
+          "enum" : [ "PLAINTEXT", "SSL", "SASL_PLAINTEXT", "SASL_SSL" ]
+        },
+        "sslKeystoreLocation" : {
+          "type" : "string"
+        },
+        "sslTruststoreLocation" : {
+          "type" : "string"
+        },
+        "sslEndpointIdentification" : {
+          "type" : "string"
+        },
+        "tune" : {
+          "description" : "Properties to tune the connection factory.",
+          "type" : "object",
+          "properties" : {
+            "acks" : {
+              "type" : "string"
+            },
+            "batchSize" : {
+              "type" : "string"
+            },
+            "lingerMS" : {
+              "type" : "string"
+            },
+            "retries" : {
+              "type" : "string"
+            }
+          },
+          "additionalProperties" : false
+        },
+        "connectionManagerConfig" : {
+          "$ref" : "#/definitions/connectionManagerConfig"
+        }
+      },
+      "additionalProperties" : false
+    },
+    "tcpipConnectionFactory" : {
+      "type" : "object",
+      "properties" : {
+        "connectionManagerConfig" : {
+          "$ref" : "#/definitions/connectionManagerConfig"
+        }
+      },
+      "additionalProperties" : false
+    },
+    "kafkaActivationSpec" : {
+      "type" : "object",
+      "properties" : {
+        "groupId" : {
+          "type" : "string"
+        },
+        "topics" : {
+          "type" : "string"
+        },
+        "retryBackoff" : {
+          "type" : "integer"
+        },
+        "pollInterval" : {
+          "type" : "integer"
+        },
+        "maxRetryCount" : {
+          "type" : "integer"
+        }
+      },
+      "additionalProperties" : false
+    },
+    "mqLBConnectionFactory" : {
+      "type" : "object",
+      "properties" : {
+        "hostname" : {
+          "description" : "Hostname of the messaging server.",
+          "type" : "string"
+        },
+        "port" : {
+          "description" : "Port number. Default is 1414.",
+          "type" : "integer",
+          "exclusiveMinimum" : 0,
+          "maximum" : 65535
+        },
+        "channel" : {
+          "description" : "Default value is channel1.",
+          "type" : "string"
+        },
+        "queueManager" : {
+          "description" : "Default value is MQ.QUEUE.MANAGER.",
+          "type" : "string"
+        },
+        "sslCipherSuite" : {
+          "description" : "SSL CipherSuite for a connection.",
+          "type" : "string"
+        },
+        "connectionManagerConfig" : {
+          "$ref" : "#/definitions/connectionManagerConfig"
+        },
+        "AMHLBSuffixA" : {
+          "description" : "",
+          "type" : "string"
+        },
+        "AMHLBSuffixB" : {
+          "description" : "",
+          "type" : "string"
+        }
+      },
+      "additionalProperties" : false
+    }
+  },
+  "properties" : {
+    "global" : {
+      "description" : "Placeholder for global values when the chart is used as a sub-chart. If not there it fails to install.",
+      "type" : "object",
+      "additionalProperties" : false
+    },
+    "enabled" : {
+      "description" : "Should OPF chart be enabled as a sub-chart.",
+      "type" : "boolean"
+    },
+    "nameOverride" : {
+      "description" : "Name of the application. By default, it uses the name of the chart.",
+      "type" : "string"
+    },
+    "fullnameOverride" : {
+      "description" : "Fully qualified app name used for naming the kubernetes objects. By default, it uses the release name followed by te app name except if the release name already contains the app name.",
+      "type" : "string"
+    },
+    "deployment" : {
+      "description" : "OPF deployment configuration.",
+      "type" : "object",
+      "properties" : {
+        "image" : {
+          "description" : "Container image settings.",
+          "type" : "object",
+          "properties" : {
+            "repository" : {
+              "description" : "Repository to get the image from.",
+              "type" : "string"
+            },
+            "name" : {
+              "description" : "Name of container image.",
+              "type" : "string",
+              "minLength" : 3
+            },
+            "tag" : {
+              "description" : "Tag name of container image.",
+              "minLength" : 1
+            },
+            "pullPolicy" : {
+              "description" : "When to pull the image. Default value is Always.",
+              "type" : "string",
+              "enum" : [ "IfNotPresent", "Always", "Never" ]
+            },
+            "pullSecrets" : {
+              "type" : "string"
+            }
+          },
+          "required" : [ "name", "tag" ],
+          "additionalProperties" : false
+        },
+        "nodeSelector" : {
+          "type" : "object"
+        },
+        "replicasCount" : {
+          "description" : "Number of desired replicas. Default value is 1.",
+          "type" : "integer",
+          "minimum" : 1
+        },
+        "strategy" : {
+          "type" : "object",
+          "properties" : {
+            "type" : {
+              "description" : "Deployment update strategy type. Can be set to RollingUpdate or Recreate. Default is RollingUpdate.",
+              "type" : "string",
+              "enum" : [ "RollingUpdate", "Recreate" ]
+            },
+            "rollingUpdate" : {
+              "type" : "object",
+              "properties" : {
+                "maxUnavailable" : {
+                  "description" : "Maximum number of unavailable replicas when doing a rolling update. Default is 0.",
+                  "type" : "string"
+                },
+                "maxSurge" : {
+                  "description" : "Maximum number of additional replicas when doing a rolling update. Default is 1.",
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "additionalProperties" : false
+        },
+        "labels" : {
+          "description" : "Additional labels to be added to the Kubernetes objects.",
+          "type" : "object"
+        },
+        "containerHttpsPort" : {
+          "description" : "Port on which to deploy OPF in the pods. Default value is 9443.",
+          "type" : "integer",
+          "exclusiveMinimum" : 0,
+          "maximum" : 65535
+        },
+        "serviceAccountName" : {
+          "description" : "Name of the service account to be used. Default value is \"default\".",
+          "type" : "string"
+        },
+        "resources" : {
+          "description" : "Kubernetes resources limits and requests.",
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "Should deployment resources be enabled. Default value is true.",
+              "type" : "boolean"
+            },
+            "memory" : {
+              "description" : "Memory limit and request values.",
+              "type" : "object",
+              "properties" : {
+                "request" : {
+                  "description" : "Memory request value. Default value is 3422M.",
+                  "type" : "string",
+                  "minlength" : 1
+                },
+                "limit" : {
+                  "description" : "Memory limit value. Default value is 3422M.",
+                  "type" : "string",
+                  "minlength" : 1
+                }
+              },
+              "additionalProperties" : false
+            },
+            "cpu" : {
+              "description" : "CPU limit and request values.",
+              "type" : "object",
+              "properties" : {
+                "request" : {
+                  "description" : "CPU request value. Default value is 2.0.",
+                  "type" : "string",
+                  "minlength" : 1
+                },
+                "limit" : {
+                  "description" : "CPU limit value. Default value is 4.0.",
+                  "type" : "string",
+                  "minlength" : 1
+                }
+              },
+              "additionalProperties" : false
+            }
+          },
+          "additionalProperties" : false
+        },
+        "lifecycle" : {
+          "description" : "Container lifecycle settings.",
+          "type" : "object",
+          "properties" : {
+            "preTerminationPeriodSeconds" : {
+              "description" : "Default value is 5.",
+              "type" : "integer",
+              "exclusiveMinimum" : 0,
+              "maximum" : 3600
+            },
+            "terminationGracePeriodSeconds" : {
+              "description" : "Default value is 60.",
+              "type" : "integer",
+              "exclusiveMinimum" : 0,
+              "maximum" : 3600
+            }
+          },
+          "additionalProperties" : false
+        },
+        "probes" : {
+          "description" : "Probes configuration.",
+          "type" : "object",
+          "properties" : {
+            "liveness" : {
+              "$ref" : "#/definitions/probe"
+            },
+            "readiness" : {
+              "$ref" : "#/definitions/probe"
+            },
+            "startup" : {
+              "$ref" : "#/definitions/probe"
+            }
+          },
+          "required" : [ "liveness", "readiness", "startup" ],
+          "additionalProperties" : false
+        },
+        "podAnnotations" : {
+          "description" : "Additional annotations to be added to the pods.",
+          "type" : "object"
+        },
+        "volumes" : {
+          "description" : "External volumes related configuration.",
+          "type" : "object",
+          "properties" : {
+            "transactionsLog" : {
+              "description" : "Transactions log volume configuration.",
+              "type" : "object",
+              "properties" : {
+                "enabled" : {
+                  "description" : "Should server transactions log be saved in an mounted volume. Default is true.",
+                  "type" : "boolean"
+                },
+                "storageClassName" : {
+                  "description" : "The name of the storage class name corresponding to the transactions log volume to be mounted.",
+                  "type" : "string"
+                }
+              },
+              "anyOf" : [ {
+                "properties" : {
+                  "enabled" : {
+                    "const" : true
+                  }
+                },
+                "required" : [ "storageClassName" ]
+              }, {
+                "properties" : {
+                  "enabled" : {
+                    "const" : false
+                  }
+                }
+              } ],
+              "additionalProperties" : false
+            },
+            "interchanges" : {
+              "description" : "Interchanges volume configuration.",
+              "type" : "object",
+              "properties" : {
+                "enabled" : {
+                  "description" : "Should a volume be mounted to be able to load interchanges from the file system. Default is false.",
+                  "type" : "boolean"
+                },
+                "mountPath" : {
+                  "description" : "Where this volume should be mounted in the OPF container.",
+                  "type" : "string"
+                },
+                "storageClassName" : {
+                  "description" : "The name of the storage class name corresponding to the interchanges volume to be mounted.",
+                  "type" : "string"
+                },
+                "requestedStorageCapacity" : {
+                  "description" : "Requested storage capacity for the interchanges volume to be mounted.",
+                  "type" : "string"
+                }
+              },
+              "anyOf" : [ {
+                "properties" : {
+                  "enabled" : {
+                    "const" : true
+                  }
+                },
+                "required" : [ "mountPath", "storageClassName" ]
+              }, {
+                "properties" : {
+                  "enabled" : {
+                    "const" : false
+                  }
+                }
+              } ],
+              "additionalProperties" : false
+            }
+          },
+          "required" : [ "transactionsLog", "interchanges" ],
+          "additionalProperties" : false
+        },
+        "extraVolumes" : {
+          "description" : "Allows to mount additional volumes to OPF container. Syntax is the same as when defining one directly in k8s deployment."
+        },
+        "extraVolumeMounts" : {
+          "description" : "Volumes mounts corresponding to the additional volumes listed in extraVolumes. Syntax is the same as when defining one directly in k8s deployment."
+        },
+        "service" : {
+          "description" : "Configuration of the OPF Service.",
+          "type" : "object",
+          "properties" : {
+            "type" : {
+              "description" : "Type of Service. Set to either ClusterIP (default, needed when using Ingress) or LoadBalancer or NodePort.",
+              "type" : "string",
+              "enum" : [ "ClusterIP", "LoadBalancer", "NodePort" ]
+            },
+            "port" : {
+              "description" : "Service https port. Default is 9443.",
+              "type" : "integer",
+              "exclusiveMinimum" : 0,
+              "maximum" : 65535
+            },
+            "annotations" : {
+              "description" : "Additional annotations to be added to the Service.",
+              "type" : "object"
+            },
+            "nodePort" : {
+              "description" : "NodePort can be assigned in case of service type is NodePort",
+              "type" : "integer",
+              "exclusiveMinimum" : 30000,
+              "maximum" : 32767
+            }
+          },
+          "required" : [ "type", "port" ],
+          "additionalProperties" : false
+        },
+        "ingress" : {
+          "description" : "Kubernetes ingress related configuration.",
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "Should ingress be enabled. Default is true.",
+              "type" : "boolean"
+            },
+            "host" : {
+              "description" : "(Virtual) host to mount the application on. Default is \"opf.clear2pay.com\"",
+              "type" : "string",
+              "minLength" : 1
+            },
+            "path" : {
+              "description" : "Path to mount application on (recommended: /). Default is /.",
+              "type" : "string"
+            },
+            "pathType" : {
+              "description" : "Ingress is required to have a corresponding path type",
+              "type" : "string"
+            },
+            "tls" : {
+              "type" : "object",
+              "properties" : {
+                "enabled" : {
+                  "description" : "Should tls be enabled on ingress. Default is true.",
+                  "type" : "boolean"
+                },
+                "secret" : {
+                  "description" : "Tls secret name for ingress.",
+                  "type" : "string"
+                }
+              },
+              "anyOf" : [ {
+                "properties" : {
+                  "enabled" : {
+                    "const" : true
+                  }
+                },
+                "required" : [ "secret" ]
+              }, {
+                "properties" : {
+                  "enabled" : {
+                    "const" : false
+                  }
+                }
+              } ]
+            },
+            "annotations" : {
+              "description" : "Additional annotations to be added to the Ingress.",
+              "type" : "object"
+            }
+          },
+          "anyOf" : [ {
+            "properties" : {
+              "enabled" : {
+                "const" : true
+              }
+            },
+            "required" : [ "host" ]
+          }, {
+            "properties" : {
+              "enabled" : {
+                "const" : false
+              }
+            }
+          } ],
+          "additionalProperties" : false
+        },
+        "budget" : {
+          "description" : "Pod Disruption Budget configuration.",
+          "type" : "object",
+          "properties" : {
+            "minAvailable" : {
+              "description" : "Number (or percentage) of pods that must always be available. Default is 0.",
+              "type" : "string",
+              "pattern" : "^(100|[1-9]?[0-9])%$|^\\d*$"
+            }
+          },
+          "required" : [ "minAvailable" ],
+          "additionalProperties" : false
+        }
+      },
+      "required" : [ "image" ],
+      "additionalProperties" : false
+    },
+    "serverConfig" : {
+      "description" : "Application server configuration.",
+      "type" : "object",
+      "properties" : {
+        "jvm" : {
+          "type" : "object",
+          "properties" : {
+            "memory" : {
+              "type" : "object",
+              "properties" : {
+                "initMemorySize" : {
+                  "description" : "Initial memory sizes available to the JVM.",
+                  "type" : "string"
+                },
+                "maxMemorySize" : {
+                  "description" : "Maximum memory sizes available to the JVM.",
+                  "type" : "string"
+                },
+                "initPermSize" : {
+                  "description" : "Initial value of permanent space which is allocated at startup of JVM.",
+                  "type" : "string"
+                },
+                "maxPermSize" : {
+                  "description" : "Maximum value of permanent space that JVM can allot up to.",
+                  "type" : "string"
+                },
+                "maxStackSize" : {
+                  "description" : "Maximum stack size available to the JVM.",
+                  "type" : "string"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "runtimeOptimization" : {
+              "type" : "object",
+              "properties" : {
+                "enabled" : {
+                  "description" : "Enable server application runtime optimizations. The directory server will take longer to start and \"warm up\" but will be more aggressively optimized to produce higher throughput. This is enabled by default.",
+                  "type" : "boolean"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "CMSCollector" : {
+              "description" : "Concurrent Mark Sweep (CMS) collector configuration. The CMS is  designed for applications that prefer shorter garbage collection pauses and that can afford to share processor resources with the garbage collector while the application is running. CMS is enabled by default.",
+              "type" : "object",
+              "properties" : {
+                "enabled" : {
+                  "description" : "Enable the Concurrent Mark Sweep (CMS) collector.",
+                  "type" : "boolean"
+                },
+                "classUnloading" : {
+                  "type" : "object",
+                  "properties" : {
+                    "enabled" : {
+                      "description" : "Enable class unloading when using the concurrent mark-sweep (CMS) garbage collector. This option is enabled by default.",
+                      "type" : "boolean"
+                    }
+                  },
+                  "additionalProperties" : false
+                }
+              },
+              "additionalProperties" : false
+            }
+          },
+          "additionalProperties" : false
+        },
+        "authentication" : {
+          "type" : "object",
+          "properties" : {
+            "ltpa" : {
+              "type" : "object",
+              "properties" : {
+                "timeout" : {
+                  "description" : "Amount of time after which the ltpa token expires in minutes. Specify a positive integer followed by a unit of time, which can be hours (h) or minutes (m). It should be set to something > than the maximum number of hour a end user will use the app without interruption. Default value is 120m.",
+                  "type" : "string"
+                }
+              }
+            },
+            "authCache" : {
+              "type" : "object",
+              "properties" : {
+                "timeout" : {
+                  "description" : "Authentication cache timeout (cache for subject). If a user is inactive for longer than period that is specified by the timeout attribute, then the entry for that user is removed from the cache. Specify a positive integer followed by a unit of time, which can be hours (h), minutes (m), seconds (s), or milliseconds (ms)£. Default value is 10m.",
+                  "type" : "string"
+                },
+                "initSize" : {
+                  "description" : "Initial number of entries supported by the authentication cache.",
+                  "type" : "integer"
+                },
+                "maxSize" : {
+                  "description" : "Maximum number of entries supported by the authentication cache.",
+                  "type" : "integer"
+                }
+              }
+            }
+          }
+        },
+        "httpSession" : {
+          "type" : "object",
+          "properties" : {
+            "timeout" : {
+              "description" : "Amount of time an http session can go unused before it is no longer valid, in seconds if unit of time isn't specified. Specify a positive integer followed by a unit of time, which can be hours (h), minutes (m), or seconds (s). Default value is 30m.",
+              "type" : "string"
+            }
+          }
+        },
+        "monitoring" : {
+          "type" : "object",
+          "properties" : {
+            "metrics" : {
+              "type" : "object",
+              "properties" : {
+                "enabled" : {
+                  "description" : "Enable/disable liberty MicroProfile Metrics on /metrics endpoint (OpenMetric format). Default value is false.",
+                  "type" : "boolean"
+                }
+              },
+              "required" : [ "enabled" ]
+            },
+            "scraping" : {
+              "type" : "object",
+              "properties" : {
+                "enabled" : {
+                  "description" : "Enable/Disable liberty MicroProfile metrics scrapping. Default value is false.",
+                  "type" : "boolean"
+                },
+                "podAnnotations" : {
+                  "description" : "Annotations to be added to the pods for them to be scrapped properly by the reporting agent (eg.: Prometheus)",
+                  "type" : "object"
+                }
+              }
+            }
+          },
+          "required" : [ "metrics", "scraping" ],
+          "additionalProperties" : false
+        },
+        "transactions" : {
+          "type" : "object",
+          "properties" : {
+            "OnePCOptimization" : {
+              "description" : "Specifies whether the transaction manager optimizes when all resources but one vote read only. Default value is true",
+              "type" : "boolean"
+            },
+            "defaultMaxShutdownDelay" : {
+              "description" : "Default maximum shutdown delay. Specify a positive integer followed by a unit of time, which can be hours (h), minutes (m), or seconds (s). For example, specify 30 seconds as 30s. You can include multiple values in a single entry. For example, 1m30s is equivalent to 90 seconds.",
+              "type" : "string"
+            },
+            "enableLogRetries" : {
+              "description" : "When recovery logs are stored in an RDBMS table, this property allows SQL operations that fail to be retried. Default value is false",
+              "type" : "boolean"
+            },
+            "logRetryInterval" : {
+              "description" : "Specifies the interval in seconds between attempts to recover from a transient error accessing the transaction service logs.",
+              "type" : "string"
+            },
+            "logRetryLimit" : {
+              "description" : "Specifies the maximum number of attempts to recover from a transient error accessing the transaction service logs for an unrecoverable error condition.",
+              "type" : "string"
+            },
+            "recoverOnStartup" : {
+              "description" : "Specifies whether the server should begin transaction recovery at server startup. Default value is false",
+              "type" : "boolean"
+            },
+            "shutdownOnLogFailure" : {
+              "description" : "Specifies whether the transaction manager will stop an application server that is part of a recoveryGroup if an unrecoverable error occurs accessing its own transaction service logs. Default value is true",
+              "type" : "boolean"
+            },
+            "waitForRecovery" : {
+              "description" : "Specifies whether the server should wait for transaction recovery to complete before accepting new transactional work. Default value is false",
+              "type" : "boolean"
+            },
+            "timeouts" : {
+              "type" : "object",
+              "properties" : {
+                "clientInactivity" : {
+                  "description" : "Maximum duration between transactional requests from a remote client. Default value is 12m. Any period of client inactivity that exceeds this timeout results in the transaction being rolled back in this application server. Specify a positive integer followed by a unit of time, which can be hours (h), minutes (m), or seconds (s).",
+                  "type" : "string"
+                },
+                "totalTranLifetime" : {
+                  "description" : "Default maximum time allowed for transactions started on this server to complete. Default value is 15m. Any such transactions that do not complete before this timeout occurs are rolled back. Specify a positive integer followed by a unit of time, which can be hours (h), minutes (m), or seconds (s).",
+                  "type" : "string"
+                }
+              }
+            },
+            "heuristics" : {
+              "type" : "object",
+              "properties" : {
+                "acceptHeuristicHazard" : {
+                  "description" : "Specifies whether all applications on this server accept the possibility of a heuristic hazard occurring in a two-phase transaction that contains a one-phase resource. Default value is true",
+                  "type" : "boolean"
+                },
+                "enableLoggingForHeuristicReporting" : {
+                  "description" : "Specifies whether the application server logs about-to-commit-one-phase-resource events from transactions that involve both a one-phase commit resource and two-phase commit resources. Default value is false",
+                  "type" : "boolean"
+                },
+                "heuristicRetryInterval" : {
+                  "description" : "Amount of time that the application server waits before retrying a completion signal, such as commit or rollback, after a transient exception from a resource manager or remote partner. Specify a positive integer followed by a unit of time, which can be hours (h), minutes (m), or seconds (s). For example, specify 30 seconds as 30s. You can include multiple values in a single entry. For example, 1m30s is equivalent to 90 seconds.",
+                  "type" : "string"
+                },
+                "heuristicRetryLimit" : {
+                  "description" : "The number of times that the application server retries a completion signal, such as commit or rollback. Retries occur after a transient exception from a resource manager or remote partner.",
+                  "type" : "string"
+                },
+                "heuristicRetryWait" : {
+                  "description" : "Amount of time that the application server waits before retrying a completion signal, such as commit or rollback, after a transient exception from a resource manager or remote partner. Specify a positive integer followed by a unit of time, which can be hours (h), minutes (m), or seconds (s). For example, specify 30 seconds as 30s. You can include multiple values in a single entry. For example, 1m30s is equivalent to 90 seconds.",
+                  "type" : "string"
+                },
+                "lpsHeuristicCompletion" : {
+                  "description" : "Specifies the direction that is used to complete a transaction that has a heuristic outcome; either the application server commits or rolls back the transaction, or depends on manual completion by the administrator. Allowed values are: COMMIT, ROLLBACK and MANUAL",
+                  "type" : "string"
+                }
+              }
+            },
+            "lease" : {
+              "type" : "object",
+              "properties" : {
+                "leaseCheckInterval" : {
+                  "description" : "The interval after which the lease check strategy is implemented. Specify a positive integer followed by a unit of time, which can be hours (h), minutes (m), or seconds (s). For example, specify 30 seconds as 30s. You can include multiple values in a single entry. For example, 1m30s is equivalent to 90 seconds.",
+                  "type" : "string"
+                },
+                "leaseLength" : {
+                  "description" : "The length of time before a recovery log lease expires. Specify a positive integer followed by a unit of time, which can be hours (h), minutes (m), or seconds (s). For example, specify 30 seconds as 30s. You can include multiple values in a single entry. For example, 1m30s is equivalent to 90 seconds.",
+                  "type" : "string"
+                },
+                "leaseRenewalThreshold" : {
+                  "description" : "The percentage of the duration of the recovery log lease that passes before the lease is renewed.",
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
+        "transactionLogs" : {
+          "type" : "object",
+          "properties" : {
+            "mode" : {
+              "description" : "The server transactions recovery log mode. Either db or file. Default value is file",
+              "type" : "string"
+            }
+          }
+        },
+        "ejbContainer" : {
+          "type" : "object",
+          "properties" : {
+            "poolCleanupInterval" : {
+              "description" : "The interval between removing unused bean instances. This setting only applies to stateless session and message-driven beans. Specify a positive integer followed by a unit of time, which can be hours (h), minutes (m), or seconds (s). For example, specify 30 seconds as 30s. Default value is 24h.",
+              "type" : "string"
+            },
+            "startEJBsAtAppStart" : {
+              "description" : "Specifies when EJB types will be initialized. If this property is set to true, EJB types will be initialized at the time applications are first started. If this property is set to false, EJB types will be initialized at the time the EJB type is first used by an application. Default value is true.",
+              "type" : "boolean"
+            },
+            "cacheSize" : {
+              "description" : "The number of stateful session bean instances that should be cached in memory. Default value is 10000.",
+              "type" : "integer"
+            }
+          }
+        },
+        "concurrencyPolicy" : {
+          "type" : "object",
+          "properties" : {
+            "maxConcurrentTasks" : {
+              "description" : "Specifies the maximum number of tasks that can run simultaneously. Default is set to 10.",
+              "type" : "integer"
+            },
+            "maxQueueSize" : {
+              "description" : "Specifies the maximum number of tasks that can be in the queue waiting for execution. Default is set to 50.",
+              "type" : "integer"
+            }
+          }
+        },
+        "warmUp" : {
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "Should warmUp be enabled. Default value is false.",
+              "type" : "boolean"
+            }
+          },
+          "required" : [ "enabled" ],
+          "additionalProperties" : false
+        },
+        "test" : {
+          "type" : "object",
+          "properties" : {
+            "configurationName" : {
+              "description" : "Test configuration name (common|ci). Default value is common.",
+              "type" : "string",
+              "enum" : [ "common", "ci" ]
+            }
+          },
+          "required" : [ "configurationName" ],
+          "additionalProperties" : false
+        },
+        "remoteDebug" : {
+          "description" : "Java remote debug related configuration.",
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "Should remote debug be activated (port=7777). Default value is false.",
+              "type" : "boolean"
+            }
+          },
+          "additionalProperties" : false
+        }
+      },
+      "required" : [ "jvm", "monitoring" ],
+      "additionalProperties" : false
+    },
+    "db" : {
+      "description" : "Database related configuration.",
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "description" : "Database type (oracle or postgres)",
+          "type" : "string",
+          "enum" : [ "postgres", "oracle" ]
+        },
+        "url" : {
+          "description" : "Database JDBC URL.",
+          "type" : "string"
+        },
+        "host" : {
+          "description" : "Database JDBC hostname.",
+          "type" : "string"
+        },
+        "port" : {
+          "description" : "Database JDBC port.",
+          "type" : "integer"
+        },
+        "database" : {
+          "description" : "Database JDBC database name.",
+          "type" : "string"
+        },
+        "schema" : {
+          "description" : "Database JDBC schema.",
+          "type" : "string"
+        },
+        "sslmode" : {
+          "description" : "Database ssl connection mode.",
+          "type" : "string"
+        },
+        "xaConfig" : {
+          "$ref" : "#/definitions/connectionManagerConfig"
+        },
+        "nonxaConfig" : {
+          "$ref" : "#/definitions/connectionManagerConfig"
+        },
+        "compat" : {
+          "description" : "Compatibility database (NDU) related configuration.",
+          "$ref" : "#/definitions/connectionManagerConfig"
+        },
+        "tranlog" : {
+          "description" : "Transaction Service logs in database related configuration.",
+          "type" : "object",
+          "properties" : {
+            "type" : {
+              "description" : "Tranlog Database type (oracle or postgres)",
+              "type" : "string",
+              "enum" : [ "postgres", "oracle" ]
+            },
+            "url" : {
+              "description" : "Tranlog Database JDBC URL.",
+              "type" : "string"
+            },
+            "host" : {
+              "description" : "Tranlog Database JDBC hostname.",
+              "type" : "string"
+            },
+            "port" : {
+              "description" : "Tranlog Database JDBC port.",
+              "type" : "integer"
+            },
+            "database" : {
+              "description" : "Tranlog Database JDBC database name.",
+              "type" : "string"
+            },
+            "schema" : {
+              "description" : "Tranlog Database JDBC schema.",
+              "type" : "string"
+            },
+            "sslmode" : {
+              "description" : "Tranlog Database ssl connection mode.",
+              "type" : "string"
+            },
+            "connectionManagerConfig" : {
+              "$ref" : "#/definitions/connectionManagerConfig"
+            }
+          },
+          "anyOf" : [ {
+            "properties" : {
+              "type" : {
+                "const" : "oracle"
+              }
+            },
+            "required" : [ "url" ]
+          }, {
+            "properties" : {
+              "type" : {
+                "const" : "postgres"
+              }
+            },
+            "required" : [ "host", "port", "database", "schema" ]
+          }, {
+            "properties" : {
+              "type" : { }
+            }
+          } ],
+          "additionalProperties" : false
+        }
+      },
+      "anyOf" : [ {
+        "properties" : {
+          "type" : {
+            "const" : "oracle"
+          }
+        },
+        "required" : [ "url" ]
+      }, {
+        "properties" : {
+          "type" : {
+            "const" : "postgres"
+          }
+        },
+        "required" : [ "host", "port", "database", "schema" ]
+      } ],
+      "required" : [ "xaConfig", "nonxaConfig", "compat", "tranlog" ],
+      "additionalProperties" : false
+    },
+    "messaging" : {
+      "description" : "JMS related configuration",
+      "type" : "object",
+      "properties" : {
+        "mq" : {
+          "type" : "object",
+          "properties" : {
+            "resourceAdapter" : {
+              "type" : "object",
+              "properties" : {
+                "maxConnections" : {
+                  "description" : "The maximum number of connections to a WebSphere MQ queue manager and the maximum number of MDBs deployed. Default value is 50.",
+                  "type" : "integer",
+                  "minimum" : 0
+                },
+                "startupRetryCount" : {
+                  "description" : "The default number of times to try and connect a MDB on startup, if the WebSphere MQ queue manager is not running when the application server is started. Default value is 0.",
+                  "type" : "integer",
+                  "minimum" : 0
+                },
+                "startupRetryInterval" : {
+                  "description" : "The default sleep time between startup connection attempts (in milliseconds). Default value is 30000.",
+                  "type" : "integer",
+                  "minimum" : 0
+                },
+                "reconnectionRetryCount" : {
+                  "description" : "The maximum number of attempts made by a WebSphere MQ messaging provider activation specification to reconnect to a WebSphere MQ queue manager if a connection fails. Default value is 5.",
+                  "type" : "integer",
+                  "minimum" : 0
+                },
+                "reconnectionRetryInterval" : {
+                  "description" : "The time, in milliseconds, that a WebSphere MQ messaging provider activation specification waits before making another attempt to reconnect to a WebSphere MQ queue manager. Default value is 300000.",
+                  "type" : "integer",
+                  "minimum" : 0
+                }
+              },
+              "additionalProperties" : false
+            },
+            "cfDefaultValues" : {
+              "description" : "Default values to be used for mq connection factories when not defined.",
+              "$ref" : "#/definitions/mqConnectionFactory"
+            },
+            "connectionFactories" : {
+              "type" : "object",
+              "properties" : {
+                "QCF" : {
+                  "description" : "Shared queue connection factory (or main qcf when ndu is not used) properties.",
+                  "$ref" : "#/definitions/mqConnectionFactory"
+                },
+                "SWIFTSAAQCF" : {
+                  "description" : "Shared queue connection factory for swiftsaa properties.",
+                  "$ref" : "#/definitions/mqConnectionFactory"
+                },
+                "MQHAQCF" : {
+                  "$ref" : "#/definitions/mqConnectionFactory"
+                },
+                "AMHQCF" : {
+                  "description" : "Common AMH queue connection factory",
+                  "$ref" : "#/definitions/mqLBConnectionFactory"
+                },
+                "AMH1QCF" : {
+                  "description" : "Queue connection factory configuration for the second of two Active/Active AMH queue managers",
+                  "$ref" : "#/definitions/mqConnectionFactory"
+                },
+                "AMH2QCF" : {
+                  "description" : "Queue connection factory configuration for the second of two Active/Active AMH queue managers",
+                  "$ref" : "#/definitions/mqConnectionFactory"
+                }
+              },
+              "required" : [ "QCF", "SWIFTSAAQCF", "MQHAQCF", "AMHQCF", "AMH1QCF", "AMH2QCF" ]
+            },
+            "ndu" : {
+              "description" : "Non disruptive upgrade related configurations.",
+              "type" : "object",
+              "properties" : {
+                "color" : {
+                  "description" : "Color of the cluster.",
+                  "type" : "string",
+                  "enum" : [ "blue", "green" ]
+                },
+                "compatMode" : {
+                  "description" : "BPH Oracle compat DataSource for NDU ",
+                  "type" : "object",
+                  "properties" : {
+                    "enabled" : {
+                      "description" : "To enable jdbc/bphCompatXA",
+                      "type" : "boolean"
+                    }
+                  }
+                },
+                "MYQCF" : {
+                  "description" : "Local queue connection factory properties.",
+                  "$ref" : "#/definitions/mqConnectionFactory"
+                },
+                "OTHERQCF" : {
+                  "description" : "Other queue connection factory properties.",
+                  "$ref" : "#/definitions/mqConnectionFactory"
+                },
+                "otherHandoverSetup" : {
+                  "description" : "Default value is single.",
+                  "type" : "string",
+                  "enum" : [ "single", "multi" ]
+                }
+              },
+              "required" : [ "color", "MYQCF", "OTHERQCF", "otherHandoverSetup" ],
+              "additionalProperties" : false
+            }
+          },
+          "required" : [ "cfDefaultValues", "connectionFactories" ],
+          "additionalProperties" : false,
+          "description" : "MQ Queue connection factories configuration."
+        },
+        "kafka" : {
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "Should kafka be enabled. Default value is true.",
+              "type" : "boolean"
+            },
+            "resourceAdapter" : {
+              "type" : "object",
+              "properties" : {
+                "location" : {
+                  "type" : "string"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "connectionFactories" : {
+              "type" : "object",
+              "properties" : {
+                "KafkaCF" : {
+                  "$ref" : "#/definitions/kafkaConnectionFactory"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "activationSpecs" : {
+              "description" : "Kafka jms activation spec configuration.",
+              "type" : "object",
+              "properties" : {
+                "stet" : {
+                  "$ref" : "#/definitions/kafkaActivationSpec"
+                },
+                "additionalProperties" : false
+              },
+              "additionalProperties" : false
+            }
+          },
+          "additionalProperties" : false
+        },
+        "tcpip" : {
+          "type" : "object",
+          "properties" : {
+            "resourceAdapter" : {
+              "type" : "object",
+              "properties" : {
+                "location" : {
+                  "type" : "string"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "adminObjects" : {
+              "type" : "object",
+              "properties" : {
+                "ISTSenderQ" : {
+                  "type" : "object",
+                  "properties" : {
+                    "hostname" : {
+                      "description" : "Hostname of the server where the messages will be sent to.",
+                      "type" : "string"
+                    },
+                    "port" : {
+                      "description" : "Port of the server where the messages will be sent to.",
+                      "type" : "integer",
+                      "exclusiveMinimum" : 0,
+                      "maximum" : 65535
+                    }
+                  },
+                  "additionalProperties" : false
+                }
+              },
+              "additionalProperties" : false
+            },
+            "connectionFactories" : {
+              "type" : "object",
+              "properties" : {
+                "ISTQCF" : {
+                  "$ref" : "#/definitions/tcpipConnectionFactory"
+                }
+              },
+              "additionalProperties" : false
+            }
+          },
+          "additionalProperties" : false
+        },
+        "db" : {
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "Should the application use internal queues in database as an alternative to MQ",
+              "type" : "boolean"
+            },
+            "partitionsPerQueue" : {
+              "description" : "The number of partitions per queue. To be useful, this number should be higher than the number of OPF nodes.",
+              "type" : "integer"
+            },
+            "pollInterval" : {
+              "description" : "The interval of time (ms) between two polls on the internal db-queue to fetch the messages.",
+              "type" : "integer"
+            },
+            "control" : {
+              "type" : "object",
+              "properties" : {
+                "checkPeriod" : {
+                  "description" : "The interval of time (ms) between two checks to see if the cluster state has changed regarding partition distribution.",
+                  "type" : "integer"
+                },
+                "inactiveTimeout" : {
+                  "description" : "The time (ms) before which a server not updating the database is considered inactive.",
+                  "type" : "integer"
+                },
+                "aliveUpdatePeriod" : {
+                  "description" : "Time between two updates in the database to ensure that the other servers see this one as alive.",
+                  "type" : "integer"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "redelivery" : {
+              "type" : "object",
+              "properties" : {
+                "infinite" : {
+                  "description" : "Tells to retry the message until it succeeds (true), or move it to a DLQ after a finite number of retry (false). Default is false.",
+                  "type" : "boolean"
+                },
+                "incremental" : {
+                  "description" : "Specifies how the retries will be scheduled: directly after the failure (false), or by adding an incremental delay (true). Default is false.",
+                  "type" : "boolean"
+                },
+                "maxRetryCount" : {
+                  "description" : "Maximum retries for processing a failure message.",
+                  "type" : "integer"
+                },
+                "retryDelays" : {
+                  "description" : "Redelivery retry delay time in (ms) for respective redeliveryRetryCount. Defaults to 200,5000,15000,60000,300000",
+                  "type" : "string"
+                },
+                "retryCounts" : {
+                  "description" : "Redelivery retries with count for each redeliveryRetryDelay. Default '2,1,1,1,5' means that the delays for redelivery will be: 0ms, 0ms, 200ms, 5s, 15s, 60s, 60s, 60s, 60s, 60s and every retry after this will be done after a 5min delay.",
+                  "type" : "string"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "white" : {
+              "type" : "object",
+              "properties" : {
+                "enabled" : {
+                  "description" : "Should the application use internal queues in database as an alternative to MQ for this connection",
+                  "type" : "boolean"
+                }
+              },
+              "additionalProperties" : false
+            }
+          },
+          "additionalProperties" : false
+        },
+        "swiftsaa" : {
+          "type" : "object",
+          "properties" : {
+            "optionName" : {
+              "description" : "SWIFTSAA option name. Available values: mq, mqnoauth",
+              "type" : "string",
+              "pattern" : "^(mq|mqnoauth)$"
+            }
+          },
+          "additionalProperties" : false
+        },
+        "fromswift" : {
+          "type" : "object",
+          "properties" : {
+            "optionName" : {
+              "description" : "FromSWIFT option name. Available values: db, mq, mqnoauth",
+              "type" : "string",
+              "pattern" : "^(db|mq|mqnoauth)$"
+            }
+          },
+          "additionalProperties" : false
+        },
+        "receipt" : {
+          "type" : "object",
+          "properties" : {
+            "optionName" : {
+              "description" : "Receipts option name. Available values: db, mq, mqnoauth",
+              "type" : "string",
+              "pattern" : "^(db|mq|mqnoauth)$"
+            }
+          },
+          "additionalProperties" : false
+        },
+        "AMHIntegration" : {
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "Enables or disables AMH.",
+              "type" : "boolean"
+            }
+          },
+          "additionalProperties" : false
+        }
+      },
+      "required" : [ "mq" ],
+      "additionalProperties" : false
+    },
+    "cache" : {
+      "description" : "@OPFPatch US1832627 Distroless image for OPF - to be removed once delivered. Configuration for cache",
+      "type" : "object",
+      "properties" : {
+        "relayCacheManager" : {
+          "description" : "@OPFPatch US1832627 Distroless image for OPF - to be removed once delivered. RelayCacheManager for ehcache relay cache",
+          "type" : "object",
+          "properties" : {
+            "peerProvider" : {
+              "type" : "string",
+              "description" : "@OPFPatch US1832627 Distroless image for OPF - to be removed once delivered. Ehcache relay cache peer providers implementation - ks8 as kubernetes, db as database",
+              "enum" : [ "k8s", "db" ]
+            },
+            "dbCacheManagerPeerProvider" : {
+              "description" : "@OPFPatch US1832627 Distroless image for OPF - to be removed once delivered. A database CacheManagerPeerProvider to provide CacheListeners to current CacheManager.",
+              "type" : "object",
+              "properties" : {
+                "nodeActiveMillis" : {
+                  "description" : "@OPFPatch US1832627 Distroless image for OPF - to be removed once delivered. Milliseconds to consider node active",
+                  "type" : "integer"
+                },
+                "nodeMaxInactiveMinutes" : {
+                  "description" : "@OPFPatch US1832627 Distroless image for OPF - to be removed once delivered. Minutes to consider node inactive and to delete from database",
+                  "type" : "integer"
+                },
+                "lookupIntervalMillis" : {
+                  "description" : "@OPFPatch US1832627 Distroless image for OPF - to be removed once delivered. Milliseconds to lookup CacheListener Peers & node heartbeat",
+                  "type" : "integer"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "k8sCacheManagerPeerProvider" : {
+              "description" : "@OPFPatch US1832627 Distroless image for OPF - to be removed once delivered. A kubernetes CacheManagerPeerProvider to provide CacheListeners to current CacheManager.",
+              "type" : "object",
+              "properties" : {
+                "podSelectors" : {
+                  "description" : "@OPFPatch US1832627 Distroless image for OPF - to be removed once delivered. Pod label selectors of pods to cache update ",
+                  "type" : "string"
+                },
+                "lookupIntervalMillis" : {
+                  "description" : "@OPFPatch US1832627 Distroless image for OPF - to be removed once delivered. Milliseconds to lookup CacheListener Peers",
+                  "type" : "integer"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "cacheManagerPeerListener" : {
+              "description" : "@OPFPatch US1832627 Distroless image for OPF - to be removed once delivered. A CacheManagerPeerListener listens for messages from peers to the current CacheManager.",
+              "type" : "object",
+              "properties" : {
+                "port" : {
+                  "type" : "integer",
+                  "exclusiveMinimum" : 0,
+                  "maximum" : 65535
+                },
+                "socketTimeout" : {
+                  "description" : "@OPFPatch US1832627 Distroless image for OPF - to be removed once delivered. Socket timeout in milliseconds.",
+                  "type" : "integer"
+                }
+              },
+              "additionalProperties" : false
+            }
+          },
+          "additionalProperties" : false
+        }
+      },
+      "additionalProperties" : false
+    },
+    "k8sAuthorization" : {
+      "description" : "K8s authorization for kube-api call listPods",
+      "type" : "object",
+      "properties" : {
+        "enabled" : {
+          "description" : "Should be true for k8s authorization objects : roles & roleBindings",
+          "type" : "boolean"
+        },
+        "role" : {
+          "description" : "k8s authorization role",
+          "type" : "object",
+          "properties" : {
+            "rules" : {
+              "description" : "k8s role rules",
+              "type" : "object",
+              "properties" : {
+                "apiGroups" : {
+                  "description" : "k8s Role api groups",
+                  "type" : "string"
+                },
+                "resources" : {
+                  "description" : "k8s Role Resource Group",
+                  "type" : "string"
+                },
+                "verbs" : {
+                  "description" : "k8s Role verbs",
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "additionalProperties" : false
+        }
+      },
+      "additionalProperties" : false
+    },
+    "security" : {
+      "description" : "Security configuration.",
+      "type" : "object",
+      "properties" : {
+        "k8sSecrets" : {
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "If enabled, the opf deployment will look for a K8s secret containing the opf credentials and mount it as a bootstrap.properties file. Default value is true. Note that if you disable this, you should make the credentials available by any other way (eg. Hashicorp vault) as a file called 'bootstrap.secret.extension.properties' located in /secrets.",
+              "type" : "boolean"
+            },
+            "opfSecretName" : {
+              "description" : "The name of the K8s secret containing the opf credentials.",
+              "type" : "string"
+            }
+          },
+          "anyOf" : [ {
+            "properties" : {
+              "enabled" : {
+                "const" : true
+              }
+            },
+            "required" : [ "opfSecretName" ]
+          }, {
+            "properties" : {
+              "enabled" : {
+                "const" : false
+              }
+            }
+          } ],
+          "additionalProperties" : false
+        },
+        "urlPathFilters" : {
+          "type" : "object",
+          "properties" : {
+            "opf" : {
+              "description" : "Filter to identify urls corresponding to the OPF rest api. It is used  by OpenidConnectClient's and OpenIdLoginModule when openId is enabled or the PersonRegistryLoginModule when it is not. Default value is \"opfrest\".",
+              "type" : "string"
+            },
+            "opfIdp2" : {
+              "description" : "Filter to identify urls which needs to be authenticated and authorized using 2nd IdP.",
+              "type" : "string"
+            },
+            "metrics" : {
+              "description" : "Filter to identify urls corresponding to the Open metrics endpoint. It is used  by OpenidConnectClient's and OpenIdLoginModule when openId is enabled or the PersonRegistryLoginModule when it is not. Default value is \"opfrest/metrics\".",
+              "type" : "string"
+            },
+            "infraOps" : {
+              "description" : "Filter to identify urls corresponding to the Infrastructure Operations REST Api. It is used  by OpenidConnectClient's and OpenIdLoginModule when openId is enabled or the PersonRegistryLoginModule when it is not. Default value is \"/v1/reference-data-import-jobs|/v1/dewarehousing-jobs|/v1/account-posting-jobs|/v1/data-information-contents\".",
+              "type" : "string"
+            }
+          }
+        },
+        "openid" : {
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "Should OpenId authentication mechanism be enabled. Default value is true.",
+              "type" : "boolean"
+            },
+            "opf" : {
+              "type" : "object",
+              "properties" : {
+                "authFilterMatchType" : {
+                  "description" : "Match type used to match the OPF urlPathFilter in order to decide if the OpenIdConnect client should intercept the request. Default value is \"contains\".",
+                  "type" : "string",
+                  "enum" : [ "contains", "equals", "notContain" ]
+                }
+              },
+              "additionalProperties" : false
+            },
+            "opfIdp2" : {
+              "type" : "object",
+              "properties" : {
+                "authFilterMatchType" : {
+                  "description" : "Match type used to match the urlPathFilter defined for IdP2 in order to decide if the OpenIdConnect client should intercept the request. Default value is \"contains\".",
+                  "type" : "string",
+                  "enum" : [ "contains", "equals", "notContain" ]
+                }
+              }
+            },
+            "idpConfig" : {
+              "type" : "object",
+              "properties" : {
+                "tokenEndpointUrl" : {
+                  "description" : "Specifies a token endpoint URL.",
+                  "type" : "string"
+                },
+                "inboundPropagation" : {
+                  "description" : "Its possible values are none, supported and required. It allows JWT token in the request to be used for validation",
+                  "type" : "string",
+                  "enum" : [ "none", "required", "supported" ]
+                },
+                "authorizationEndpointRedirectUrl" : {
+                  "description" : "Specifies an Authorization endpoint URL.",
+                  "type" : "string"
+                },
+                "jwkEndpointUrl" : {
+                  "description" : "Specifies a JWK endpoint URL.",
+                  "type" : "string"
+                },
+                "signatureAlgorithm" : {
+                  "description" : "Specifies the signature algorithm that will be used to verify the signature of the ID token.",
+                  "type" : "string"
+                },
+                "realmIdentifier" : {
+                  "description" : "Specifies a JSON attribute in the ID token that is used as the realm name.",
+                  "type" : "string"
+                },
+                "issuerIdentifier" : {
+                  "description" : "A case-sensitive URL using the HTTPS scheme that contains scheme, host and optionally port number and path components. Specify multiple values as a comma separated list.",
+                  "type" : "string"
+                },
+                "userIdentifier" : {
+                  "description" : "Specifies a JSON attribute in the ID token that is used as the user principal name in the subject.",
+                  "type" : "string"
+                },
+                "accessTokenMinValidityTime" : {
+                  "type" : "integer"
+                },
+                "tokenEndpointAuthMethod" : {
+                  "description" : "The method to use for sending credentials to the token endpoint of the OpenID Connect provider in order to authenticate the client.",
+                  "type" : "string"
+                },
+                "propagatedTokenEnabled" : {
+                  "description" : "Specifies whether JSON Web Tokens can be reused.",
+                  "type" : "boolean"
+                },
+                "redirectJunctionPath" : {
+                  "description" : "Specifies whether JSON Web Tokens can be reused.",
+                  "type" : "string"
+                },
+                "scope" : {
+                  "description" : "OPF client scope as defined in the OpenId provider.",
+                  "type" : "string"
+                },
+                "clientCredentialsAudiences" : {
+                  "type" : "string"
+                },
+                "httpsRequired" : {
+                  "description" : "Require SSL communication between the OpenID relying party and provider service.",
+                  "type" : "boolean"
+                }
+              },
+              "required" : [ "tokenEndpointUrl", "inboundPropagation", "authorizationEndpointRedirectUrl", "jwkEndpointUrl", "signatureAlgorithm", "realmIdentifier", "issuerIdentifier", "userIdentifier", "accessTokenMinValidityTime", "propagatedTokenEnabled", "clientCredentialsAudiences" ],
+              "additionalProperties" : false
+            },
+            "identityConfig" : {
+              "type" : "object",
+              "properties" : {
+                "authorisationsClaim" : {
+                  "description" : "Properties for customizing the default Authorizations claim.",
+                  "type" : "object",
+                  "properties" : {
+                    "application" : {
+                      "description" : "The name of the application; the authorizations claim contains configurations for multiple applications.",
+                      "type" : "string"
+                    },
+                    "defaultBankGroup" : {
+                      "description" : "The name of the default bank group.",
+                      "type" : "string"
+                    },
+                    "defaultBank" : {
+                      "description" : "The name of the default bank. This is used when the coreBankIdentifier is not defined in the claim.",
+                      "type" : "string"
+                    }
+                  },
+                  "required" : [ "application", "defaultBankGroup" ],
+                  "additionalProperties" : false
+                },
+                "identityClaim" : {
+                  "description" : "Claim containing the user security identity",
+                  "type" : "string"
+                },
+                "paths" : {
+                  "description" : "Set of json paths describing where to retrieve the several parts of the user security identity in the identity claim",
+                  "type" : "object",
+                  "properties" : {
+                    "bankGroupPath" : {
+                      "description" : "The json-path used to retrieve the bank-group from the token. Default value is \"$.bank-group-id\"",
+                      "type" : "string"
+                    },
+                    "userGroupPath" : {
+                      "description" : "The json-path used to retrieve the user security groups from the token. Can be set to a constant value, multiple groups can be given in a comma-separated list. Default value is \"bankuser\".",
+                      "type" : "string"
+                    },
+                    "bankPath" : {
+                      "description" : "The json-path used to retrieve the bank name from the token. This can depend on the bank-group. Default value is \",$.bank-users[*].bank-name\".",
+                      "type" : "string"
+                    },
+                    "bankingEntityPath" : {
+                      "description" : "The json-path used to retrieve the banking-entity from the token. This can depend on the bank-group and bank. Default value is \"$['bank-users'][?(@['bank-name'] == '${bank}')].banking-entity-name\".",
+                      "type" : "string"
+                    },
+                    "bankUserIdPath" : {
+                      "description" : "The json-path used to retrieve the bank-user id from the token. This can depend on the bank-group and bank and banking-entity. Default value is \"$['bank-users'][?(@['bank-name'] == '${bank}' && @['banking-entity-name'] == '${bankingEntity}')].user-id\".",
+                      "type" : "string"
+                    },
+                    "bankUserNamePath" : {
+                      "description" : "The json-path used to retrieve the bank-user name from the token. This can depend on the bank-group and bank and banking-entity. Default value is \"$['bank-users'][?(@['bank-name'] == '${bank}' && @['banking-entity-name'] == '${bankingEntity}')].user-name\".",
+                      "type" : "string"
+                    },
+                    "rolesPath" : {
+                      "description" : "The json-path used to retrieve the bank-user roles from the token. This can depend on the bank-group and bank and banking-entity. Default value is \"$['bank-users'][?(@['bank-name'] == '${bank}' && @['banking-entity-name'] == '${bankingEntity}')].roles[*].role-name\".",
+                      "type" : "string"
+                    },
+                    "bankRolesPath" : {
+                      "description" : "the json-path used to retrieve the bank name on which the role apply. This can depend on the bank-group and bank, banking-entity and role. Can be null, in that case the role will be applied to the bank-user's bank. Default value is \"$['bank-users'][?(@['bank-name'] == '${bank}' && @['banking-entity-name'] == '${bankingEntity}')].roles[?(@['role-name'] == '${role}')].bank-name\".",
+                      "type" : "string"
+                    },
+                    "bankingEntityRolesPath" : {
+                      "description" : "the json-path used to retrieve the banking-entity name on which the role apply. This can depend on the bank-group and bank, banking-entity and role. Can be null, in that case the role will be applied to the bank-user's banking-entity. Default value is \"$['bank-users'][?(@['bank-name'] == '${bank}' && @['banking-entity-name'] == '${bankingEntity}')].roles[?(@['role-name'] == '${role}')].banking-entity-name\".",
+                      "type" : "string"
+                    }
+                  },
+                  "additionalProperties" : false
+                }
+              }
+            },
+            "idpConfigIdp2" : {
+              "type" : "object",
+              "properties" : {
+                "tokenEndpointUrl" : {
+                  "description" : "Specifies a token endpoint URL.",
+                  "type" : "string"
+                },
+                "inboundPropagation" : {
+                  "description" : "Its possible values are none, supported and required. It allows JWT token in the request to be used for validation",
+                  "type" : "string",
+                  "enum" : [ "none", "required", "supported" ]
+                },
+                "authorizationEndpointRedirectUrl" : {
+                  "description" : "Specifies an Authorization endpoint URL.",
+                  "type" : "string"
+                },
+                "jwkEndpointUrl" : {
+                  "description" : "Specifies a JWK endpoint URL.",
+                  "type" : "string"
+                },
+                "signatureAlgorithm" : {
+                  "description" : "Specifies the signature algorithm that will be used to verify the signature of the ID token.",
+                  "type" : "string"
+                },
+                "realmIdentifier" : {
+                  "description" : "Specifies a JSON attribute in the ID token that is used as the realm name.",
+                  "type" : "string"
+                },
+                "issuerIdentifier" : {
+                  "description" : "A case-sensitive URL using the HTTPS scheme that contains scheme, host and optionally port number and path components. Specify multiple values as a comma separated list.",
+                  "type" : "string"
+                },
+                "userIdentifier" : {
+                  "description" : "Specifies a JSON attribute in the ID token that is used as the user principal name in the subject.",
+                  "type" : "string"
+                },
+                "accessTokenMinValidityTime" : {
+                  "type" : "integer"
+                },
+                "tokenEndpointAuthMethod" : {
+                  "description" : "The method to use for sending credentials to the token endpoint of the OpenID Connect provider in order to authenticate the client.",
+                  "type" : "string"
+                },
+                "propagatedTokenEnabled" : {
+                  "description" : "Specifies whether JSON Web Tokens can be reused.",
+                  "type" : "boolean"
+                },
+                "redirectJunctionPath" : {
+                  "description" : "Specifies whether JSON Web Tokens can be reused.",
+                  "type" : "string"
+                },
+                "scope" : {
+                  "description" : "OPF client scope as defined in the OpenId provider.",
+                  "type" : "string"
+                },
+                "clientCredentialsAudiences" : {
+                  "type" : "string"
+                },
+                "httpsRequired" : {
+                  "description" : "Require SSL communication between the OpenID relying party and provider service.",
+                  "type" : "boolean"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "identityConfigIdp2" : {
+              "type" : "object",
+              "properties" : {
+                "authorisationsClaim" : {
+                  "description" : "Properties for customizing the default Authorizations claim.",
+                  "type" : "object",
+                  "properties" : {
+                    "application" : {
+                      "description" : "The name of the application; the authorizations claim contains configurations for multiple applications.",
+                      "type" : "string"
+                    },
+                    "defaultBankGroup" : {
+                      "description" : "The name of the default bank group.",
+                      "type" : "string"
+                    },
+                    "defaultBank" : {
+                      "description" : "The name of the default bank. This is used when the coreBankIdentifier is not defined in the claim.",
+                      "type" : "string"
+                    }
+                  },
+                  "required" : [ "application", "defaultBankGroup" ],
+                  "additionalProperties" : false
+                },
+                "identityClaim" : {
+                  "description" : "Claim containing the user security identity",
+                  "type" : "string"
+                },
+                "paths" : {
+                  "description" : "Set of json paths describing where to retrieve the several parts of the user security identity in the identity claim",
+                  "type" : "object",
+                  "properties" : {
+                    "bankGroupPath" : {
+                      "description" : "The json-path used to retrieve the bank-group from the token. Default value is \"$.bank-group-id\"",
+                      "type" : "string"
+                    },
+                    "userGroupPath" : {
+                      "description" : "The json-path used to retrieve the user security groups from the token. Can be set to a constant value, multiple groups can be given in a comma-separated list. Default value is \"bankuser\".",
+                      "type" : "string"
+                    },
+                    "bankPath" : {
+                      "description" : "The json-path used to retrieve the bank name from the token. This can depend on the bank-group. Default value is \",$.bank-users[*].bank-name\".",
+                      "type" : "string"
+                    },
+                    "bankingEntityPath" : {
+                      "description" : "The json-path used to retrieve the banking-entity from the token. This can depend on the bank-group and bank. Default value is \"$['bank-users'][?(@['bank-name'] == '${bank}')].banking-entity-name\".",
+                      "type" : "string"
+                    },
+                    "bankUserIdPath" : {
+                      "description" : "The json-path used to retrieve the bank-user id from the token. This can depend on the bank-group and bank and banking-entity. Default value is \"$['bank-users'][?(@['bank-name'] == '${bank}' && @['banking-entity-name'] == '${bankingEntity}')].user-id\".",
+                      "type" : "string"
+                    },
+                    "bankUserNamePath" : {
+                      "description" : "The json-path used to retrieve the bank-user name from the token. This can depend on the bank-group and bank and banking-entity. Default value is \"$['bank-users'][?(@['bank-name'] == '${bank}' && @['banking-entity-name'] == '${bankingEntity}')].user-name\".",
+                      "type" : "string"
+                    },
+                    "rolesPath" : {
+                      "description" : "The json-path used to retrieve the bank-user roles from the token. This can depend on the bank-group and bank and banking-entity. Default value is \"$['bank-users'][?(@['bank-name'] == '${bank}' && @['banking-entity-name'] == '${bankingEntity}')].roles[*].role-name\".",
+                      "type" : "string"
+                    },
+                    "bankRolesPath" : {
+                      "description" : "the json-path used to retrieve the bank name on which the role apply. This can depend on the bank-group and bank, banking-entity and role. Can be null, in that case the role will be applied to the bank-user's bank. Default value is \"$['bank-users'][?(@['bank-name'] == '${bank}' && @['banking-entity-name'] == '${bankingEntity}')].roles[?(@['role-name'] == '${role}')].bank-name\".",
+                      "type" : "string"
+                    },
+                    "bankingEntityRolesPath" : {
+                      "description" : "the json-path used to retrieve the banking-entity name on which the role apply. This can depend on the bank-group and bank, banking-entity and role. Can be null, in that case the role will be applied to the bank-user's banking-entity. Default value is \"$['bank-users'][?(@['bank-name'] == '${bank}' && @['banking-entity-name'] == '${bankingEntity}')].roles[?(@['role-name'] == '${role}')].banking-entity-name\".",
+                      "type" : "string"
+                    }
+                  },
+                  "additionalProperties" : false
+                }
+              }
+            }
+          },
+          "anyOf" : [ {
+            "properties" : {
+              "enabled" : {
+                "const" : true
+              }
+            },
+            "required" : [ "opf", "idpConfig" ]
+          }, {
+            "properties" : {
+              "enabled" : {
+                "const" : false
+              }
+            }
+          } ],
+          "additionalProperties" : false
+        },
+        "tls" : {
+          "description" : "OPF server tls configuration.",
+          "type" : "object",
+          "properties" : {
+            "secretName" : {
+              "description" : "The name of the k8s secret containing the OPF server keystores and truststores.",
+              "type" : "string"
+            },
+            "mountPath" : {
+              "description" : "Path to the directory where the tls secret has to be mounted.",
+              "type" : "string"
+            },
+            "itemsProjection" : {
+              "description" : "Optionally, you can specify a target path for all or certain secret keys."
+            },
+            "serverKeystore" : {
+              "type" : "object",
+              "properties" : {
+                "type" : {
+                  "description" : "Type of the server keystore.",
+                  "type" : "string"
+                },
+                "location" : {
+                  "description" : "Location of the server keystore.",
+                  "type" : "string"
+                }
+              },
+              "required" : [ "type", "location" ],
+              "additionalProperties" : false
+            },
+            "serverTruststore" : {
+              "type" : "object",
+              "properties" : {
+                "type" : {
+                  "description" : "Type of the server truststore.",
+                  "type" : "string"
+                },
+                "location" : {
+                  "description" : "Location of the server truststore.",
+                  "type" : "string"
+                }
+              },
+              "required" : [ "type", "location" ],
+              "additionalProperties" : false
+            },
+            "mqQCFKeystore" : {
+              "type" : "object",
+              "properties" : {
+                "type" : {
+                  "description" : "Type of the keystore.",
+                  "type" : "string"
+                },
+                "location" : {
+                  "description" : "Location of the keystore.",
+                  "type" : "string"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "mqQCFTruststore" : {
+              "type" : "object",
+              "properties" : {
+                "type" : {
+                  "description" : "Type of the truststore.",
+                  "type" : "string"
+                },
+                "location" : {
+                  "description" : "Location of the truststore.",
+                  "type" : "string"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "mqOTHERQCFKeystore" : {
+              "type" : "object",
+              "properties" : {
+                "type" : {
+                  "description" : "Type of the server keystore.",
+                  "type" : "string"
+                },
+                "location" : {
+                  "description" : "Location of the server keystore.",
+                  "type" : "string"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "mqOTHERQCFTruststore" : {
+              "type" : "object",
+              "properties" : {
+                "type" : {
+                  "description" : "Type of the truststore.",
+                  "type" : "string"
+                },
+                "location" : {
+                  "description" : "Location of the truststore.",
+                  "type" : "string"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "mqMYQCFKeystore" : {
+              "type" : "object",
+              "properties" : {
+                "type" : {
+                  "description" : "Type of the keystore.",
+                  "type" : "string"
+                },
+                "location" : {
+                  "description" : "Location of the keystore.",
+                  "type" : "string"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "mqMYQCFTruststore" : {
+              "type" : "object",
+              "properties" : {
+                "type" : {
+                  "description" : "Type of the truststore.",
+                  "type" : "string"
+                },
+                "location" : {
+                  "description" : "Location of the truststore.",
+                  "type" : "string"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "mqSWIFTSAAQCFKeystore" : {
+              "type" : "object",
+              "properties" : {
+                "type" : {
+                  "description" : "Type of the keystore.",
+                  "type" : "string"
+                },
+                "location" : {
+                  "description" : "Location of the keystore.",
+                  "type" : "string"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "mqSWIFTSAAQCFTruststore" : {
+              "type" : "object",
+              "properties" : {
+                "type" : {
+                  "description" : "Type of the truststore.",
+                  "type" : "string"
+                },
+                "location" : {
+                  "description" : "Location of the truststore.",
+                  "type" : "string"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "mqAMHQCFKeystore" : {
+              "type" : "object",
+              "properties" : {
+                "type" : {
+                  "description" : "Type of the keystore.",
+                  "type" : "string"
+                },
+                "location" : {
+                  "description" : "Location of the keystore.",
+                  "type" : "string"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "mqAMHQCFTruststore" : {
+              "type" : "object",
+              "properties" : {
+                "type" : {
+                  "description" : "Type of the truststore.",
+                  "type" : "string"
+                },
+                "location" : {
+                  "description" : "Location of the truststore.",
+                  "type" : "string"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "mqAMH1QCFKeystore" : {
+              "type" : "object",
+              "properties" : {
+                "type" : {
+                  "description" : "Type of the keystore.",
+                  "type" : "string"
+                },
+                "location" : {
+                  "description" : "Location of the keystore.",
+                  "type" : "string"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "mqAMH1QCFTruststore" : {
+              "type" : "object",
+              "properties" : {
+                "type" : {
+                  "description" : "Type of the truststore.",
+                  "type" : "string"
+                },
+                "location" : {
+                  "description" : "Location of the truststore.",
+                  "type" : "string"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "mqAMH2QCFKeystore" : {
+              "type" : "object",
+              "properties" : {
+                "type" : {
+                  "description" : "Type of the keystore.",
+                  "type" : "string"
+                },
+                "location" : {
+                  "description" : "Location of the keystore.",
+                  "type" : "string"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "mqAMH2QCFTruststore" : {
+              "type" : "object",
+              "properties" : {
+                "type" : {
+                  "description" : "Type of the truststore.",
+                  "type" : "string"
+                },
+                "location" : {
+                  "description" : "Location of the truststore.",
+                  "type" : "string"
+                }
+              },
+              "additionalProperties" : false
+            }
+          },
+          "required" : [ "secretName", "mountPath", "serverKeystore", "serverTruststore" ],
+          "additionalProperties" : false
+        }
+      },
+      "required" : [ "k8sSecrets", "openid", "tls" ],
+      "additionalProperties" : false
+    },
+    "externalSystems" : {
+      "description" : "External systems configuration",
+      "type" : "object",
+      "properties" : {
+        "cbis" : {
+          "description" : "Core banking integration service configuration",
+          "type" : "object",
+          "properties" : {
+            "baseUrl" : {
+              "description" : "CBIS base url",
+              "type" : "string"
+            },
+            "alwaysTrust" : {
+              "description" : "cbis always-trust certificate",
+              "type" : "boolean"
+            },
+            "alwaysTrustAsync" : {
+              "description" : "cbis async always-trust certificate",
+              "type" : "boolean"
+            }
+          },
+          "required" : [ "baseUrl", "alwaysTrust", "alwaysTrustAsync" ],
+          "additionalProperties" : false
+        },
+        "sanctionsCheck" : {
+          "description" : "Sanctions check service configuration",
+          "type" : "object",
+          "properties" : {
+            "baseUrl" : {
+              "description" : "Sanctions check service base url",
+              "type" : "string"
+            }
+          },
+          "required" : [ "baseUrl" ],
+          "additionalProperties" : false
+        },
+        "paymentUploadPush" : {
+          "description" : "Payment upload push service configuration",
+          "type" : "object",
+          "properties" : {
+            "baseUrl" : {
+              "description" : "Payment upload push service base url",
+              "type" : "string"
+            }
+          },
+          "required" : [ "baseUrl" ],
+          "additionalProperties" : false
+        },
+        "universalExecutionCallback" : {
+          "description" : "Universal execution callback service configuration",
+          "type" : "object",
+          "properties" : {
+            "baseUrl" : {
+              "description" : "Universal execution callback service base url",
+              "type" : "string"
+            }
+          },
+          "required" : [ "baseUrl" ],
+          "additionalProperties" : false
+        },
+        "universalExecution" : {
+          "description" : "Universal execution service configuration",
+          "type" : "object",
+          "properties" : {
+            "baseUrl" : {
+              "description" : "Universal execution service base url",
+              "type" : "string"
+            }
+          },
+          "required" : [ "baseUrl" ],
+          "additionalProperties" : false
+        },
+        "universalExecutionInfraOps" : {
+          "description" : "Universal execution infrastructure operations service configuration",
+          "type" : "object",
+          "properties" : {
+            "baseUrl" : {
+              "description" : "Universal execution infrastructure operations service base url",
+              "type" : "string"
+            }
+          },
+          "required" : [ "baseUrl" ],
+          "additionalProperties" : false
+        },
+        "fsisRiskAssessment" : {
+          "description" : "Fraud and sanctions integration service configuration",
+          "type" : "object",
+          "properties" : {
+            "baseUrl" : {
+              "description" : "Fraud and sanctions integration service base url",
+              "type" : "string"
+            },
+            "callbackUrl" : {
+              "description" : "Fraud and sanctions integration service callback url",
+              "type" : "string"
+            },
+            "alwaysTrust" : {
+              "description" : "fsis always-trust certificate",
+              "type" : "boolean"
+            }
+          },
+          "required" : [ "baseUrl", "alwaysTrust" ],
+          "additionalProperties" : false
+        },
+        "nacas" : {
+          "description" : "nacas service configuration",
+          "type" : "object",
+          "properties" : {
+            "baseUrl" : {
+              "description" : "nacas service base url",
+              "type" : "string"
+            },
+            "timeout" : {
+              "description" : "xct nacas connection/read timeout",
+              "type" : "integer"
+            },
+            "alwaysTrust" : {
+              "description" : "xct nacas always-trust certificate",
+              "type" : "boolean"
+            },
+            "enabled" : {
+              "description" : "xct nacas enabled",
+              "type" : "boolean"
+            }
+          },
+          "required" : [ "baseUrl", "alwaysTrust" ],
+          "additionalProperties" : false
+        },
+        "fxs" : {
+          "description" : "fxss service configuration",
+          "type" : "object",
+          "properties" : {
+            "baseUrl" : {
+              "description" : "fxs service base url",
+              "type" : "string"
+            }
+          },
+          "required" : [ "baseUrl" ],
+          "additionalProperties" : false
+        },
+        "pcs" : {
+          "description" : "payment charges service configuration",
+          "type" : "object",
+          "properties" : {
+            "baseUrl" : {
+              "description" : "pcs base url",
+              "type" : "string"
+            }
+          },
+          "required" : [ "baseUrl" ],
+          "additionalProperties" : false
+        },
+        "xctFxs" : {
+          "description" : "xct fxs",
+          "type" : "object",
+          "properties" : {
+            "baseUrl" : {
+              "description" : "xct fxs base url",
+              "type" : "string"
+            },
+            "timeout" : {
+              "description" : "xct fxs connection/read timeout",
+              "type" : "integer"
+            },
+            "alwaysTrust" : {
+              "description" : "xct fxs always-trust certificate",
+              "type" : "boolean"
+            }
+          },
+          "required" : [ "baseUrl", "alwaysTrust" ],
+          "additionalProperties" : false
+        },
+        "xctGpiCct" : {
+          "description" : "xctGpiCct",
+          "type" : "object",
+          "properties" : {
+            "baseUrl" : {
+              "description" : "xxctGpiCct base url",
+              "type" : "string"
+            },
+            "timeout" : {
+              "description" : "xctGpiCct connection/read timeout",
+              "type" : "integer"
+            },
+            "alwaysTrust" : {
+              "description" : "xctGpiCct always-trust certificate",
+              "type" : "boolean"
+            }
+          },
+          "required" : [ "baseUrl", "alwaysTrust" ],
+          "additionalProperties" : false
+        },
+        "xctGpiCov" : {
+          "description" : "xctGpiCov",
+          "type" : "object",
+          "properties" : {
+            "baseUrl" : {
+              "description" : "xctGpiCov base url",
+              "type" : "string"
+            },
+            "timeout" : {
+              "description" : "xctGpiCov connection/read timeout",
+              "type" : "integer"
+            },
+            "alwaysTrust" : {
+              "description" : "xctGpiCov always-trust certificate",
+              "type" : "boolean"
+            }
+          },
+          "required" : [ "baseUrl", "alwaysTrust" ],
+          "additionalProperties" : false
+        },
+        "xctGpiFit" : {
+          "description" : "xctGpiFit",
+          "type" : "object",
+          "properties" : {
+            "baseUrl" : {
+              "description" : "xctGpiFit base url",
+              "type" : "string"
+            },
+            "timeout" : {
+              "description" : "xctGpiFit connection/read timeout",
+              "type" : "integer"
+            },
+            "alwaysTrust" : {
+              "description" : "xctGpiFit always-trust certificate",
+              "type" : "boolean"
+            }
+          },
+          "required" : [ "baseUrl", "alwaysTrust" ],
+          "additionalProperties" : false
+        },
+        "xctGpiUcon" : {
+          "description" : "xctGpiUcon",
+          "type" : "object",
+          "properties" : {
+            "baseUrl" : {
+              "description" : "xctGpiUcon base url",
+              "type" : "string"
+            },
+            "timeout" : {
+              "description" : "xctGpiUcon connection/read timeout",
+              "type" : "integer"
+            },
+            "alwaysTrust" : {
+              "description" : "xctGpiUcon always-trust certificate",
+              "type" : "boolean"
+            }
+          },
+          "required" : [ "baseUrl", "alwaysTrust" ],
+          "additionalProperties" : false
+        },
+        "xctGpiGct" : {
+          "description" : "xctGpiGct",
+          "type" : "object",
+          "properties" : {
+            "baseUrl" : {
+              "description" : "xctGpiGct base url",
+              "type" : "string"
+            },
+            "timeout" : {
+              "description" : "xctGpiGct connection/read timeout",
+              "type" : "integer"
+            },
+            "alwaysTrust" : {
+              "description" : "xctGpiGct always-trust certificate",
+              "type" : "boolean"
+            }
+          },
+          "required" : [ "baseUrl", "alwaysTrust" ],
+          "additionalProperties" : false
+        },
+		"xctGpiGpt" : {
+          "description" : "xctGpiGpt",
+          "type" : "object",
+          "properties" : {
+            "baseUrl" : {
+              "description" : "xctGpiGpt base url",
+              "type" : "string"
+            },
+            "timeout" : {
+              "description" : "xctGpiGpt connection/read timeout",
+              "type" : "integer"
+            },
+            "alwaysTrust" : {
+              "description" : "xctGpiGpt always-trust certificate",
+              "type" : "boolean"
+            }
+          },
+          "required" : [ "baseUrl", "alwaysTrust" ],
+          "additionalProperties" : false
+        },
+		"xctGpiGsrp" : {
+          "description" : "xctGpiGsrp",
+          "type" : "object",
+          "properties" : {
+            "baseUrl" : {
+              "description" : "xctGpiGsrp base url",
+              "type" : "string"
+            },
+            "timeout" : {
+              "description" : "xctGpiGsrp connection/read timeout",
+              "type" : "integer"
+            },
+            "alwaysTrust" : {
+              "description" : "xctGpiGsrp always-trust certificate",
+              "type" : "boolean"
+            }
+          },
+          "required" : [ "baseUrl", "alwaysTrust" ],
+          "additionalProperties" : false
+        },
+        "xctPcs" : {
+          "description" : "xct pcs",
+          "type" : "object",
+          "properties" : {
+            "baseUrl" : {
+              "description" : "xct pcs base url",
+              "type" : "string"
+            },
+            "timeout" : {
+              "description" : "xct pcs connection/read timeout",
+              "type" : "integer"
+            },
+            "alwaysTrust" : {
+              "description" : "xct pcs always-trust certificate",
+              "type" : "boolean"
+            }
+          },
+          "required" : [ "baseUrl", "alwaysTrust" ],
+          "additionalProperties" : false
+        },
+        "POM" : {
+          "description" : "POM - external system",
+          "type" : "object",
+          "properties" : {
+            "baseUrl" : {
+              "description" : "POM base endpoint url for integration",
+              "type" : "string"
+            },
+            "alwaysTrust" : {
+              "description" : "xct pom always-trust certificate",
+              "type" : "boolean"
+            }
+          },
+          "required" : [ "baseUrl", "alwaysTrust" ],
+          "additionalProperties" : false
+        },
+        "xctFsis" : {
+          "description" : "fsis service configuration",
+          "type" : "object",
+          "properties" : {
+            "sanctionsCheckConnectorId" : {
+              "description" : "xct fsis sanctions check connector id",
+              "type" : "string"
+            },
+            "fraudCheckConnectorId" : {
+              "description" : "xct fsis fraud check connector id",
+              "type" : "string"
+            },
+            "callback_max_repeat" : {
+              "description" : "xct fsis callback message, max number of tries of processing",
+              "type" : "integer"
+            },
+            "callback_break_time" : {
+              "description" : "xct fsis callback message, max delay time in milliseconds between single iteration of retry",
+              "type" : "integer"
+            }
+          },
+          "additionalProperties" : false
+        },
+        "channels" : {
+          "description" : "channels service configuration",
+          "type" : "object",
+          "properties" : {
+            "baseUrl" : {
+              "description" : "channels service base url",
+              "type" : "string"
+            }
+          },
+          "required" : [ "baseUrl" ],
+          "additionalProperties" : false
+        }
+      },
+      "additionalProperties" : false
+    },
+    "monitoring" : {
+      "type" : "object",
+      "properties" : {
+        "whitebox" : {
+          "type" : "object",
+          "properties" : {
+            "allowRuntimeSet" : {
+              "description" : "Indicates whether diagnostic mode can be auto turned on at runtime. Default value is false.",
+              "type" : "boolean"
+            },
+            "inMemoryEvents" : {
+              "type" : "object",
+              "properties" : {
+                "enabled" : {
+                  "description" : "Enable inMemory recording of the whitebox events in order for them to be accessible through jmx. Default value is false.",
+                  "type" : "boolean"
+                }
+              }
+            },
+            "influxDb" : {
+              "type" : "object",
+              "properties" : {
+                "enabled" : {
+                  "description" : "Default value is false.",
+                  "type" : "boolean"
+                },
+                "host" : {
+                  "description" : "Host name of the influxDb server",
+                  "type" : "string"
+                },
+                "port" : {
+                  "description" : "Influx db server port. Default value is 8086.",
+                  "type" : "integer",
+                  "exclusiveMinimum" : 0,
+                  "maximum" : 65535
+                },
+                "database" : {
+                  "description" : "Influx db name to be used.",
+                  "type" : "string"
+                },
+                "measurement" : {
+                  "description" : "Influx db measurement to be used.",
+                  "type" : "string"
+                },
+                "categories" : {
+                  "description" : "Whitebox events categories to be pushed to influxDb.",
+                  "type" : "array",
+                  "uniqueItems" : true,
+                  "items" : {
+                    "type" : "string"
+                  }
+                },
+                "batchMode" : {
+                  "description" : "Enable batch mode for influx db publication, hi efficiency in performance.",
+                  "type" : "boolean"
+                },
+                "batchPointsMaxSize" : {
+                  "description" : "Value less than or equals to 0 signifies the fact that BatchPoints has no limit and we don't break it down. Default value is -1. ",
+                  "type" : "integer"
+                },
+                "batchPointsWriteConcurrency" : {
+                  "description" : "Default value is 1.",
+                  "type" : "integer"
+                },
+                "retentionPolicy" : {
+                  "description" : "Retention policy for influxDb data.",
+                  "type" : "string"
+                },
+                "initialDelayMillis" : {
+                  "description" : "Initial delay in Millis before pushing the data.",
+                  "type" : "integer"
+                },
+                "intervalMillis" : {
+                  "description" : "Interval in Millis to push data to influxDb.",
+                  "type" : "integer"
+                },
+                "logLevel" : {
+                  "description" : "Default value is full.",
+                  "type" : "string",
+                  "enum" : [ "none", "basic", "header", "full" ]
+                }
+              },
+              "anyOf" : [ {
+                "properties" : {
+                  "enabled" : {
+                    "const" : true
+                  }
+                },
+                "required" : [ "host" ]
+              }, {
+                "properties" : {
+                  "enabled" : {
+                    "const" : false
+                  }
+                }
+              } ],
+              "additionalProperties" : false
+            },
+            "scraping" : {
+              "type" : "object",
+              "properties" : {
+                "enabled" : {
+                  "description" : "Enable/Disable Whitebox metrics scrapping. Default value is false. Note that for these metrics to be available on /opfrest/metrics, either the metrics reporter needs to be enabled at startup (see whitebox-prometheus-xxx.xml file) or it can be manually turned on trough JMX.",
+                  "type" : "boolean"
+                },
+                "podAnnotations" : {
+                  "description" : "Annotations to be added to the pods for them to be scrapped properly by the reporting agent (eg.: Prometheus)",
+                  "type" : "object"
+                }
+              },
+              "additionalProperties" : false
+            }
+          },
+          "required" : [ "allowRuntimeSet", "inMemoryEvents", "influxDb", "scraping" ],
+          "additionalProperties" : false
+        },
+        "deepsea" : {
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "Should deepsea be enabled. Default value is false.",
+              "type" : "boolean"
+            }
+          }
+        }
+      },
+      "additionalProperties" : false
+    },
+    "logging" : {
+      "description" : "Logging configuration.",
+      "type" : "object",
+      "properties" : {
+        "httpLoggingStrategy" : {
+          "description" : "Default value is opf.",
+          "type" : "string",
+          "enum" : [ "opf", "rest", "full" ]
+        },
+        "consoleSources" : {
+          "description" : "The list of comma-separated sources that route to the console. This property applies only when consoleFormat=json. Valid values are message, trace, accessLog, ffdc, and audit.",
+          "type" : "string"
+        },
+        "consoleFormat" : {
+          "description" : "The required format for the console. Valid values are dev, simple or json format. By default, consoleFormat is set to dev.",
+          "type" : "string",
+          "enum" : [ "dev", "simple", "json" ]
+        },
+        "consoleLogLevel" : {
+          "description" : "This filter controls the granularity of messages that go to the console. The valid values are INFO, AUDIT, WARNING, ERROR, and OFF. By default, the consoleLogLevel is set to AUDIT.",
+          "type" : "string",
+          "enum" : [ "INFO", "AUDIT", "WARNING", "ERROR", "OFF" ]
+        },
+        "traceSpecification" : {
+          "description" : "This setting is used to selectively enable trace. The log detail level specification is in the following format: component = level. Default value is *=info",
+          "type" : "string"
+        },
+        "traceFormat" : {
+          "description" : "This attribute controls the format of the trace log. The default format for Liberty is ENHANCED. You can also use BASIC and ADVANCED.",
+          "type" : "string",
+          "enum" : [ "ENHANCED", "BASIC", "ADVANCED" ]
+        }
+      },
+      "additionalProperties" : false
+    },
+    "bootstrapProperties" : {
+      "description" : "Server additional bootstrap properties",
+      "type" : "array",
+      "uniqueItems" : true,
+      "items" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "description" : "Property name",
+            "type" : "string"
+          },
+          "value" : {
+            "description" : "Property value",
+            "type" : "string"
+          },
+          "description" : {
+            "description" : "Property description",
+            "type" : "string"
+          }
+        },
+        "additionalProperties" : false,
+        "required" : [ "name", "value" ]
+      }
+    },
+    "environmentVariables" : {
+      "description" : "Additional environment variables. These have to be given as key value pairs.",
+      "type" : "object"
+    },
+    "jvm" : {
+      "description" : "Server additional JVM configuration.",
+      "type" : "object",
+      "properties" : {
+        "options" : {
+          "description" : "JVM options. Must be given in the form of key value pairs even if only the values will be actually used and added as jvm options.",
+          "type" : "object"
+        },
+        "systemProperties" : {
+          "description" : "JVM system properties. These have to be given as key value pairs.",
+          "type" : "object"
+        }
+      },
+      "additionalProperties" : false
+    },
+    "extension" : {
+      "type" : "object",
+      "properties" : {
+        "additionalBootstrapConfigMaps" : {
+          "description" : "Name of the additional bootstrap configMap to be mounted as a bootstrap.properties file in the OPF server. The configMap must contain a data entry called \"bootstrap.extension.properties\". These additional configMaps have to be given as key value pairs, the name can be anything, only the value is used to determine the file name to be used.",
+          "type" : "object"
+        },
+        "additionalSecrets" : {
+          "description" : "Name of the additional K8s secrets to be mounted as bootstrap.properties file in the OPF server. The configMap must contain a data entry called \"opf-secrets\". These additional secrets have to be given as key value pairs, the name can be anything, only the value is used to determine the file name to be used.",
+          "type" : "object"
+        }
+      },
+      "additionalProperties" : false
+    }
+  },
+  "required" : [ "deployment", "serverConfig", "db", "messaging", "security", "externalSystems" ],
+  "additionalProperties" : false
+}

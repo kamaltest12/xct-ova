@@ -1,0 +1,5 @@
+apiVersion: v2
+name: test-app
+description: Chart for deploying the OPF test-app
+version: 17.2.7-70880-eed75aac
+appVersion: "17.2.7-70880-eed75aac"

@@ -1,0 +1,15 @@
+secrets:
+  enabled: true
+  ova:
+    serverConfig:
+      admin:
+        username: admin
+        password: password
+    openid:
+      clientId: ova
+      clientSecret: "b1048aae-f242-4ed8-bec2-2c6b12053c75"
+    tls:
+      keystore:
+        password: password
+      truststore:
+        password: password

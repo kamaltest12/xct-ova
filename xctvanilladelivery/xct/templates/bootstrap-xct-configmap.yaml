@@ -1,0 +1,57 @@
+# Configuration map for open liberty configuration extension (bootstrap.properties)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bootstrap-xct-configmap
+  labels:
+    app.kubernetes.io/name: {{ include "xct.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "xct.chart" $ }}
+    {{- with .Values.deployment.labels }}
+    {{ toYaml . | nindent 4 | trim -}}
+    {{- end }}
+data:
+  bootstrap.extension.properties: |-
+    # Messaging settings
+    #AMH MQ queue connection factory common configuration
+    mq.amhqcf.cm.minPoolSize={{ .Values.messaging.mq.connectionFactories.AMHQCF.connectionManagerConfig.minPoolSize | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.minPoolSize }}
+    mq.amhqcf.cm.maxPoolSize={{ .Values.messaging.mq.connectionFactories.AMHQCF.connectionManagerConfig.maxPoolSize | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.maxPoolSize }}
+    mq.amhqcf.cm.connectionTimeout={{ .Values.messaging.mq.connectionFactories.AMHQCF.connectionManagerConfig.connectionTimeout | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.connectionTimeout }}
+    mq.amhqcf.cm.maxIdleTime={{ .Values.messaging.mq.connectionFactories.AMHQCF.connectionManagerConfig.maxIdleTime | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.maxIdleTime }}
+    mq.amhqcf.cm.purgePolicy={{ .Values.messaging.mq.connectionFactories.AMHQCF.connectionManagerConfig.purgePolicy | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.purgePolicy }}
+    mq.amhqcf.cm.agedTimeout={{ .Values.messaging.mq.connectionFactories.AMHQCF.connectionManagerConfig.agedTimeout | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.agedTimeout }}
+    mq.amhqcf.cm.reapTime={{ .Values.messaging.mq.connectionFactories.AMHQCF.connectionManagerConfig.reapTime | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.reapTime }}
+    mq.amhqcf.ssl.cipher.suite={{ .Values.messaging.mq.connectionFactories.AMHQCF.sslCipherSuite | default .Values.messaging.mq.cfDefaultValues.sslCipherSuite }}
+    # AMH MQ1 queue connection factory configuration
+    mq.amh1qcf.hostName={{ .Values.messaging.mq.connectionFactories.AMH1QCF.hostname | default .Values.messaging.mq.cfDefaultValues.hostname | required ".Values.messaging.mq.cfDefaultValues.hostname is required" }}
+    mq.amh1qcf.port={{ .Values.messaging.mq.connectionFactories.AMH1QCF.port | default .Values.messaging.mq.cfDefaultValues.port }}
+    mq.amh1qcf.channel={{ .Values.messaging.mq.connectionFactories.AMH1QCF.channel | default .Values.messaging.mq.cfDefaultValues.channel }}
+    mq.amh1qcf.queueManager={{ .Values.messaging.mq.connectionFactories.AMH1QCF.queueManager | default .Values.messaging.mq.cfDefaultValues.queueManager }}
+    # AMH MQ2 queue connection factory configuration
+    mq.amh2qcf.hostName={{ .Values.messaging.mq.connectionFactories.AMH2QCF.hostname | default .Values.messaging.mq.cfDefaultValues.hostname | required ".Values.messaging.mq.cfDefaultValues.hostname is required" }}
+    mq.amh2qcf.port={{ .Values.messaging.mq.connectionFactories.AMH2QCF.port | default .Values.messaging.mq.cfDefaultValues.port }}
+    mq.amh2qcf.channel={{ .Values.messaging.mq.connectionFactories.AMH2QCF.channel | default .Values.messaging.mq.cfDefaultValues.channel }}
+    mq.amh2qcf.queueManager={{ .Values.messaging.mq.connectionFactories.AMH2QCF.queueManager | default .Values.messaging.mq.cfDefaultValues.queueManager }}
+    # AMH queue names
+    # AMH queue Load Balancing Suffixes
+    mq.AMHLBSuffixA={{ .Values.messaging.mq.connectionFactories.AMHQCF.AMHLBSuffixA | default "" }}
+    mq.AMHLBSuffixB={{ .Values.messaging.mq.connectionFactories.AMHQCF.AMHLBSuffixB | default "" }}
+    #AMH queue base names
+    mq.AMHReceiverMTQ.baseQueueName={{ .Values.messaging.mq.connectionFactories.AMHQCF.AMHReceiverMTQ | default "AMHReceiverMTQ" }}
+    mq.AMHReceiverMXQ.baseQueueName={{ .Values.messaging.mq.connectionFactories.AMHQCF.AMHReceiverMXQ | default "AMHReceiverMXQ" }}
+    mq.AMHSenderAckMXQ.baseQueueName={{ .Values.messaging.mq.connectionFactories.AMHQCF.AMHSenderAckMXQ | default "AMHSenderAckMXQ" }}
+    mq.AMHSenderAckMTQ.baseQueueName={{ .Values.messaging.mq.connectionFactories.AMHQCF.AMHSenderAckMTQ | default "AMHSenderAckMTQ" }}
+    mq.AMHReceiverAckMTQ.baseQueueName={{ .Values.messaging.mq.connectionFactories.AMHQCF.AMHReceiverAckMTQ | default "AMHReceiverAckMTQ" }}
+    mq.AMHReceiverAckMXQ.baseQueueName={{ .Values.messaging.mq.connectionFactories.AMHQCF.AMHReceiverAckMXQ | default "AMHReceiverAckMXQ" }}
+    mq.AMHSenderMTQ.baseQueueName={{ .Values.messaging.mq.connectionFactories.AMHQCF.AMHSenderMTQ | default "AMHSenderMTQ" }}
+    mq.AMHSenderMXQ.baseQueueName={{ .Values.messaging.mq.connectionFactories.AMHQCF.AMHSenderMXQ | default "AMHSenderMXQ" }}
+    mq.AMHReceiverNetworkAckMXQ.baseQueueName={{ .Values.messaging.mq.connectionFactories.AMHQCF.AMHReceiverNetworkAckMXQ | default "AMHReceiverNetworkAckMXQ" }}
+    mq.AMHReceiverGatewayAckMXQ.baseQueueName={{ .Values.messaging.mq.connectionFactories.AMHQCF.AMHReceiverGatewayAckMXQ | default "AMHReceiverGatewayAckMXQ" }}
+    mq.AMHReceiverNetworkAckMTQ.baseQueueName={{ .Values.messaging.mq.connectionFactories.AMHQCF.AMHReceiverNetworkAckMTQ | default "AMHReceiverNetworkAckMTQ" }}
+    mq.AMHReceiverGatewayAckMTQ.baseQueueName={{ .Values.messaging.mq.connectionFactories.AMHQCF.AMHReceiverGatewayAckMTQ | default "AMHReceiverGatewayAckMTQ" }}
+    mq.AMHSenderNetworkAckMTQ.baseQueueName={{ .Values.messaging.mq.connectionFactories.AMHQCF.AMHSenderNetworkAckMTQ | default "AMHSenderNetworkAckMTQ" }}
+    mq.AMHSenderNetworkAckMXQ.baseQueueName={{ .Values.messaging.mq.connectionFactories.AMHQCF.AMHSenderNetworkAckMXQ | default "AMHSenderNetworkAckMXQ" }}
+    mq.AMHSenderIncomingAckMTQ.baseQueueName={{ .Values.messaging.mq.connectionFactories.AMHQCF.AMHSenderIncomingAckMTQ | default "AMHSenderIncomingAckMTQ" }}
+    mq.AMHSenderIncomingAckMXQ.baseQueueName={{ .Values.messaging.mq.connectionFactories.AMHQCF.AMHSenderIncomingAckMXQ | default "AMHSenderIncomingAckMXQ" }}

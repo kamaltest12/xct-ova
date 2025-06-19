@@ -1,0 +1,48 @@
+{{- if .Values.deployment.ingress.enabled }}
+  {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+apiVersion: networking.k8s.io/v1
+  {{- else }}
+apiVersion: networking.k8s.io/v1beta1
+  {{- end }}
+kind: Ingress
+metadata:
+  name: {{ include "xct-ova.fullname" . }}-ingress
+  labels:
+    app.kubernetes.io/name: {{ include "xct-ova.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "xct-ova.chart" $ }}
+    {{- with .Values.deployment.labels }}
+    {{ toYaml . | nindent 4 | trim -}}
+    {{- end }}
+  annotations:
+    {{- with .Values.deployment.ingress.annotations }}
+    {{ toYaml . | nindent 4 | trim -}}
+    {{- end }}
+spec:
+  rules:
+  - host: {{ required ".Values.deployment.ingress.host is required." .Values.deployment.ingress.host }}
+    http:
+      paths:
+  {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+      - backend:
+          service:
+            name: {{ include "xct-ova.fullname" . }}-service
+            port:
+              number: {{ required ".Values.deployment.service.port is required." .Values.deployment.service.port }}
+        path: {{ .Values.deployment.ingress.path }}
+        pathType: {{ .Values.deployment.ingress.pathType |  default "Prefix" }}
+  {{- else }}
+      - backend:
+          serviceName: {{ include "xct-ova.fullname" . }}-service
+          servicePort: {{ required ".Values.deployment.service.port is required." .Values.deployment.service.port }}
+        path: {{ .Values.deployment.ingress.path }}
+  {{- end }}
+  {{- if .Values.deployment.ingress.tls.enabled }}
+  tls:
+  - hosts:
+    - {{ .Values.deployment.ingress.host }}
+    secretName: {{ .Values.deployment.ingress.tls.secret }}
+  {{- end }}
+{{- end }}

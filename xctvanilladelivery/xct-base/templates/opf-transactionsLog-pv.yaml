@@ -1,0 +1,23 @@
+{{- if .Values.volumes.transactionsLog.enabled }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "opf-dev-chart.name" . }}-nfs-transactionslog
+  labels:
+    app.kubernetes.io/name: {{ include "opf-dev-chart.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "opf-dev-chart.chart" $ }}
+spec:
+  volumeMode: Filesystem
+  storageClassName: opf-nfs-transactionslog
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Recycle   # if not set it is retained and cannot be claimed when uninstalling/reinstalling opf chart
+  nfs:
+    server: {{ .Values.volumes.transactionsLog.nfsServer }}
+    path: "/"
+{{- end }}

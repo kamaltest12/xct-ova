@@ -1,0 +1,16 @@
+{{- if .Values.k8sAuthorization.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "xct.fullname" . }}-role
+  labels:
+    app.kubernetes.io/name: {{ include "xct.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "xct.chart" $ }}
+rules:
+- apiGroups: {{ required ".Values.k8sAuthorization.role.rules.apiGroups" .Values.k8sAuthorization.role.rules.apiGroups }}
+  resources: {{ required ".Values.k8sAuthorization.role.rules.resources" .Values.k8sAuthorization.role.rules.resources }}
+  verbs: {{ required ".Values.k8sAuthorization.role.rules.verbs" .Values.k8sAuthorization.role.rules.verbs }}
+{{- end }}

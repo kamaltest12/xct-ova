@@ -1,0 +1,72 @@
+# Specific values for running xct-ova in dev
+deployment:
+  image:
+    name: "xct-docker.coastguard.clear2pay.com/ova-cloud"
+    tag: "17.2.7-70880-eed75aac"
+    pullPolicy: IfNotPresent
+  labels:
+    env : dev
+  resources:
+    enabled: false
+  ingress:
+    enabled: false
+  probes:
+    liveness:
+      enabled: false
+    readiness:
+      enabled: false
+    startup:
+      enabled: false    
+resourceServer:
+  apiUrl: "https://xct-service:9443/xctrest/webapi"
+serverConfig:
+  remoteDebug:
+    enabled: false
+security:
+  k8sSecrets:
+    ovaSecretName: ova-dev-chart-secrets
+  openid:
+    enabled: false
+    ova:
+      clientId: "ova"
+      clientSecret: "b1048aae-f242-4ed8-bec2-2c6b12053c75"
+    idpConfig:
+      tokenEndpointUrl: "https://keycloak:8543/auth/realms/xctsso/protocol/openid-connect/token"
+      authorizationEndpointRedirectUrl: "https://localhost:8543/auth/realms/xctsso/protocol/openid-connect/auth"
+      logoutEndpointUrl: "https://localhost:8543/auth/realms/xctsso/protocol/openid-connect/logout?redirect_uri=https://localhost:9445/ova/secure/"
+      revocationUrl: "https://keycloak:8543/auth/realms/xctsso/protocol/openid-connect/revoke"
+      revokeEnabled: false
+      revokeTokens: "refresh_token,access_token"
+      invalidateCookiesOnLogoutPattern: "WASOidcClient.*|/,WASReqURL.*|/"
+      jwkEndpointUrl: "https://keycloak:8543/auth/realms/xctsso/protocol/openid-connect/certs"
+      signatureAlgorithm: RS256
+      realmIdentifier: iss
+      issuerIdentifier: "https://keycloak:8543/auth/realms/xctsso,https://localhost:8543/auth/realms/xctsso"
+      userIdentifier: preferred_username
+      discoveryEndpointUrl: "https://keycloak:8543/auth/realms/xctsso/.well-known/openid-configuration"
+      accessTokenMinValidityTime: 0
+      targetRelyingParty: opfrest
+      exchangeToken: true
+  tls:
+    secretName: ova-dev-chart-tls-secrets
+    mountPath: "/tmp/jks"
+    itemsProjection:
+      - key: ova-server-keystore.jks
+        path: ova-server/ova-server-keystore.jks
+      - key: ova-server-truststore.jks
+        path: ova-server/ova-server-truststore.jks
+    serverKeystore:
+      type: jks
+      location: "/tmp/jks/ova-server/ova-server-keystore.jks"
+    serverTruststore:
+      type: jks
+      location: "/tmp/jks/ova-server/ova-server-truststore.jks"
+logging:
+  consoleFormat: "dev"
+  httpLoggingStrategy: "full"
+environmentVariables:
+  "openid.ova.client.secret": "b1048aae-f242-4ed8-bec2-2c6b12053c75"
+jvm:
+  systemProperties:
+    com.clear2pay.ova.security.profile: APP_SECURITY
+    com.clear2pay.ova.opf.client.api.basic.authentication: true  

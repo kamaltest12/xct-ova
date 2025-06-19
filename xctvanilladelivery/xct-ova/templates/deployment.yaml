@@ -1,0 +1,349 @@
+# Application server deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "xct-ova.fullname" . }}-deployment
+  labels:
+    app.kubernetes.io/name: {{ include "xct-ova.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "xct-ova.chart" $ }}
+    {{- with .Values.deployment.labels }}
+    {{ toYaml . | nindent 4 | trim -}}
+    {{- end }}
+spec:
+  replicas: {{ include "numericSafe" .Values.deployment.replicasCount | default 1 }}
+  strategy:
+    type: {{ .Values.deployment.strategy.type | default "RollingUpdate" }}
+    rollingUpdate:
+      maxUnavailable: {{ include "numericSafe" .Values.deployment.strategy.rollingUpdate.maxUnavailable | default 0 }}
+      maxSurge: {{ include "numericSafe" .Values.deployment.strategy.rollingUpdate.maxSurge | default 1 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "xct-ova.name" . }}
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "xct-ova.name" . }}
+        app.kubernetes.io/instance: {{ $.Release.Name }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+        app.kubernetes.io/version: {{ .Chart.AppVersion }}
+        helm.sh/chart: {{ include "xct-ova.chart" $ }}
+        {{- with .Values.deployment.labels }}
+        {{ toYaml . | nindent 8 | trim -}}
+        {{- end }}
+      annotations:
+        {{- if .Values.serverConfig.monitoring.scraping.enabled }}
+        {{- with (required ".Values.serverConfig.monitoring.scraping.podAnnotations is required" .Values.serverConfig.monitoring.scraping.podAnnotations) }}
+        {{ toYaml . | nindent 8  | trim -}}
+        {{- end }}
+        {{- end }}
+        {{- with .Values.deployment.podAnnotations }}
+        {{ toYaml . | nindent 8 | trim -}}
+        {{- end }}
+    spec:
+      shareProcessNamespace: {{ include "booleanSafe" .Values.deployment.shareProcessNamespace | default "true" }}
+      containers:
+        - name: ova
+          image: {{ if .Values.deployment.image.repository }}{{ .Values.deployment.image.repository }}/{{ end }}{{ .Values.deployment.image.name }}:{{ .Values.deployment.image.tag }}
+          imagePullPolicy: {{ .Values.deployment.image.pullPolicy | default "Always" }}
+          command:
+            - "/bin/tini"
+            - "--"
+            - "/opt/java/openjdk/jre/bin/java"
+          args:
+            - "-javaagent:/opt/ol/wlp/bin/tools/ws-javaagent.jar"
+            - "-Djava.awt.headless=true"
+            - "-Djdk.attach.allowAttachSelf=true"
+            # Resource server configuration
+            - "-Dcom.clear2pay.ova.client.api.url={{ required ".Values.resourceServer.apiUrl is required." .Values.resourceServer.apiUrl }}"
+            - "-Dcom.clear2pay.ova.opf.client.webtarget.read.timout={{ .Values.resourceServer.readTimeout | default 60000 }}"
+            - "-Dcom.clear2pay.ova.opf.client.webtarget.connect.timout={{ .Values.resourceServer.connectTimeout | default 30000 }}"
+            - "-Dhttp.logging.strategy={{ .Values.logging.httpLoggingStrategy | default "off" }}"
+            - "-Dopenid.logout.url={{ .Values.security.openid.idpConfig.logoutEndpointUrl | default nil }}"
+            - "-Dopenid.logout.cookies.invalidate.pattern={{ .Values.security.openid.idpConfig.invalidateCookiesOnLogoutPattern | default nil }}"
+            # UI confguration
+            {{- with .Values.ui }}
+            {{- with .slaveMode }}
+            - "-Dcom.clear2pay.ova.ui.slave.mode={{ .enabled }}"
+            {{- if .enabled }}
+            - "-Dcom.clear2pay.ova.ui.slave.mode.base.callback.url={{ required "Values.ui.slaveMode.baseCallbackUrl is required." .baseCallbackUrl }}"
+            {{- end }}
+            {{- end }}
+            {{- if .hideSearchLimitOverride }}
+            - "-Dcom.clear2pay.ova.hideSearchLimitOverride={{ .hideSearchLimitOverride }}"
+            {{- end }}
+            - "-Dcom.clear2pay.ova.banks.contextmode={{ .banksContextMode | default "ALLOW_ALL" }}"
+            - "-Dcom.clear2pay.ova.bankingEntities.contextmode={{ .bankingEntitiesContextMode | default "FORCE_ALL" }}"
+            {{- with .automaticLogout }}
+            {{- if .timeout }}
+            - "-Dcom.clear2pay.ova.session.timeout={{ .timeout }}"
+            {{- end }}
+            {{- if .timeoutWarning }}
+            - "-Dcom.clear2pay.ova.session.timeout.warning={{ .timeoutWarning }}"
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            # Cache configuration
+            {{- with .Values.cache }}
+            - "-Dcom.clear2pay.ova.cache.service.operation.ttl={{ .ttl | default 300 }}"
+            - "-Dcom.clear2pay.ova.cache.service.operation.size={{ .size | default 5 }}"
+            {{- end }}
+            {{- if .Values.security.openid.enabled }}
+            # Openid configuration
+            - "-Dcom.clear2pay.ova.authentication.openid.target.relying.party={{ .Values.security.openid.idpConfig.targetRelyingParty | default "opfrest" }}"
+            {{- if .Values.security.openid.idpConfig.discoveryEndpointUrl }}
+            - "-Dcom.clear2pay.ova.authentication.openid.oidc.discovery.endpoint={{ .Values.security.openid.idpConfig.discoveryEndpointUrl }}"
+            {{- end }}
+            {{- if .Values.security.openid.idpConfig.tokenEndpointUrl }}
+            - "-Dcom.clear2pay.ova.authentication.openid.token.endpoint={{ .Values.security.openid.idpConfig.tokenEndpointUrl }}"
+            {{- end }}
+            - "-Dcom.clear2pay.ova.authentication.openid.endpoint.auth.method={{.Values.security.openid.idpConfig.tokenEndpointAuthMethod | default "post" }}"
+            - "-Dcom.clear2pay.ova.authentication.openid.access.token.minimum.validity.time={{ .Values.security.openid.idpConfig.accessTokenMinValidityTime | default 0 }}"
+            - "-Dcom.clear2pay.ova.authentication.openid.revoke.endpoint={{ .Values.security.openid.idpConfig.revocationUrl | default nil }}"
+            - "-Dcom.clear2pay.ova.authentication.openid.revoke.enabled={{ .Values.security.openid.idpConfig.revokeEnabled | default nil }}"
+            - "-Dcom.clear2pay.ova.authentication.openid.revoke.tokens={{ .Values.security.openid.idpConfig.revokeTokens | default nil }}"
+            {{- if .Values.security.openid.idpConfig.exchangeToken }}
+            - "-Dcom.clear2pay.ova.security.profile=OPENID_SECURITY_EXCHANGE_TOKEN"
+            {{- else }}
+            - "-Dcom.clear2pay.ova.security.profile=OPENID_SECURITY_PROPAGATE_TOKEN"
+            {{- end }}
+            {{- end }}
+            # osgi config
+            {{- with .Values.serverConfig.osgi }}
+            - "-Dcom.clear2pay.ova.osgi.frameworkReadinessRetryLimit={{ include "numericSafe" .frameworkReadinessRetryLimit | default 600 }}"
+            - "-Dcom.clear2pay.ova.osgi.stateMonitorBundleAvailabilityRetryLimit={{ include "numericSafe" .stateMonitorBundleAvailabilityRetryLimit | default 600 }}"
+            {{- end }}
+            {{- with .Values.serverConfig.jvm.memory }}
+            {{- if .initMemorySize }}
+            - "-Xms{{ .initMemorySize }}"
+            {{- end }}
+            {{- if .maxMemorySize }}
+            - "-Xmx{{ .maxMemorySize }}"
+            {{- end}}
+            {{- if .initPermSize }}
+            - "-XX:PermSize={{ .initPermSize }}"
+            {{- end }}
+            {{- if .maxPermSize }}
+            - "-XX:MaxPermSize={{ .maxPermSize }}"
+            {{- end }}
+            {{- end }}
+            {{- if .Values.serverConfig.jvm.runtimeOptimization }}
+            {{- if .Values.serverConfig.jvm.runtimeOptimization.enabled }}
+            - "-server"
+            {{- end }}
+            {{- end }}
+            {{- with .Values.serverConfig.jvm.CMSCollector }}
+            {{- if .enabled }}
+            - "-XX:+UseConcMarkSweepGC"
+            {{- if .classUnloading.enabled }}
+            - "-XX:+CMSClassUnloadingEnabled"
+            {{- else }}
+            - "-XX:-CMSClassUnloadingEnabled"
+            {{- end }}
+            {{- else }}
+            - "-XX:-UseConcMarkSweepGC"
+            - "-XX:-CMSClassUnloadingEnabled"
+            {{- end }}
+            {{- end }}
+            {{- if ((.Values.jvm).heapDumps).enabled }}
+            - "-XX:+HeapDumpOnOutOfMemoryError"
+            - "-XX:HeapDumpPath={{ .Values.jvm.heapDumps.heapDumpsPath }}"
+            {{- end }}
+            {{- if .Values.jvm }}
+            {{- range $k, $v := .Values.jvm.options }}
+            {{- if $v }}
+            - "{{ $v }}"
+            {{- end }}
+            {{- end }}
+            {{- range $k, $v := .Values.jvm.systemProperties }}
+            {{- if $v | quote }}
+            - "-D{{ $k }}={{ $v }}"
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.serverConfig.remoteDebug.enabled }}
+            - "-Dwas.debug.mode=true"
+            - "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=7777"
+            {{- end }}
+            - "-jar"
+            - "/opt/ol/wlp/bin/tools/ws-server.jar"
+            - "defaultServer"
+          securityContext:
+            runAsNonRoot: true
+          ports:
+            - name: https
+              containerPort: {{ include "numericSafe" .Values.deployment.containerHttpsPort | default 9443 }}
+            {{- if .Values.serverConfig.remoteDebug.enabled }}
+            - name: debug
+              containerPort: 7777
+            {{- end }}
+          env:
+          {{- range $k, $v := .Values.environmentVariables }}
+          {{- if $v }}
+          - name: {{ $k }}
+            value: {{ quote $v }}
+          {{- end }}
+          {{- end }}
+          {{- if eq .Values.security.k8sSecrets.type "configVariables" }}
+          - name: VARIABLE_SOURCE_DIRS
+            value: "/config/secrets/ova-secrets{{ with .Values.extension }}{{ range $k, $v := .additionalSecrets }}:/config/secrets/{{ $v }}{{ end }}{{ end }}"
+          {{- end }}
+          volumeMounts:
+            {{- if .Values.security.k8sSecrets.enabled }}
+            {{- if .Values.security.tls.enabled }}
+            - mountPath: {{ required ".Values.security.tls.mountPath is required." .Values.security.tls.mountPath }}
+              name: ova-tls-secrets
+              readOnly: true
+            {{- end }}
+            {{- end }}
+            - mountPath: /config/bootstrap.extension.properties
+              name: ova-config-server-bootstrap-volume
+              subPath: bootstrap.extension.properties
+            {{- with .Values.extension }}
+            {{- range $k, $v := .additionalBootstrapConfigMaps }}
+            - mountPath: /config/{{ $v }}.properties
+              name: {{ $v  }}
+              subPath: bootstrap.extension.properties
+            {{- end }}
+            {{- end }}
+            {{- if .Values.security.k8sSecrets.enabled }}
+            {{- if eq .Values.security.k8sSecrets.type "bootstrapProperties" }}
+            - mountPath: /config/secrets/bootstrap.secret.extension.properties
+              subPath: ova-secrets
+            {{- else if eq .Values.security.k8sSecrets.type "configVariables"  }}
+            - mountPath: /config/secrets/ova-secrets
+            {{- end }}
+              name: ova-secrets
+              readOnly: true
+            {{- with .Values.extension }}
+            {{- range $k, $v := .additionalSecrets }}
+            {{- if eq $.Values.security.k8sSecrets.type "bootstrapProperties" }}
+            - mountPath: /config/secrets/bootstrap.{{ $v }}.extension.properties
+              subPath: ova-secrets
+            {{- else if eq $.Values.security.k8sSecrets.type "configVariables" }}
+            - mountPath: /config/secrets/{{ $v }}
+            {{- end }}
+              name: {{ $v }}
+              readOnly: true
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.deployment.extraVolumeMounts }}
+            {{- toYaml .Values.deployment.extraVolumeMounts | nindent 12 }}
+            {{- end }}
+            {{- if ((.Values.jvm).heapDumps).enabled }}
+            - mountPath: {{ .Values.jvm.heapDumps.heapDumpsPath }}
+              name: {{ include "xct-ova.fullname" . }}-heap-dumps-pvc-volume
+            {{- end}}
+          {{- if .Values.deployment.resources.enabled }}
+          resources:
+            requests:
+              memory: {{ required ".Values.deployment.resources.memory.request is required." .Values.deployment.resources.memory.request | quote }}
+              cpu: {{ required ".Values.deployment.resources.cpu.request is required." .Values.deployment.resources.cpu.request | quote }}
+            limits:
+              memory: {{ required ".Values.deployment.resources.memory.limit is required." .Values.deployment.resources.memory.limit | quote }}
+              cpu: {{ required ".Values.deployment.resources.cpu.limit is required." .Values.deployment.resources.cpu.limit | quote }}
+          {{- end }}
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sleep","{{ include "numericSafe" .Values.deployment.lifecycle.preTerminationPeriodSeconds | default 5 }}"]
+          {{- if .Values.deployment.probes.liveness.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ required ".Values.deployment.probes.liveness.httpGet.path is required." .Values.deployment.probes.liveness.httpGet.path | quote }}
+              port: {{ required ".Values.deployment.probes.liveness.httpGet.port is required." .Values.deployment.probes.liveness.httpGet.port }}
+              scheme: {{ .Values.deployment.probes.liveness.httpGet.scheme | default "HTTPS" | quote }}
+            initialDelaySeconds: {{ include "numericSafe" .Values.deployment.probes.liveness.initialDelaySeconds | default 0 }}
+            periodSeconds: {{ include "numericSafe" .Values.deployment.probes.liveness.periodSeconds | default 10 }}
+            timeoutSeconds: {{ include "numericSafe" .Values.deployment.probes.liveness.timeoutSeconds | default 1 }}
+            successThreshold: {{ include "numericSafe" .Values.deployment.probes.liveness.successThreshold | default 1 }}
+            failureThreshold: {{ include "numericSafe" .Values.deployment.probes.liveness.failureThreshold | default 3 }}
+          {{- end }}
+          {{- if .Values.deployment.probes.readiness.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ required ".Values.deployment.probes.readiness.httpGet.path is required." .Values.deployment.probes.readiness.httpGet.path | quote }}
+              port: {{ required ".Values.deployment.probes.readiness.httpGet.port is required." .Values.deployment.probes.readiness.httpGet.port }}
+              scheme: {{ .Values.deployment.probes.readiness.httpGet.scheme | default "HTTPS" | quote }}
+            initialDelaySeconds: {{ include "numericSafe" .Values.deployment.probes.readiness.initialDelaySeconds | default 0 }}
+            periodSeconds: {{ include "numericSafe" .Values.deployment.probes.readiness.periodSeconds | default 10 }}
+            timeoutSeconds: {{ include "numericSafe" .Values.deployment.probes.readiness.timeoutSeconds | default 1 }}
+            successThreshold: {{ include "numericSafe" .Values.deployment.probes.readiness.successThreshold | default 1 }}
+            failureThreshold: {{ include "numericSafe" .Values.deployment.probes.readiness.failureThreshold | default 3 }}
+          {{- end }}
+          {{- if .Values.deployment.probes.startup.enabled }}
+          startupProbe:
+            httpGet:
+              path: {{ required ".Values.deployment.probes.startup.httpGet.path is required." .Values.deployment.probes.startup.httpGet.path | quote }}
+              port: {{ required ".Values.deployment.probes.startup.httpGet.port is required." .Values.deployment.probes.startup.httpGet.port }}
+              scheme: {{ .Values.deployment.probes.startup.httpGet.scheme | default "HTTPS" | quote }}
+            initialDelaySeconds: {{ include "numericSafe" .Values.deployment.probes.startup.initialDelaySeconds | default 0 }}
+            periodSeconds: {{ include "numericSafe" .Values.deployment.probes.startup.periodSeconds | default 10 }}
+            timeoutSeconds: {{ include "numericSafe" .Values.deployment.probes.startup.timeoutSeconds | default 1 }}
+            successThreshold: {{ include "numericSafe" .Values.deployment.probes.startup.successThreshold | default 1 }}
+            failureThreshold: {{ include "numericSafe" .Values.deployment.probes.startup.failureThreshold | default 3 }}
+          {{- end }}
+      terminationGracePeriodSeconds: {{ include "numericSafe" .Values.deployment.lifecycle.terminationGracePeriodSeconds | default 60 }}
+      serviceAccountName: {{ .Values.deployment.serviceAccountName | default "default" }}
+
+      {{- if ((.Values.jvm).heapDumps).securityContext }}
+      securityContext:
+        {{- if (((.Values.jvm).heapDumps).securityContext).fsGroup }}
+        fsGroup: {{ .Values.jvm.heapDumps.securityContext.fsGroup }}
+        {{- end }}
+      {{- end }}
+
+      volumes:
+        {{- if .Values.security.k8sSecrets.enabled }}
+        {{- if .Values.security.tls.enabled }}
+        - name: ova-tls-secrets
+          secret:
+            secretName: {{ required ".Values.security.tls.secretName is required." .Values.security.tls.secretName }}
+            {{- with .Values.security.tls.itemsProjection }}
+            items:
+            {{- toYaml  . | nindent 12 }}
+            {{- end }}
+        {{- end }}
+        {{- end }}
+        - name: ova-config-server-bootstrap-volume
+          configMap:
+            name: {{ include "xct-ova.fullname" . }}-bootstrap-config
+        {{- with .Values.extension }}
+        {{- range $k, $v := .additionalBootstrapConfigMaps }}
+        - name : {{ $v }}
+          configMap:
+            name: {{ $v }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.security.k8sSecrets.enabled }}
+        - name: ova-secrets
+          secret:
+            secretName: {{ required ".Values.security.k8sSecrets.ovaSecretName is required." .Values.security.k8sSecrets.ovaSecretName }}
+        {{- with .Values.extension }}
+        {{- range $k, $v := .additionalSecrets }}
+        - name: {{ $v }}
+          secret:
+            secretName: {{ $v }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+        {{- if ((.Values.jvm).heapDumps).enabled }}
+        - name: {{ include "xct-ova.fullname" . }}-heap-dumps-pvc-volume
+          persistentVolumeClaim:
+            claimName: {{ include "xct-ova.fullname" . }}-heap-dumps-pvc
+        {{- end }}
+        {{- if .Values.deployment.extraVolumes }}
+        {{- toYaml .Values.deployment.extraVolumes | nindent 8 }}
+        {{- end }}
+      {{- if .Values.deployment.image.pullSecrets }}
+      imagePullSecrets:
+        - name: {{ .Values.deployment.image.pullSecrets }}
+      {{- end }}
+      {{- with .Values.deployment.nodeSelector }}
+      nodeSelector:
+        {{ toYaml . | nindent 8 | trim }}
+      {{- end }}

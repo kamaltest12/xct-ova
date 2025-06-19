@@ -1,0 +1,96 @@
+# Configuration map for custom java system properties, jvm memory limits
+# only one overridden jvm.options file (/config/configDropins/overrides/jvm.options) exists so downstream projects need to merge xct with their jvm properties
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jvm-xct-configmap
+  labels:
+    app.kubernetes.io/name: {{ include "xct.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "xct.chart" $ }}
+    {{- with .Values.deployment.labels }}
+    {{ toYaml . | nindent 4 | trim -}}
+    {{- end }}
+data:
+  jvm.options: |-
+    {{- with .Values.serverConfig.jvm.memory }}
+    {{- if .maxStackSize }}
+    -Xss{{ .maxStackSize }}
+    {{- end }}
+    {{- end }}
+    {{- with .Values.externalSystems }}
+    {{- if .xctFxs }}
+    -Dxct.fxs.rest.base.url={{ .xctFxs.baseUrl }}
+    -Dxct.fxs.rest.timeout={{ .xctFxs.timeout }}
+    -Dxct.fxs.rest.always.trust={{ .xctFxs.alwaysTrust }}
+    {{- end }}
+    {{- if .xctGpiCct }}
+    -Dxct.gpicct.rest.base.url={{ .xctGpiCct.baseUrl }}
+    -Dxct.gpicct.rest.timeout={{ .xctGpiCct.timeout }}
+    -Dxct.gpicct.rest.always.trust={{ .xctGpiCct.alwaysTrust }}
+    {{- end }}
+    {{- if .xctGpiCov }}
+    -Dxct.gpicov.rest.base.url={{ .xctGpiCov.baseUrl }}
+    -Dxct.gpicov.rest.timeout={{ .xctGpiCov.timeout }}
+    -Dxct.gpicov.rest.always.trust={{ .xctGpiCov.alwaysTrust }}
+    {{- end }}
+    {{- if .xctGpiFit }}
+    -Dxct.gpifit.rest.base.url={{ .xctGpiFit.baseUrl }}
+    -Dxct.gpifit.rest.timeout={{ .xctGpiFit.timeout }}
+    -Dxct.gpifit.rest.always.trust={{ .xctGpiFit.alwaysTrust }}
+    {{- end }}
+    {{- if .xctGpiUcon }}
+    -Dxct.gpiucon.rest.base.url={{ .xctGpiUcon.baseUrl }}
+    -Dxct.gpiucon.rest.timeout={{ .xctGpiUcon.timeout }}
+    -Dxct.gpiucon.rest.always.trust={{ .xctGpiUcon.alwaysTrust }}
+    {{- end }}
+    {{- if .xctGpiGct }}
+    -Dxct.gpigct.rest.base.url={{ .xctGpiGct.baseUrl }}
+    -Dxct.gpigct.rest.timeout={{ .xctGpiGct.timeout }}
+    -Dxct.gpigct.rest.always.trust={{ .xctGpiGct.alwaysTrust }}
+    {{- end }}
+    {{- if .xctPcs }}
+    -Dxct.pcs.rest.base.url={{ .xctPcs.baseUrl }}
+    -Dxct.pcs.rest.timeout={{ .xctPcs.timeout }}
+    -Dxct.pcs.rest.always.trust={{ .xctPcs.alwaysTrust }}
+    {{- end }}
+    {{- if .xctSwiftMicrogateway }}
+    -Dxct.swiftMicrogateway.busAppName={{ .xctSwiftMicrogateway.busAppName }}
+    -Dxct.swiftMicrogateway.profileId={{ .xctSwiftMicrogateway.profileId }}
+    -Dauth.swiftMicrogateway.sharedKey={{ .xctSwiftMicrogateway.sharedKey }}
+    {{- end }}
+    {{- if .POM }}
+    -Dcom.clear2pay.opf.api.client.base.url.POM={{ .POM.baseUrl }}
+    -Dxct.pom.rest.always.trust={{ .POM.alwaysTrust }}
+    {{- end }}
+    {{- if .cbis }}
+    -Dxct.cbis.rest.always.trust={{ .cbis.alwaysTrust }}
+    -Dxct.cbis.async.rest.always.trust={{ .cbis.alwaysTrustAsync }}
+    {{- end }}
+    {{- if .fsisRiskAssessment }}
+    -Dxct.fsis.risk.assessment.rest.always.trust={{ .fsisRiskAssessment.alwaysTrust }}
+    {{- end }}
+    {{- if .universalExecutionCallback }}
+    -Dxct.universal.execution.callback.rest.base.url={{ .universalExecutionCallback.baseUrl }}
+    {{- end }}
+    {{- if .universalExecution }}
+    -Dxct.universal.execution.rest.base.url={{ .universalExecution.baseUrl }}
+    {{- end }}
+    {{- if .channels }}
+    -Dcom.clear2pay.xct.api.client.base.url.CHANNELS={{ .channels.baseUrl }}
+    {{- end }}
+    {{- if .nacas }}
+    -Dxct.nacas.rest.base.url={{ .nacas.baseUrl }}
+    -Dxct.nacas.rest.timeout={{ .nacas.timeout }}
+    -Dxct.nacas.rest.always.trust={{ .nacas.alwaysTrust }}
+    -Dxct.nacas.rest.enabled={{ .nacas.enabled }}
+    {{- end }}
+    {{- if .xctFsis }}
+    -Dcom.clear2pay.bph.opfpayment.ofac.interfacing.sanctionscheck.connector.id={{ .xctFsis.sanctionsCheckConnectorId }}
+    -Dcom.clear2pay.bph.opfpayment.ofac.interfacing.fraudcheck.connector.id={{ .xctFsis.fraudCheckConnectorId }}
+    -Dcom.clear2pay.bph.opfpayment.ofac.interfacing.fsis.callback_max_repeat={{ .xctFsis.callback_max_repeat }}
+    -Dcom.clear2pay.bph.opfpayment.ofac.interfacing.fsis.callback_break_time={{ .xctFsis.callback_break_time }}
+    {{- end }}
+    {{- end }}

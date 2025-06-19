@@ -1,0 +1,491 @@
+# Configuration map for open liberty configuration extension (bootstrap.properties)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "xct.fullname" . }}-bootstrap-config
+  labels:
+    app.kubernetes.io/name: {{ include "xct.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "xct.chart" $ }}
+    {{- with .Values.deployment.labels }}
+    {{ toYaml . | nindent 4 | trim -}}
+    {{- end }}
+data:
+  bootstrap.extension.properties: |-
+    # Logging configuration
+    {{- with .Values.logging }}
+    com.ibm.ws.logging.console.source={{ .consoleSources | default "message,trace,ffdc" }}
+    com.ibm.ws.logging.console.format={{ .consoleFormat | default "json" }}
+    com.ibm.ws.logging.console.log.level={{ .consoleLogLevel | default "AUDIT" }}
+    com.ibm.ws.logging.trace.format={{ .traceFormat | default "ENHANCED" }}
+    {{- if .traceSpecification }}
+    com.ibm.ws.logging.trace.specification={{ .traceSpecification }}
+    logging.traceSpecification={{ .traceSpecification }}
+    {{- end }}
+    {{- if .hideMessage }}
+    com.ibm.ws.logging.hideMessage={{ .hideMessage }}
+    {{- end }}
+    {{- end }}
+    # Database configuration
+    {{- if eq (.Values.db.type | default "oracle") "postgres" }}
+    app.server.db=postgres
+    db.postgres.host={{ required ".Values.db.host is required." .Values.db.host }}
+    db.postgres.port={{ required ".Values.db.port is required." .Values.db.port }}
+    db.postgres.database={{ required ".Values.db.database is required." .Values.db.database }}
+    db.postgres.schema={{ required ".Values.db.schema is required." .Values.db.schema }}
+    db.postgres.sslmode={{ .Values.db.sslmode | default "disable" }}
+    {{- else }}
+    db.url={{ required ".Values.db.url is required" .Values.db.url }}
+    {{- end }}
+    # Tranlog Database configuration
+    {{- if eq (.Values.db.tranlog.type | default (.Values.db.type | default "oracle")) "postgres" }}
+    app.server.tranlog.db=postgres
+    db.tranlog.postgres.host={{ required ".Values.db.[tranlog.]host is required." (.Values.db.tranlog.host | default .Values.db.host) }}
+    db.tranlog.postgres.port={{ required ".Values.db.[tranlog.]port is required." (.Values.db.tranlog.port | default .Values.db.port) }}
+    db.tranlog.postgres.database={{ required ".Values.db.[tranlog.]database is required." (.Values.db.tranlog.database | default .Values.db.database) }}
+    db.tranlog.postgres.schema={{ required ".Values.db.[tranlog.]schema is required." (.Values.db.tranlog.schema | default (empty .Values.db.schema | ternary nil (print .Values.db.schema "tranlog"))) }}
+    db.tranlog.postgres.sslmode={{ .Values.db.tranlog.sslmode | default (.Values.db.sslmode | default "disable") }}
+    {{- else }}
+    db.tranlog.url={{ required ".Values.db.[tranlog.]url is required." (.Values.db.tranlog.url | default .Values.db.url) }}
+    {{- end }}
+    db.xa.minPoolSize={{ required ".Values.db.xaConfig.minPoolSize is required." .Values.db.xaConfig.minPoolSize }}
+    db.xa.maxPoolSize={{ required ".Values.db.xaConfig.maxPoolSize is required." .Values.db.xaConfig.maxPoolSize }}
+    db.xa.purgePolicy={{ .Values.db.xaConfig.purgePolicy | default "EntirePool" }}
+    db.xa.agedTimeout={{ include "numericSafe" .Values.db.xaConfig.agedTimeout | default "-1" }}
+    db.xa.maxIdleTime={{ .Values.db.xaConfig.maxIdleTime | default "30m" }}
+    db.xa.connectionTimeout={{ .Values.db.xaConfig.connectionTimeout | default "30s" }}
+    db.xa.reapTime={{ .Values.db.xaConfig.reapTime | default "3m" }}
+    db.nonxa.minPoolSize={{ required ".Values.db.nonxaConfig.minPoolSize is required." .Values.db.nonxaConfig.minPoolSize }}
+    db.nonxa.maxPoolSize={{ required ".Values.db.nonxaConfig.maxPoolSize is required." .Values.db.nonxaConfig.maxPoolSize }}
+    db.nonxa.purgePolicy={{ .Values.db.nonxaConfig.purgePolicy | default "EntirePool" }}
+    db.nonxa.agedTimeout={{ include "numericSafe" .Values.db.nonxaConfig.agedTimeout | default "-1" }}
+    db.nonxa.maxIdleTime={{ .Values.db.nonxaConfig.maxIdleTime | default "30m" }}
+    db.nonxa.connectionTimeout={{ .Values.db.nonxaConfig.connectionTimeout | default "30s" }}
+    db.nonxa.reapTime={{ .Values.db.nonxaConfig.reapTime | default "3m" }}
+    {{- if .Values.db.compat }}
+    db.compat.minPoolSize={{ required ".Values.db.compat.minPoolSize is required." .Values.db.compat.minPoolSize }}
+    db.compat.maxPoolSize={{ required ".Values.db.compat.maxPoolSize is required." .Values.db.compat.maxPoolSize }}
+    db.compat.purgePolicy={{ .Values.db.compat.purgePolicy | default "EntirePool" }}
+    db.compat.agedTimeout={{ include "numericSafe" .Values.db.compat.agedTimeout | default "-1" }}
+    db.compat.maxIdleTime={{ .Values.db.compat.maxIdleTime | default "30m" }}
+    db.compat.connectionTimeout={{ .Values.db.compat.connectionTimeout | default "30s" }}
+    db.compat.reapTime={{ .Values.db.compat.reapTime | default "3m" }}
+    {{- end }}
+    {{- if .Values.db.tranlog.connectionManagerConfig }}
+    db.tranlog.minPoolSize={{ required ".Values.db.tranlog.connectionManagerConfig.minPoolSize is required." .Values.db.tranlog.connectionManagerConfig.minPoolSize }}
+    db.tranlog.maxPoolSize={{ required ".Values.db.tranlog.connectionManagerConfig.maxPoolSize is required." .Values.db.tranlog.connectionManagerConfig.maxPoolSize }}
+    db.tranlog.purgePolicy={{ .Values.db.tranlog.connectionManagerConfig.purgePolicy | default "EntirePool" }}
+    db.tranlog.agedTimeout={{ include "numericSafe" .Values.db.tranlog.connectionManagerConfig.agedTimeout | default "-1" }}
+    db.tranlog.maxIdleTime={{ .Values.db.tranlog.connectionManagerConfig.maxIdleTime | default "30m" }}
+    db.tranlog.connectionTimeout={{ .Values.db.tranlog.connectionManagerConfig.connectionTimeout | default "30s" }}
+    db.tranlog.reapTime={{ .Values.db.tranlog.connectionManagerConfig.reapTime | default "3m" }}
+    {{- end }}
+    # Transaction Logs configuration
+    app.server.tranlog.mode={{ .Values.serverConfig.transactionLogs.mode | default "file" }}
+    # EJB container configuration
+    ejbcontainer.poolCleanupInterval={{ .Values.serverConfig.ejbContainer.poolCleanupInterval | default "24h" }}
+    ejbcontainer.startEJBsAtAppStart={{ include "booleanSafe" .Values.serverConfig.ejbContainer.startEJBsAtAppStart | default "true" }}
+    ejbcontainer.cacheSize={{ include "numericSafe" .Values.serverConfig.ejbContainer.cacheSize | default "10000" }}
+
+    # Messaging settings
+    # MQ resource adapter configuration
+    {{- with .Values.messaging.mq.resourceAdapter }}
+    rar.mq.jms.maxConnections={{ include "numericSafe"  .maxConnections | default 50 }}
+    rar.mq.jms.startupRetryCount={{ include "numericSafe" .startupRetryCount | default 0 }}
+    rar.mq.jms.startupRetryInterval={{ include "numericSafe"  .startupRetryInterval | default 30000 }}
+    rar.mq.jms.reconnectionRetryCount={{ include "numericSafe" .reconnectionRetryCount | default 5 }}
+    rar.mq.jms.reconnectionRetryInterval={{ include "numericSafe"  .reconnectionRetryInterval | default 300000 }}
+    {{- end }}
+    # MQ queue connection factory configuration
+    mq.qcf.hostName={{ .Values.messaging.mq.connectionFactories.QCF.hostname | default .Values.messaging.mq.cfDefaultValues.hostname | required ".Values.messaging.mq.cfDefaultValues.hostname is required" }}
+    mq.qcf.port={{ .Values.messaging.mq.connectionFactories.QCF.port | default .Values.messaging.mq.cfDefaultValues.port }}
+    mq.qcf.channel={{ .Values.messaging.mq.connectionFactories.QCF.channel | default .Values.messaging.mq.cfDefaultValues.channel }}
+    mq.qcf.queueManager={{ .Values.messaging.mq.connectionFactories.QCF.queueManager | default .Values.messaging.mq.cfDefaultValues.queueManager }}
+    {{- $mqQcfSslCipherSuite := .Values.messaging.mq.connectionFactories.QCF.sslCipherSuite | default .Values.messaging.mq.cfDefaultValues.sslCipherSuite }}
+    mq.qcf.ssl.cipher.suite={{ $mqQcfSslCipherSuite | quote }}
+    {{- if $mqQcfSslCipherSuite }}
+    mq.qcf.ssl.socket.factory="com.ibm.ws.ssl.protocol.LibertySSLSocketFactory(mqQCFSSLConfig)"
+    {{- else }}
+    mq.qcf.ssl.socket.factory=""
+    {{- end }}
+    mq.qcf.cm.minPoolSize={{ .Values.messaging.mq.connectionFactories.QCF.connectionManagerConfig.minPoolSize | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.minPoolSize }}
+    mq.qcf.cm.maxPoolSize={{ .Values.messaging.mq.connectionFactories.QCF.connectionManagerConfig.maxPoolSize | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.maxPoolSize }}
+    mq.qcf.cm.connectionTimeout={{ .Values.messaging.mq.connectionFactories.QCF.connectionManagerConfig.connectionTimeout | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.connectionTimeout }}
+    mq.qcf.cm.maxIdleTime={{ .Values.messaging.mq.connectionFactories.QCF.connectionManagerConfig.maxIdleTime | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.maxIdleTime }}
+    mq.qcf.cm.purgePolicy={{ .Values.messaging.mq.connectionFactories.QCF.connectionManagerConfig.purgePolicy | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.purgePolicy }}
+    mq.qcf.cm.agedTimeout={{ .Values.messaging.mq.connectionFactories.QCF.connectionManagerConfig.agedTimeout | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.agedTimeout }}
+    mq.qcf.cm.reapTime={{ .Values.messaging.mq.connectionFactories.QCF.connectionManagerConfig.reapTime | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.reapTime }}
+    mq.swiftsaaqcf.hostName={{ .Values.messaging.mq.connectionFactories.SWIFTSAAQCF.hostname | default .Values.messaging.mq.cfDefaultValues.hostname | required ".Values.messaging.mq.cfDefaultValues.hostname is required" }}
+    mq.swiftsaaqcf.port={{ .Values.messaging.mq.connectionFactories.SWIFTSAAQCF.port | default .Values.messaging.mq.cfDefaultValues.port }}
+    mq.swiftsaaqcf.channel={{ .Values.messaging.mq.connectionFactories.SWIFTSAAQCF.channel | default .Values.messaging.mq.cfDefaultValues.channel }}
+    mq.swiftsaaqcf.queueManager={{ .Values.messaging.mq.connectionFactories.SWIFTSAAQCF.queueManager | default .Values.messaging.mq.cfDefaultValues.queueManager }}
+    {{- $mqSwiftSaaQcfSslCipherSuite := .Values.messaging.mq.connectionFactories.SWIFTSAAQCF.sslCipherSuite | default .Values.messaging.mq.cfDefaultValues.sslCipherSuite }}
+    mq.swiftsaaqcf.ssl.cipher.suite={{ $mqSwiftSaaQcfSslCipherSuite | quote }}
+    {{- if $mqSwiftSaaQcfSslCipherSuite }}
+    mq.swiftsaaqcf.ssl.socket.factory="com.ibm.ws.ssl.protocol.LibertySSLSocketFactory(mqSWIFTSAAQCFSSLConfig)"
+    {{- else }}
+    mq.swiftsaaqcf.ssl.socket.factory=""
+    {{- end }}
+    mq.swiftsaaqcf.cm.minPoolSize={{ .Values.messaging.mq.connectionFactories.SWIFTSAAQCF.connectionManagerConfig.minPoolSize | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.minPoolSize }}
+    mq.swiftsaaqcf.cm.maxPoolSize={{ .Values.messaging.mq.connectionFactories.SWIFTSAAQCF.connectionManagerConfig.maxPoolSize | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.maxPoolSize }}
+    mq.swiftsaaqcf.cm.connectionTimeout={{ .Values.messaging.mq.connectionFactories.SWIFTSAAQCF.connectionManagerConfig.connectionTimeout | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.connectionTimeout }}
+    mq.swiftsaaqcf.cm.maxIdleTime={{ .Values.messaging.mq.connectionFactories.SWIFTSAAQCF.connectionManagerConfig.maxIdleTime | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.maxIdleTime }}
+    mq.swiftsaaqcf.cm.purgePolicy={{ .Values.messaging.mq.connectionFactories.SWIFTSAAQCF.connectionManagerConfig.purgePolicy | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.purgePolicy }}
+    mq.swiftsaaqcf.cm.agedTimeout={{ .Values.messaging.mq.connectionFactories.SWIFTSAAQCF.connectionManagerConfig.agedTimeout | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.agedTimeout }}
+    mq.swiftsaaqcf.cm.reapTime={{ .Values.messaging.mq.connectionFactories.SWIFTSAAQCF.connectionManagerConfig.reapTime | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.reapTime }}
+    {{- if .Values.messaging.mq.ndu }}
+    # Non Disruptive Upgrade configuration
+    mq.myqcf.hostName={{ .Values.messaging.mq.ndu.MYQCF.hostname | default .Values.messaging.mq.cfDefaultValues.hostname }}
+    mq.myqcf.port={{ .Values.messaging.mq.ndu.MYQCF.port | default .Values.messaging.mq.cfDefaultValues.port }}
+    mq.myqcf.channel={{ .Values.messaging.mq.ndu.MYQCF.channel | default .Values.messaging.mq.cfDefaultValues.channel }}
+    mq.myqcf.queueManager={{ .Values.messaging.mq.ndu.MYQCF.queueManager | default .Values.messaging.mq.cfDefaultValues.queueManager }}
+    {{- $mqMyQcfSslCipherSuite := .Values.messaging.mq.ndu.MYQCF.sslCipherSuite | default .Values.messaging.mq.cfDefaultValues.sslCipherSuite }}
+    mq.myqcf.ssl.cipher.suite={{ $mqMyQcfSslCipherSuite | quote }}
+    {{- if $mqMyQcfSslCipherSuite }}
+    mq.myqcf.ssl.socket.factory="com.ibm.ws.ssl.protocol.LibertySSLSocketFactory(mqMYQCFSSLConfig)"
+    {{- else }}
+    mq.myqcf.ssl.socket.factory=""
+    {{- end }}
+    mq.myqcf.cm.minPoolSize={{ .Values.messaging.mq.ndu.MYQCF.connectionManagerConfig.minPoolSize | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.minPoolSize }}
+    mq.myqcf.cm.maxPoolSize={{ .Values.messaging.mq.ndu.MYQCF.connectionManagerConfig.maxPoolSize | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.maxPoolSize }}
+    mq.myqcf.cm.connectionTimeout={{ .Values.messaging.mq.ndu.MYQCF.connectionManagerConfig.connectionTimeout | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.connectionTimeout }}
+    mq.myqcf.cm.maxIdleTime={{ .Values.messaging.mq.ndu.MYQCF.connectionManagerConfig.maxIdleTime | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.maxIdleTime }}
+    mq.myqcf.cm.purgePolicy={{ .Values.messaging.mq.ndu.MYQCF.connectionManagerConfig.purgePolicy | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.purgePolicy }}
+    mq.myqcf.cm.agedTimeout={{ .Values.messaging.mq.ndu.MYQCF.connectionManagerConfig.agedTimeout | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.agedTimeout }}
+    mq.myqcf.cm.reapTime={{ .Values.messaging.mq.ndu.MYQCF.connectionManagerConfig.reapTime | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.reapTime }}
+    mq.otherqcf.hostName={{ .Values.messaging.mq.ndu.OTHERQCF.hostname | default .Values.messaging.mq.cfDefaultValues.hostname }}
+    mq.otherqcf.port={{ .Values.messaging.mq.ndu.OTHERQCF.port | default .Values.messaging.mq.cfDefaultValues.port }}
+    mq.otherqcf.channel={{ .Values.messaging.mq.ndu.OTHERQCF.channel | default .Values.messaging.mq.cfDefaultValues.channel }}
+    mq.otherqcf.queueManager={{ .Values.messaging.mq.ndu.OTHERQCF.queueManager | default .Values.messaging.mq.cfDefaultValues.queueManager }}
+    {{- $mqOtherQcfSslCipherSuite := .Values.messaging.mq.ndu.OTHERQCF.sslCipherSuite | default .Values.messaging.mq.cfDefaultValues.sslCipherSuite }}
+    mq.otherqcf.ssl.cipher.suite={{ $mqOtherQcfSslCipherSuite | quote }}
+    {{- if $mqOtherQcfSslCipherSuite }}
+    mq.otherqcf.ssl.socket.factory="com.ibm.ws.ssl.protocol.LibertySSLSocketFactory(mqOTHERQCFSSLConfig)"
+    {{- else }}
+    mq.otherqcf.ssl.socket.factory=""
+    {{- end }}
+    mq.otherqcf.cm.minPoolSize={{ .Values.messaging.mq.ndu.OTHERQCF.connectionManagerConfig.minPoolSize | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.minPoolSize }}
+    mq.otherqcf.cm.maxPoolSize={{ .Values.messaging.mq.ndu.OTHERQCF.connectionManagerConfig.maxPoolSize | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.maxPoolSize }}
+    mq.otherqcf.cm.connectionTimeout={{ .Values.messaging.mq.ndu.OTHERQCF.connectionManagerConfig.connectionTimeout | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.connectionTimeout }}
+    mq.otherqcf.cm.maxIdleTime={{ .Values.messaging.mq.ndu.OTHERQCF.connectionManagerConfig.maxIdleTime | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.maxIdleTime }}
+    mq.otherqcf.cm.purgePolicy={{ .Values.messaging.mq.ndu.OTHERQCF.connectionManagerConfig.purgePolicy | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.purgePolicy }}
+    mq.otherqcf.cm.agedTimeout={{ .Values.messaging.mq.ndu.OTHERQCF.connectionManagerConfig.agedTimeout | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.agedTimeout }}
+    mq.otherqcf.cm.reapTime={{ .Values.messaging.mq.ndu.OTHERQCF.connectionManagerConfig.reapTime | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.reapTime }}
+    mq.queuemanager.setup={{ .Values.messaging.mq.ndu.otherHandoverSetup | default "single" }}
+    {{- end }}
+    {{- if .Values.messaging.kafka.enabled }}
+    {{- with .Values.messaging.kafka }}
+    # Kafka resource adapter configuration
+    {{- if .resourceAdapter }}
+    rar.kafka.jms.location= {{ .resourceAdapter.location | default "/rar/kafka-jms-rar.rar" }}
+    {{- else }}
+    rar.kafka.jms.location= "/rar/kafka-jms-rar.rar"
+    {{- end }}
+    # Kafka connection factory configuration
+    {{- with .connectionFactories }}
+    {{ if hasKey .KafkaCF "sslEndpointIdentification" }}kafka.cf.sslEndpointIdentification= {{ .sslEndpointIdentification }}{{ end }}
+    {{- with .KafkaCF }}
+    kafka.cf.bootstrapServers= {{ required ".Values.messaging.kafka.connectionFactories.KafkaCF.bootstrapServers is required." .bootstrapServers }}
+    kafka.cf.clientId= {{ .clientId | default "kafkaClient" }}
+    kafka.cf.protocol= {{ required ".Values.messaging.kafka.connectionFactories.KafkaCF.protocol is required." .protocol }}
+    {{- if contains "SSL" .protocol }}
+    kafka.cf.sslKeystoreLocation= {{ required ".Values.messaging.kafka.connectionFactories.KafkaCF.sslKeystoreLocation is required." .sslKeystoreLocation }}
+    kafka.cf.sslTruststoreLocation= {{ required ".Values.messaging.kafka.connectionFactories.KafkaCF.sslTruststoreLocation is required." .sslTruststoreLocation }}
+    {{- end }}
+    {{- with .tune }}
+    {{ if .acks }}kafka.cf.tune.acks= {{ .acks }}{{ end }}
+    {{ if .batchSize }}kafka.cf.tune.batchSize= {{ .batchSize }}{{ end }}
+    {{ if .lingerMS }}kafka.cf.tune.lingerMS= {{ .lingerMS }}{{ end }}
+    {{ if .retries }}kafka.cf.tune.retries= {{ .retries }}{{ end }}
+    {{- end }}
+    {{- with .connectionManagerConfig }}
+    # Kafka connection manager configuration
+    kafka.cf.cm.connectionTimeout= {{ include "numericSafe" .connectionTimeout | default "0" }}
+    kafka.cf.cm.maxIdleTime= {{ .maxIdleTime | default "30m" }}
+    kafka.cf.cm.minPoolSize= {{ include "numericSafe" .minPoolSize | default "0" }}
+    kafka.cf.cm.maxPoolSize= {{ include "numericSafe" .maxPoolSize | default "2" }}
+    kafka.cf.cm.purgePolicy= {{ .purgePolicy | default "EntirePool" }}
+    kafka.cf.cm.agedTimeout= {{ include "numericSafe" .agedTimeout | default "-1"}}
+    kafka.cf.cm.reapTime= {{ .reapTime | default "3m" }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- with .activationSpecs }}
+    # Kafka activation specifications configuration
+    {{- with .stet }}
+    # Stet configuration
+    stet.kafka.jms.as.groupId={{ .groupId | default "stet" }}
+    stet.kafka.jms.as.topics={{ .topics | default "stet" }}
+    stet.kafka.jms.as.retryBackoff={{ include "numericSafe" .retryBackoff | default 1000 }}
+    stet.kafka.jms.as.pollInterval={{ include "numericSafe" .pollInterval | default 2000 }}
+    stet.kafka.jms.as.maxRetryCount={{ include "numericSafe" .maxRetryCount | default 3 }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- with .Values.messaging.tcpip }}
+    # Tcpip resource adapter configuration
+    {{- if .resourceAdapter }}
+    rar.tcpip.jms.location= {{ .resourceAdapter.location | default "/rar/tcpip-jms-rar.rar" }}
+    rar.tcpip.jms.hostname= {{ .resourceAdapter.hostname  | default "localhost" }}
+    rar.tcpip.jms.port= {{ include "numericSafe" .resourceAdapter.port | default "9027" }}
+    {{- else }}
+    rar.tcpip.jms.location= "/rar/tcpip-jms-rar.rar"
+    rar.tcpip.jms.hostname= "localhost"
+    rar.tcpip.jms.port= 9027
+    {{- end }}
+    {{- with .adminObjects }}
+    {{- with .ISTSenderQ }}
+    # Tcpip ISTSenderQ admin object configuration
+    tcpip.ist.ao.istSenderQ.hostname={{ .hostname | default "localhost" }}
+    tcpip.ist.ao.istSenderQ.port={{ include "numericSafe" .port | default "9027" }}
+    {{- end }}
+    {{- end }}
+    {{- with .connectionFactories }}
+    {{- with .ISTQCF}}
+    {{- with .connectionManagerConfig }}
+    # Tcpip IST connection manager configuration
+    tcpip.ist.cm.connectionTimeout= {{ include "numericSafe" .connectionTimeout | default "0" }}
+    tcpip.ist.cm.maxIdleTime= {{ .maxIdleTime | default "30m" }}
+    tcpip.ist.cm.minPoolSize= {{ include "numericSafe" .minPoolSize | default "0" }}
+    tcpip.ist.cm.maxPoolSize= {{ include "numericSafe" .maxPoolSize | default "2" }}
+    tcpip.ist.cm.purgePolicy= {{ .purgePolicy | default "EntirePool" }}
+    tcpip.ist.cm.agedTimeout= {{ include "numericSafe" .agedTimeout | default "-1"}}
+    tcpip.ist.cm.reapTime= {{ .reapTime | default "3m" }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- with .Values.messaging.db }}
+    {{- if .enabled }}
+    # DB-JMS for internal queues configuration
+    internal.queue.option.name=db
+    db.jms.partitionsPerQueue= {{ include "numericSafe" .partitionsPerQueue | default "10" }}
+    db.jms.pollInterval= {{ include "numericSafe" .pollInterval | default "50" }}
+    {{- with .redelivery }}
+    {{- if .infinite }}
+    db.jms.maxRetryCount=2147000000
+    {{- else }}
+    db.jms.maxRetryCount= {{ include "numericSafe" .maxRetryCount | default "3" }}
+    {{- end }}
+    {{- if .incremental }}
+    db.jms.redeliveryRetryCountList= {{ .retryCounts | default "2,1,1,1,5" }}
+    db.jms.redeliveryRetryDelayList= {{ .retryDelays | default "200,5000,15000,60000,300000" }}
+    {{- end }}
+    {{- end }}
+    {{- with .control }}
+    db.jms.controlState.checkPeriod= {{ include "numericSafe" .checkPeriod | default "500" }}
+    db.jms.controlState.inactiveTimeout= {{ include "numericSafe" .inactiveTimeout | default "2000" }}
+    db.jms.controlState.aliveUpdatePeriod= {{ include "numericSafe" .aliveUpdatePeriod | default "200" }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- if .Values.serverConfig.monitoring.metrics.enabled }}
+    metrics.option.name=2.0
+    {{- else }}
+    metrics.option.name=off
+    {{- end }}
+    # URL's filters for security (used by OpenidConnectClient's and OpenIdLoginModule when openId is enabled or PersonRegistryLoginModule when it is not)
+    restApiUrl.pathFilter={{ .Values.security.urlPathFilters.opf | default "opfrest" }}
+    {{- if .Values.security.urlPathFilters.metrics }}
+    metrics.pathFilter={{ .Values.security.urlPathFilters.metrics | default "opfrest/metrics" }}
+    {{- end }}
+    {{- if .Values.security.urlPathFilters.infraOps }}
+    infraOps.pathFilter={{ .Values.security.urlPathFilters.infraOps | default "/v1/reference-data-import-jobs|/v1/dewarehousing-jobs|/v1/account-posting-jobs|/v1/data-information-contents" }}
+    {{- end }}
+    {{- if .Values.security.urlPathFilters.opfIdp2 }}
+    openid.idp2.pathFilter={{ .Values.security.urlPathFilters.opfIdp2 }}
+    {{- end }}
+    {{- if .Values.security.openid.enabled }}
+    # OpenId SSO configuration
+    security.option.name=openidsso
+    openid.restApiFilter.matchType={{ .Values.security.openid.opf.authFilterMatchType | default "contains" }}
+    openid.token.endpoint.url={{ required ".Values.security.openid.idpConfig.tokenEndpointUrl  is required." .Values.security.openid.idpConfig.tokenEndpointUrl }}
+    openid.opf.inbound.propagation.option={{ required ".Values.security.openid.idpConfig.inboundPropagation  is required." .Values.security.openid.idpConfig.inboundPropagation }}
+    openid.jwk.endpoint.url={{ required ".Values.security.openid.idpConfig.jwkEndpointUrl is required." .Values.security.openid.idpConfig.jwkEndpointUrl }}
+    openid.authorization.endpoint.redirect.url={{ required ".Values.security.openid.idpConfig.authorizationEndpointRedirectUrl is required." .Values.security.openid.idpConfig.authorizationEndpointRedirectUrl }}
+    openid.issuer.identifier={{ required ".Values.security.openid.idpConfig.issuerIdentifier is required." .Values.security.openid.idpConfig.issuerIdentifier }}
+    openid.realm.identifier={{ .Values.security.openid.idpConfig.realmIdentifier | default "iss" }}
+    openid.signature.algorithm={{ .Values.security.openid.idpConfig.signatureAlgorithm  | default "RS256" }}
+    openid.user.identifier={{ .Values.security.openid.idpConfig.userIdentifier | default "preferred_username" }}
+    openid.redirect.junction.path={{ .Values.security.openid.idpConfig.redirectJunctionPath | default "" }}
+    openid.token.endpoint.auth.method={{.Values.security.openid.idpConfig.tokenEndpointAuthMethod | default "post" }}
+    openid.accept.propagated.token={{ include "booleanSafe" .Values.security.openid.idpConfig.propagatedTokenEnabled | default "true" }}
+    openid.opf.audiences={{ required ".Values.security.openid.idpConfig.clientCredentialsAudiences  is required." .Values.security.openid.idpConfig.clientCredentialsAudiences }}
+    openid.scope={{ .Values.security.openid.idpConfig.scope | default "openid profile" }}
+    openid.https.required={{ include "booleanSafe" .Values.security.openid.idpConfig.httpsRequired | default "true"}}
+    {{- if .Values.security.openid.identityConfig }}
+    {{- with .Values.security.openid.identityConfig }}
+    {{- if .identityClaim }}
+    openid.identity.claim={{ .identityClaim }}
+    {{- else if .authorisationsClaim }}
+    openid.identity.claim=Authorisations
+    {{- end }}
+    {{- if .paths.bankGroupPath }}
+    openid.identity.bankGroupPath={{ .paths.bankGroupPath }}
+    {{- else if .authorisationsClaim }}
+    openid.identity.bankGroupPath={{ .authorisationsClaim.defaultBankGroup }}
+    {{- end }}
+    openid.identity.userGroupPath={{ .paths.userGroupPath }}
+    {{- if .paths.bankPath }}
+    openid.identity.bankPath={{ .paths.bankPath }}
+    {{- else if .authorisationsClaim }}
+    openid.identity.bankPath=$.applications[*].{{ .authorisationsClaim.application }}.coreBankIdentifier{{ if .authorisationsClaim.defaultBank }}?:{{ .authorisationsClaim.defaultBank }}{{ end }}
+    {{- end }}
+    {{- if .paths.bankingEntityPath }}
+    openid.identity.bankingEntityPath={{ .paths.bankingEntityPath }}
+    {{- else if .authorisationsClaim }}
+    openid.identity.bankingEntityPath=$.applications[*].{{ .authorisationsClaim.application }}.coreBankUnitIdentifier
+    {{- end }}
+    openid.identity.bankUserIdPath={{ .paths.bankUserIdPath }}
+    openid.identity.bankUserNamePath={{ .paths.bankUserNamePath }}
+    {{- if .paths.rolesPath }}
+    openid.identity.rolesPath={{ .paths.rolesPath }}
+    {{- else if .authorisationsClaim }}
+    openid.identity.rolesPath=$.applications[*].{{ .authorisationsClaim.application }}.roles.*
+    {{- end }}
+    openid.identity.bankRolesPath={{ .paths.bankRolesPath }}
+    openid.identity.bankingEntityRolesPath={{ .paths.bankingEntityRolesPath }}
+    {{- end }}
+    {{- end }}
+    # OpenId SSO configuration for 2nd provider
+    {{- if .Values.security.openid.opfIdp2 }}
+    openid.idp2.matchType={{ .Values.security.openid.opfIdp2.authFilterMatchType }}
+    {{- end }}
+    {{- if .Values.security.openid.idpConfigIdp2 }}
+    openid.idp2.token.endpoint.url={{ required ".Values.security.openid.idpConfigIdp2.tokenEndpointUrl  is required." .Values.security.openid.idpConfigIdp2.tokenEndpointUrl }}
+    openid.idp2.opf.inbound.propagation.option={{ required "Values.security.openid.idpConfigIdp2.inboundPropagation is required." .Values.security.openid.idpConfigIdp2.inboundPropagation }}
+    openid.idp2.jwk.endpoint.url={{ required ".Values.security.openid.idpConfigIdp2.jwkEndpointUrl is required." .Values.security.openid.idpConfigIdp2.jwkEndpointUrl }}
+    openid.idp2.authorization.endpoint.redirect.url={{ required ".Values.security.openid.idpConfigIdp2.authorizationEndpointRedirectUrl is required." .Values.security.openid.idpConfigIdp2.authorizationEndpointRedirectUrl }}
+    openid.idp2.issuer.identifier={{ required ".Values.security.openid.idpConfigIdp2.issuerIdentifier is required." .Values.security.openid.idpConfigIdp2.issuerIdentifier }}
+    openid.idp2.realm.identifier={{ .Values.security.openid.idpConfigIdp2.realmIdentifier | default "iss" }}
+    openid.idp2.signature.algorithm={{ .Values.security.openid.idpConfigIdp2.signatureAlgorithm  | default "RS256" }}
+    openid.idp2.user.identifier={{ .Values.security.openid.idpConfigIdp2.userIdentifier | default "preferred_username" }}
+    openid.idp2.redirect.junction.path={{ .Values.security.openid.idpConfigIdp2.redirectJunctionPath | default "" }}
+    openid.idp2.token.endpoint.auth.method={{.Values.security.openid.idpConfigIdp2.tokenEndpointAuthMethod | default "post" }}
+    openid.idp2.accept.propagated.token={{ .Values.security.openid.idpConfigIdp2.propagatedTokenEnabled  | default "true"  }}
+    openid.idp2.audiences={{ required ".Values.security.openid.idpConfigIdp2.clientCredentialsAudiences is required." .Values.security.openid.idpConfigIdp2.clientCredentialsAudiences }}
+    openid.idp2.scope={{ .Values.security.openid.idpConfigIdp2.scope | default "openid profile" }}
+    openid.idp2.https.required={{ include "booleanSafe" .Values.security.openid.idpConfigIdp2.httpsRequired | default "true"}}
+    {{- end }}
+    {{- if .Values.security.openid.identityConfigIdp2 }}
+    {{- with .Values.security.openid.identityConfigIdp2 }}
+    {{- if .identityClaim }}
+    openid.idp2.identity.claim={{ .identityClaim }}
+    {{- else if .authorisationsClaim }}
+    openid.idp2.identity.claim=Authorisations
+    {{- end }}
+    {{- if .paths.bankGroupPath }}
+    openid.idp2.identity.bankGroupPath={{ .paths.bankGroupPath }}
+    {{- else if .authorisationsClaim }}
+    openid.idp2.identity.bankGroupPath={{ .authorisationsClaim.defaultBankGroup }}
+    {{- end }}
+    openid.idp2.identity.userGroupPath={{ .paths.userGroupPath }}
+    {{- if .paths.bankPath }}
+    openid.idp2.identity.bankPath={{ .paths.bankPath }}
+    {{- else if .authorisationsClaim }}
+    openid.idp2.identity.bankPath=$.applications[*].{{ .authorisationsClaim.application }}.coreBankIdentifier{{ if .authorisationsClaim.defaultBank }}?:{{ .authorisationsClaim.defaultBank }}{{ end }}
+    {{- end }}
+    {{- if .paths.bankingEntityPath }}
+    openid.idp2.identity.bankingEntityPath={{ .paths.bankingEntityPath }}
+    {{- else if .authorisationsClaim }}
+    openid.idp2.identity.bankingEntityPath=$.applications[*].{{ .authorisationsClaim.application }}.coreBankUnitIdentifier
+    {{- end }}
+    openid.idp2.identity.bankUserIdPath={{ .paths.bankUserIdPath }}
+    openid.idp2.identity.bankUserNamePath={{ .paths.bankUserNamePath }}
+    {{- if .paths.rolesPath }}
+    openid.idp2.identity.rolesPath={{ .paths.rolesPath }}
+    {{- else if .authorisationsClaim }}
+    openid.idp2.identity.rolesPath=$.applications[*].{{ .authorisationsClaim.application }}.roles.*
+    {{- end }}
+    openid.idp2.identity.bankRolesPath={{ .paths.bankRolesPath }}
+    openid.idp2.identity.bankingEntityRolesPath={{ .paths.bankingEntityRolesPath }}
+    {{- end }}
+    {{- end }}
+    {{- else }}
+    security.option.name=opfnative
+    {{- end }}
+    {{- with .Values.serverConfig }}
+    #Session, authentication and auth cache configuration
+    httpSession.invalidation.timeout={{ .httpSession.timeout | default "30m"}}
+    authentication.ltpa.expiration={{ include "numericSafe" .authentication.ltpa.timeout | default "120"}}
+    authentication.cache.timeout={{ .authentication.authCache.timeout | default "65m" }}
+    authentication.cache.initSize={{ include "numericSafe" .authentication.authCache.initSize | default "50" }}
+    authentication.cache.maxSize={{ include "numericSafe" .authentication.authCache.maxSize | default "25000" }}
+    {{- end}}
+    # Additional bootstrap properties
+    default.https.port={{ include "numericSafe" .Values.deployment.containerHttpsPort | default 9443 }}
+    {{- if .Values.serverConfig.test }}
+    configuration.option.name={{ .Values.serverConfig.test.configurationName | default "common" }}
+    {{- end }}
+    {{- range .Values.bootstrapProperties }}
+    {{- if .description }}
+    # {{ .description }}
+    {{- end }}
+    {{ .name }}={{ .value }}
+    {{- end }}
+    # TLS configuration
+    ssl.keystore.location={{ required ".Values.security.tls.serverKeystore.location is required." .Values.security.tls.serverKeystore.location }}
+    ssl.keystore.type={{ .Values.security.tls.serverKeystore.type | default "jks" }}
+    ssl.truststore.location={{ required ".Values.security.tls.serverTruststore.location is required." .Values.security.tls.serverTruststore.location }}
+    ssl.truststore.type={{ .Values.security.tls.serverTruststore.type | default "jks" }}
+    mq.qcf.ssl.keystore.location={{ .Values.security.tls.mqQCFKeystore.location | default .Values.security.tls.serverKeystore.location }}
+    mq.qcf.ssl.keystore.type={{ .Values.security.tls.mqQCFKeystore.type | default "jks" }}
+    mq.qcf.ssl.truststore.location={{ .Values.security.tls.mqQCFTruststore.location | default .Values.security.tls.serverTruststore.location }}
+    mq.qcf.ssl.truststore.type={{ .Values.security.tls.mqQCFTruststore.type | default "jks" }}
+    mq.swiftsaaqcf.ssl.keystore.location={{ .Values.security.tls.mqSWIFTSAAQCFKeystore.location | default .Values.security.tls.serverKeystore.location  }}
+    mq.swiftsaaqcf.ssl.keystore.type={{ .Values.security.tls.mqSWIFTSAAQCFKeystore.type | default "jks" }}
+    mq.swiftsaaqcf.ssl.truststore.location={{ .Values.security.tls.mqSWIFTSAAQCFTruststore.location | default .Values.security.tls.serverTruststore.location }}
+    mq.swiftsaaqcf.ssl.truststore.type={{ .Values.security.tls.mqSWIFTSAAQCFTruststore.type | default "jks" }}
+    mq.otherqcf.ssl.keystore.location={{ .Values.security.tls.mqOTHERQCFKeystore.location | default .Values.security.tls.serverKeystore.location  }}
+    mq.otherqcf.ssl.keystore.type={{ .Values.security.tls.mqOTHERQCFKeystore.type | default "jks" }}
+    mq.otherqcf.ssl.truststore.location={{ .Values.security.tls.mqOTHERQCFTruststore.location | default .Values.security.tls.serverTruststore.location }}
+    mq.otherqcf.ssl.truststore.type={{ .Values.security.tls.mqOTHERQCFTruststore.type | default "jks" }}
+    mq.myqcf.ssl.keystore.location={{ .Values.security.tls.mqMYQCFKeystore.location  | default .Values.security.tls.serverKeystore.location }}
+    mq.myqcf.ssl.keystore.type={{ .Values.security.tls.mqMYQCFKeystore.type | default "jks" }}
+    mq.myqcf.ssl.truststore.location={{ .Values.security.tls.mqMYQCFTruststore.location | default .Values.security.tls.serverTruststore.location }}
+    mq.myqcf.ssl.truststore.type={{ .Values.security.tls.mqMYQCFTruststore.type | default "jks" }}
+    # Concurrency configuration
+    {{- with .Values.serverConfig.concurrencyPolicy }}
+    concurrency.policy.max={{ include "numericSafe" .maxConcurrentTasks | default 10 }}
+    concurrency.policy.maxQueueSize={{ include "numericSafe" .maxQueueSize | default 50 }}
+    {{- end}}
+    # JTA configuration
+    {{- with .Values.serverConfig.transactions }}
+    jta.OnePCOptimization={{ include "booleanSafe" .OnePCOptimization | default "true" }}
+    jta.defaultMaxShutdownDelay={{ .defaultMaxShutdownDelay | default "2s" }}
+    jta.enableLogRetries={{ include "booleanSafe" .enableLogRetries | default "false" }}
+    jta.logRetryInterval={{ .logRetryInterval | default "10" }}
+    jta.logRetryLimit={{ .logRetryLimit | default "180" }}
+    jta.recoverOnStartup={{ include "booleanSafe" .recoverOnStartup | default "false" }}
+    jta.shutdownOnLogFailure={{ include "booleanSafe" .shutdownOnLogFailure | default "true" }}
+    jta.waitForRecovery={{ include "booleanSafe" .waitForRecovery | default "false" }}
+    jta.clientInactivityTimeout={{ .timeouts.clientInactivity | default "12m" }}
+    jta.totalTranLifetimeTimeout={{ .timeouts.totalTranLifetime | default "15m" }}
+    jta.acceptHeuristicHazard={{ include "booleanSafe" .heuristics.acceptHeuristicHazard | default "true" }}
+    jta.enableLoggingForHeuristicReporting={{ include "booleanSafe" .heuristics.enableLoggingForHeuristicReporting | default "false" }}
+    jta.heuristicRetryInterval={{ .heuristics.heuristicRetryInterval | default "60s" }}
+    jta.heuristicRetryLimit={{ .heuristics.heuristicRetryLimit | default "0" }}
+    jta.heuristicRetryWait={{ .heuristics.heuristicRetryWait | default "60s" }}
+    jta.lpsHeuristicCompletion={{ .heuristics.lpsHeuristicCompletion | default "ROLLBACK" }}
+    jta.leaseCheckInterval={{ .lease.leaseCheckInterval | default "60s" }}
+    jta.leaseLength={{ .lease.leaseLength | default "60s" }}
+    jta.leaseRenewalThreshold={{ .lease.leaseRenewalThreshold | default "90" }}
+    {{- end }}
+    # Secrets inclusion and additional includes
+    bootstrap.include= ./secrets/bootstrap.secret.extension.properties
+    {{- with .Values.extension -}}
+    {{- range $k, $v := .additionalSecrets -}}
+    ,./secrets/bootstrap.{{ $v }}.extension.properties
+    {{- end -}}
+    {{- end -}}
+    {{- with .Values.extension -}}
+    {{- if .additionalBootstrapConfigMaps -}}
+    ,
+    {{- end -}}
+    {{- range $k, $v := .additionalBootstrapConfigMaps -}}
+    {{- join "," (printf "%s.%s" $v "properties") -}}
+    {{- end -}}
+    {{- end -}}

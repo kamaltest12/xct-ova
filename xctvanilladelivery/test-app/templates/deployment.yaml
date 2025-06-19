@@ -1,0 +1,197 @@
+# Application server deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "test-app.fullname" . }}-deployment
+  labels:
+    app.kubernetes.io/name: {{ include "test-app.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "test-app.chart" $ }}
+    {{- with .Values.deployment.labels }}
+    {{ toYaml . | nindent 4 | trim -}}
+    {{- end }}
+spec:
+  replicas: {{ include "numericSafe" .Values.deployment.replicasCount | default 1 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "test-app.name" . }}
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "test-app.name" . }}
+        app.kubernetes.io/instance: {{ $.Release.Name }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+        app.kubernetes.io/version: {{ .Chart.AppVersion }}
+        helm.sh/chart: {{ include "test-app.chart" $ }}
+        {{- with .Values.deployment.labels }}
+        {{ toYaml . | nindent 8 | trim -}}
+        {{- end }}
+      annotations:
+        rollingUpgrade: {{ randAlphaNum 5 | quote }}
+        {{- with .Values.deployment.podAnnotations }}
+        {{ toYaml . | nindent 8 | trim -}}
+        {{- end }}
+        {{- with .Values.deployment.podAnnotations }}
+        {{ toYaml . | nindent 8 | trim -}}
+        {{- end }}
+    spec:
+      containers:
+        - name: test-app
+          image: {{ if .Values.deployment.image.repository }}{{ .Values.deployment.image.repository }}/{{ end }}{{ .Values.deployment.image.name }}:{{ .Values.deployment.image.tag }}
+          imagePullPolicy: {{ .Values.deployment.image.pullPolicy | default "IfNotPresent" }}
+          command: ["/bin/bash"]
+          args: ["-c", "sudo /usr/sbin/sshd && /scripts/start/start.sh {{ if .Values.serverConfig.remoteDebug.enabled }}debug{{ else }}run{{ end }} testServer"]
+          ports:
+            - name: http
+              containerPort: 9080
+            - name: https
+              containerPort: 9443
+            - name: ssh
+              containerPort: 22
+            {{- if .Values.serverConfig.remoteDebug.enabled }}
+            - name: debug
+              containerPort: 7777
+            {{- end }}
+          env:
+          {{- range $k, $v := .Values.environmentVariables }}
+          {{- if $v }}
+          - name: {{ $k }}
+            value: {{ quote $v }}
+          {{- end }}
+          {{- end }}
+          volumeMounts:
+            {{- if .Values.security.k8sSecrets.enabled }}
+            - mountPath: {{ required ".Values.security.tls.mountPath is required." .Values.security.tls.mountPath }}
+              name: opf-tls-secrets
+              readOnly: true
+            {{- end }}
+            - mountPath: /config/bootstrap.extension.properties
+              name: opf-config-server-bootstrap-volume
+              subPath: bootstrap.extension.properties
+            {{- with .Values.extension }}
+            {{- range $k, $v := .additionalBootstrapConfigMaps }}
+            - mountPath: /config/{{ $v }}.properties
+              name: {{ $v  }}
+              subPath: bootstrap.extension.properties
+            {{- end }}
+            {{- end }}
+            {{- if .Values.security.k8sSecrets.enabled }}
+            - mountPath: /config/secrets/bootstrap.secret.extension.properties
+              name: opf-secrets
+              subPath: opf-secrets
+              readOnly: true
+            {{- with .Values.extension }}
+            {{- range $k, $v := .additionalSecrets }}
+            - mountPath: /config/secrets/bootstrap.{{ $v }}.extension.properties
+              name: {{ $v }}
+              subPath: opf-secrets
+              readOnly: true
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            - mountPath: /config/jvm.options
+              name: test-app-config-jvm-options-volume
+              subPath: jvm.options
+            {{- with .Values.extension }}
+            {{- if .additionalJvmConfigMap }}
+            - mountPath: /config/configDropins/overrides/jvm.options
+              name: test-app-config-additional-jvm-options-volume
+              subPath: jvm.options
+            {{- end }}
+            {{- end }}
+          {{- if .Values.deployment.resources.enabled }}
+          resources:
+            requests:
+              memory: {{ required ".Values.deployment.resources.memory.request is required." .Values.deployment.resources.memory.request | quote }}
+              cpu: {{ required ".Values.deployment.resources.cpu.request is required." .Values.deployment.resources.cpu.request | quote }}
+            limits:
+              memory: {{ required ".Values.deployment.resources.memory.limit is required." .Values.deployment.resources.memory.limit | quote }}
+              cpu: {{ required ".Values.deployment.resources.cpu.limit is required." .Values.deployment.resources.cpu.limit | quote }}
+          {{- end }}
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "echo 'Waiting before sending TERM signal' && sleep {{ include "numericSafe" .Values.deployment.lifecycle.preTerminationPeriodSeconds | default 5 }} && echo 'Sent TERM signal'"]
+          {{- if .Values.deployment.probes.liveness.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ required ".Values.deployment.probes.liveness.httpGet.path is required." .Values.deployment.probes.liveness.httpGet.path | quote }}
+              port: {{ required ".Values.deployment.probes.liveness.httpGet.port is required." .Values.deployment.probes.liveness.httpGet.port }}
+              scheme: {{ .Values.deployment.probes.liveness.httpGet.scheme | default "HTTPS" | quote }}
+            initialDelaySeconds: {{ include "numericSafe" .Values.deployment.probes.liveness.initialDelaySeconds | default 0 }}
+            periodSeconds: {{ include "numericSafe" .Values.deployment.probes.liveness.periodSeconds | default 10 }}
+            timeoutSeconds: {{ include "numericSafe" .Values.deployment.probes.liveness.timeoutSeconds | default 1 }}
+            successThreshold: {{ include "numericSafe" .Values.deployment.probes.liveness.successThreshold | default 1 }}
+            failureThreshold: {{ include "numericSafe" .Values.deployment.probes.liveness.failureThreshold | default 3 }}
+          {{- end }}
+          {{- if .Values.deployment.probes.readiness.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ required ".Values.deployment.probes.readiness.httpGet.path is required." .Values.deployment.probes.readiness.httpGet.path | quote }}
+              port: {{ required ".Values.deployment.probes.readiness.httpGet.port is required." .Values.deployment.probes.readiness.httpGet.port }}
+              scheme: {{ .Values.deployment.probes.readiness.httpGet.scheme | default "HTTPS" | quote }}
+            initialDelaySeconds: {{ include "numericSafe" .Values.deployment.probes.readiness.initialDelaySeconds | default 0 }}
+            periodSeconds: {{ include "numericSafe" .Values.deployment.probes.readiness.periodSeconds | default 10 }}
+            timeoutSeconds: {{ include "numericSafe" .Values.deployment.probes.readiness.timeoutSeconds | default 1 }}
+            successThreshold: {{ include "numericSafe" .Values.deployment.probes.readiness.successThreshold | default 1 }}
+            failureThreshold: {{ include "numericSafe" .Values.deployment.probes.readiness.failureThreshold | default 3 }}
+          {{- end }}
+          {{- if .Values.deployment.probes.startup.enabled }}
+          startupProbe:
+            httpGet:
+              path: {{ required ".Values.deployment.probes.startup.httpGet.path is required." .Values.deployment.probes.startup.httpGet.path | quote }}
+              port: {{ required ".Values.deployment.probes.startup.httpGet.port is required." .Values.deployment.probes.startup.httpGet.port }}
+              scheme: {{ .Values.deployment.probes.startup.httpGet.scheme | default "HTTPS" | quote }}
+            initialDelaySeconds: {{ include "numericSafe" .Values.deployment.probes.startup.initialDelaySeconds | default 0 }}
+            periodSeconds: {{ include "numericSafe" .Values.deployment.probes.startup.periodSeconds | default 10 }}
+            timeoutSeconds: {{ include "numericSafe" .Values.deployment.probes.startup.timeoutSeconds | default 1 }}
+            successThreshold: {{ include "numericSafe" .Values.deployment.probes.startup.successThreshold | default 1 }}
+            failureThreshold: {{ include "numericSafe" .Values.deployment.probes.startup.failureThreshold | default 3 }}
+          {{- end }}
+      terminationGracePeriodSeconds: {{ include "numericSafe" .Values.deployment.lifecycle.terminationGracePeriodSeconds | default 60 }}
+      serviceAccountName: {{ .Values.deployment.serviceAccountName | default "default" }}
+      volumes:
+        {{- if .Values.security.k8sSecrets.enabled }}
+        - name: opf-tls-secrets
+          secret:
+            secretName: {{ required ".Values.security.tls.secretName is required." .Values.security.tls.secretName }}
+            {{- with .Values.security.tls.itemsProjection }}
+            items:
+            {{- toYaml  . | nindent 12 }}
+            {{- end }}
+        {{- end }}
+        - name: opf-config-server-bootstrap-volume
+          configMap:
+            name: {{ .Values.deployment.opfBootstrapConfigMap | default "opf-bootstrap-config" }}
+        {{- with .Values.extension }}
+        {{- range $k, $v := .additionalBootstrapConfigMaps }}
+        - name : {{ $v }}
+          configMap:
+            name: {{ $v }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.security.k8sSecrets.enabled }}
+        - name: opf-secrets
+          secret:
+            secretName: {{ required ".Values.security.k8sSecrets.opfSecretName is required." .Values.security.k8sSecrets.opfSecretName }}
+        {{- with .Values.extension }}
+        {{- range $k, $v := .additionalSecrets }}
+        - name: {{ $v }}
+          secret:
+            secretName: {{ $v }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+        - name: test-app-config-jvm-options-volume
+          configMap:
+            name: {{ include "test-app.fullname" . }}-jvm-config
+        {{- with .Values.extension }}
+        {{- if .additionalJvmConfigMap }}
+        - name: opf-config-additional-jvm-options-volume
+          configMap:
+            name: {{ .additionalJvmConfigMap }}
+        {{- end }}
+        {{- end }}

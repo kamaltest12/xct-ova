@@ -1,0 +1,72 @@
+# Specific values for running OPF in dev
+deployment:
+  image:
+    name: "xct-docker.coastguard.clear2pay.com/test/xct-testapp"
+    tag: "17.2.7-70880-eed75aac"
+    pullPolicy: IfNotPresent
+  labels:
+    env: 'dev'
+  resources:
+    enabled: false
+  ingress:
+    enabled: false
+  probes:
+    liveness:
+      enabled: false
+    readiness:
+      enabled: false
+    startup:
+      enabled: false 
+  opfBootstrapConfigMap: xct-bootstrap-config
+  service:
+    clusterIP:
+      https: 9443
+      http: 8080
+      ssh: 9122
+serverConfig:
+  remoteDebug:
+    enabled: true
+security:
+  k8sSecrets:
+    opfSecretName: opf-dev-chart-secrets
+  tls:
+    secretName: opf-dev-chart-tls-secrets
+    mountPath: "/tmp/jks"
+    itemsProjection:
+      - key: opf-server-keystore.jks
+        path: opf-server/opf-server-keystore.jks
+      - key: opf-server-truststore.jks
+        path: opf-server/opf-server-truststore.jks
+      - key: kafka.server.keystore.jks
+        path: kafka/broker/kafka.server.keystore.jks
+      - key: kafka.server.truststore.jks
+        path: kafka/broker/kafka.server.truststore.jks
+      - key: kafka.client.keystore.jks
+        path: kafka/client/kafka.client.keystore.jks
+      - key: kafka.client.truststore.jks
+        path: kafka/client/kafka.client.truststore.jks
+      - key: ist.client.truststore.jks
+        path: ist/client/ist.client.truststore.jks
+      - key: ist.client.keystore.jks
+        path: ist/client/ist.client.keystore.jks
+      - key: saa.keystore.jceks
+        path: swift/saa.keystore.jceks
+    serverKeystore:
+      type: jks
+      location: "/tmp/jks/opf-server/opf-server-keystore.jks"
+    serverTruststore:
+      type: jks
+      location: "/tmp/jks/opf-server/opf-server-truststore.jks"
+httpBridge:
+  url: "https://xct-service:9443/xctrest/jmx"
+  user: "bva1"
+  password: "password"
+  authmode: "openid"
+  openidTokenEndpointUrl: "https://keycloak:8543/auth/realms/xctsso/protocol/openid-connect/token"
+  clientId: "test-client"
+  secret: "8a5300d5-a39a-4cd2-80ab-4ac1be73cb05"
+extension:
+  additionalSecrets:
+    secrets.xct.extension: xct-secrets
+  additionalBootstrapConfigMaps:
+    xct-bootstrap-configmap: xct-bootstrap-configmap

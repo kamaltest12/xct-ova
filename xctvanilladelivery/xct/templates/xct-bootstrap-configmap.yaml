@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "xct.fullname" . }}-bootstrap-configmap
+  labels:
+    app.kubernetes.io/name: {{ include "xct.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "xct.chart" $ }}
+    {{- with .Values.deployment.labels }}
+    {{ toYaml . | nindent 4 | trim -}}
+    {{- end }}
+data:
+  bootstrap.extension.properties: |-
+    internal.queue.option.white.name=mq
+    # DB-JMS for internal white queues configuration, EPC-89659
+    {{- with .Values.messaging.db }}
+    {{- with .white }}
+    {{- if .enabled }}
+    internal.queue.option.white.name=db
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    
+    internal.queue.option.fromswift.name={{ .Values.messaging.fromswift.optionName | default "mq" }}
+    # Interact queue connection factory configuration
+    # passwords configured in xct-secrets.yaml
+    mq.fromswiftqcf.hostName={{ .Values.messaging.mq.connectionFactories.FromSWIFTQCF.hostname | default .Values.messaging.mq.cfDefaultValues.hostname | required ".Values.messaging.mq.cfDefaultValues.hostname is required" }}
+    mq.fromswiftqcf.port={{ .Values.messaging.mq.connectionFactories.FromSWIFTQCF.port | default .Values.messaging.mq.cfDefaultValues.port }}
+    mq.fromswiftqcf.channel={{ .Values.messaging.mq.connectionFactories.FromSWIFTQCF.channel | default .Values.messaging.mq.cfDefaultValues.channel }}
+    mq.fromswiftqcf.queueManager={{ .Values.messaging.mq.connectionFactories.FromSWIFTQCF.queueManager | default .Values.messaging.mq.cfDefaultValues.queueManager }}
+    mq.fromswiftqcf.cm.connectionTimeout={{ .Values.messaging.mq.connectionFactories.FromSWIFTQCF.connectionManagerConfig.connectionTimeout | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.connectionTimeout }}
+    mq.fromswiftqcf.cm.maxIdleTime={{ .Values.messaging.mq.connectionFactories.FromSWIFTQCF.connectionManagerConfig.maxIdleTime | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.maxIdleTime }}
+    mq.fromswiftqcf.cm.minPoolSize={{ .Values.messaging.mq.connectionFactories.FromSWIFTQCF.connectionManagerConfig.minPoolSize | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.minPoolSize }}
+    mq.fromswiftqcf.cm.maxPoolSize={{ .Values.messaging.mq.connectionFactories.FromSWIFTQCF.connectionManagerConfig.maxPoolSize | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.maxPoolSize }}
+    mq.fromswiftqcf.cm.purgePolicy={{ .Values.messaging.mq.connectionFactories.FromSWIFTQCF.connectionManagerConfig.purgePolicy | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.purgePolicy }}
+    mq.fromswiftqcf.cm.agedTimeout={{ .Values.messaging.mq.connectionFactories.FromSWIFTQCF.connectionManagerConfig.agedTimeout | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.agedTimeout }}
+    mq.fromswiftqcf.cm.reapTime={{ .Values.messaging.mq.connectionFactories.FromSWIFTQCF.connectionManagerConfig.reapTime | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.reapTime }}
+    mq.fromswiftqcf.ssl.cipher.suite={{ .Values.messaging.mq.connectionFactories.FromSWIFTQCF.sslCipherSuite | default .Values.messaging.mq.cfDefaultValues.sslCipherSuite }}
+    mq.fromswiftqcf.ssl.keystore.location={{ .Values.messaging.mq.connectionFactories.FromSWIFTQCF.keystoreLocation | default .Values.security.tls.serverKeystore.location }}
+    mq.fromswiftqcf.ssl.keystore.type={{ .Values.messaging.mq.connectionFactories.FromSWIFTQCF.keystoreType | default "jks" }}
+    mq.fromswiftqcf.ssl.truststore.location={{ .Values.messaging.mq.connectionFactories.FromSWIFTQCF.truststoreLocation | default .Values.security.tls.serverTruststore.location }}
+    mq.fromswiftqcf.ssl.truststore.type={{ .Values.messaging.mq.connectionFactories.FromSWIFTQCF.truststoreType | default "jks" }}
+
+    {{- if .Values.messaging.AMHIntegration.enabled }}
+    AMHIntegration=on
+    {{- else }}
+    AMHIntegration=off
+    {{- end }}
+    {{- if .Values.messaging.AMHIntegration.enabled }}
+    AMHIntegration=on
+    {{- else }}
+    AMHIntegration=off
+    {{- end }}
+    internal.queue.option.swiftsaa.name={{ .Values.messaging.swiftsaa.optionName | default "mq" }}
+    
+    internal.queue.option.receipt.name={{ .Values.messaging.receipt.optionName | default "mq" }}
+    # SWIFT receipt queue connection factory configuration
+    # passwords configured in xct-secrets.yaml
+    mq.receiptqcf.hostName={{ .Values.messaging.mq.connectionFactories.ReceiptQCF.hostname | default .Values.messaging.mq.cfDefaultValues.hostname | required ".Values.messaging.mq.cfDefaultValues.hostname is required" }}
+    mq.receiptqcf.port={{ .Values.messaging.mq.connectionFactories.ReceiptQCF.port | default .Values.messaging.mq.cfDefaultValues.port }}
+    mq.receiptqcf.channel={{ .Values.messaging.mq.connectionFactories.ReceiptQCF.channel | default .Values.messaging.mq.cfDefaultValues.channel }}
+    mq.receiptqcf.queueManager={{ .Values.messaging.mq.connectionFactories.ReceiptQCF.queueManager | default .Values.messaging.mq.cfDefaultValues.queueManager }}
+    mq.receiptqcf.cm.connectionTimeout={{ .Values.messaging.mq.connectionFactories.ReceiptQCF.connectionManagerConfig.connectionTimeout | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.connectionTimeout }}
+    mq.receiptqcf.cm.maxIdleTime={{ .Values.messaging.mq.connectionFactories.ReceiptQCF.connectionManagerConfig.maxIdleTime | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.maxIdleTime }}
+    mq.receiptqcf.cm.minPoolSize={{ .Values.messaging.mq.connectionFactories.ReceiptQCF.connectionManagerConfig.minPoolSize | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.minPoolSize }}
+    mq.receiptqcf.cm.maxPoolSize={{ .Values.messaging.mq.connectionFactories.ReceiptQCF.connectionManagerConfig.maxPoolSize | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.maxPoolSize }}
+    mq.receiptqcf.cm.purgePolicy={{ .Values.messaging.mq.connectionFactories.ReceiptQCF.connectionManagerConfig.purgePolicy | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.purgePolicy }}
+    mq.receiptqcf.cm.agedTimeout={{ .Values.messaging.mq.connectionFactories.ReceiptQCF.connectionManagerConfig.agedTimeout | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.agedTimeout }}
+    mq.receiptqcf.cm.reapTime={{ .Values.messaging.mq.connectionFactories.ReceiptQCF.connectionManagerConfig.reapTime | default .Values.messaging.mq.cfDefaultValues.connectionManagerConfig.reapTime }}
+    mq.receiptqcf.ssl.cipher.suite={{ .Values.messaging.mq.connectionFactories.ReceiptQCF.sslCipherSuite | default .Values.messaging.mq.cfDefaultValues.sslCipherSuite }}
+    mq.receiptqcf.ssl.keystore.location={{ .Values.messaging.mq.connectionFactories.ReceiptQCF.keystoreLocation | default .Values.security.tls.serverKeystore.location }}
+    mq.receiptqcf.ssl.keystore.type={{ .Values.messaging.mq.connectionFactories.ReceiptQCF.keystoreType | default "jks" }}
+    mq.receiptqcf.ssl.truststore.location={{ .Values.messaging.mq.connectionFactories.ReceiptQCF.truststoreLocation | default .Values.security.tls.serverTruststore.location }}
+    mq.receiptqcf.ssl.truststore.type={{ .Values.messaging.mq.connectionFactories.ReceiptQCF.truststoreType | default "jks" }}    

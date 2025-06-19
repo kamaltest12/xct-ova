@@ -1,0 +1,7 @@
+apiVersion: v2
+type: application
+name: opf-dev-chart
+description: Chart for deploying xct secrets and pesistent volumes for dev purpose
+version: 17.2.7-70880-eed75aac
+appVersion: "17.2.7-70880-eed75aac"
+

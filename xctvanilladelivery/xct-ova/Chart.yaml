@@ -1,0 +1,6 @@
+apiVersion: v2
+type: application
+name: xct-ova
+description: Helm chart for deploying XCT OVA
+version: 17.2.7-70880-eed75aac
+appVersion: "17.2.7-70880-eed75aac"

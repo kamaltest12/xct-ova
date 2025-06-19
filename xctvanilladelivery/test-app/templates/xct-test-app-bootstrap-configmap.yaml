@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "test-app.fullname" . }}-bootstrap-configmap
+  labels:
+    app.kubernetes.io/name: {{ include "test-app.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "test-app.chart" $ }}
+    {{- with .Values.deployment.labels }}
+    {{ toYaml . | nindent 4 | trim -}}
+    {{- end }}
+data:
+  bootstrap.extension.properties: |-
+    # DB-JMS for internal white queues configuration, EPC-89659
+    {{- with .Values.messaging.db }}
+    {{- if .enabled }}
+    interchange.upload.qcf.default=jms/MYQCF
+    {{- end }}
+    {{- end }}

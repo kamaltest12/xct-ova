@@ -1,0 +1,774 @@
+{
+  "$schema" : "https://json-schema.org/draft-07/schema#",
+  "$id" : "http://clear2pay.com/testapp/values.schema.json",
+  "title" : "TestApp kubernetes deployment schema for values.yaml",
+  "description" : "Schema describing the values.yaml for a TestApp kubernetes deployment.",
+  "type" : "object",
+  "definitions" : {
+    "probe" : {
+      "description" : "Single probe configuration.",
+      "type" : "object",
+      "properties" : {
+        "enabled" : {
+          "description" : "Should the probe be enabled. Default value is true.",
+          "type" : "boolean"
+        },
+        "httpGet" : {
+          "description" : "HTTP GET endpoint configuration.",
+          "type" : "object",
+          "properties" : {
+            "path" : {
+              "description" : "Path to access on the HTTP server.",
+              "type" : "string"
+            },
+            "port" : {
+              "description" : "Name or number of the port to access on the container. Number must be in the range 1 to 65535.",
+              "type" : "integer",
+              "exclusiveMinimum" : 0,
+              "maximum" : 65535
+            },
+            "scheme" : {
+              "description" : "Scheme to use for connecting to the host (HTTP or HTTPS). Default value is HTTPS.",
+              "type" : "string",
+              "enum" : [ "HTTP", "HTTPS" ]
+            }
+          },
+          "required" : [ "path", "port" ],
+          "additionalProperties" : false
+        },
+        "initialDelaySeconds" : {
+          "description" : "Number of seconds after the container has started before liveness or readiness probes are initiated. Defaults to 0 seconds.",
+          "type" : "integer",
+          "minimum" : 0
+        },
+        "periodSeconds" : {
+          "description" : "How often (in seconds) to perform the probe.",
+          "type" : "integer",
+          "minimum" : 1
+        },
+        "timeoutSeconds" : {
+          "description" : "Number of seconds after which the probe times out.",
+          "type" : "integer",
+          "minimum" : 1
+        },
+        "successThreshold" : {
+          "description" : "Minimum consecutive successes for the probe to be considered successful after having failed. Defaults to 1. Must be 1 for liveness and startup Probes.",
+          "type" : "integer",
+          "minimum" : 1
+        },
+        "failureThreshold" : {
+          "description" : "When a probe fails, Kubernetes will try failureThreshold times before giving up. Giving up in case of liveness probe means restarting the container. In case of readiness probe the Pod will be marked Unready.",
+          "type" : "integer",
+          "minimum" : 1
+        }
+      },
+      "anyOf" : [ {
+        "properties" : {
+          "enabled" : {
+            "const" : true
+          }
+        },
+        "required" : [ "httpGet" ]
+      }, {
+        "properties" : {
+          "enabled" : {
+            "const" : false
+          }
+        }
+      } ],
+      "additionalProperties" : false
+    }
+  },
+  "properties" : {
+    "global" : {
+      "description" : "Placeholder for global values when the chart is used as a sub-chart. If not there it fails to install.",
+      "type" : "object",
+      "additionalProperties" : false
+    },
+    "enabled" : {
+      "description" : "Should db chart be enabled as a sub-chart.",
+      "type" : "boolean"
+    },
+    "nameOverride" : {
+      "description" : "Name of the application. By default, it uses the name of the chart.",
+      "type" : "string"
+    },
+    "fullnameOverride" : {
+      "description" : "Fully qualified app name used for naming the kubernetes objects. By default, it uses the release name followed by te app name except if the release name already contains the app name.",
+      "type" : "string"
+    },
+    "deployment" : {
+      "description" : "Test app deployment configuration.",
+      "type" : "object",
+      "properties" : {
+        "image" : {
+          "description" : "Container image settings.",
+          "type" : "object",
+          "properties" : {
+            "repository" : {
+              "description" : "Repository to get the image from.",
+              "type" : "string"
+            },
+            "name" : {
+              "description" : "Name of container image.",
+              "type" : "string",
+              "minLength" : 3
+            },
+            "tag" : {
+              "description" : "Tag name of container image.",
+              "minLength" : 1
+            },
+            "pullPolicy" : {
+              "description" : "When to pull the image. Default value is Always.",
+              "type" : "string",
+              "enum" : [ "IfNotPresent", "Always", "Never" ]
+            }
+          },
+          "required" : [ "name", "tag" ],
+          "additionalProperties" : false
+        },
+        "labels" : {
+          "description" : "Additional labels to be added to the Kubernetes objects.",
+          "type" : "object"
+        },
+        "replicasCount" : {
+          "description" : "Number of desired replicas. Default value is 1.",
+          "type" : "integer",
+          "minimum" : 1
+        },
+        "resources" : {
+          "description" : "Kubernetes resources limits and requests.",
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "Should deployment resources be enabled. Default value is true.",
+              "type" : "boolean"
+            },
+            "memory" : {
+              "description" : "Memory limit and request values.",
+              "type" : "object",
+              "properties" : {
+                "request" : {
+                  "description" : "Memory request value. Default value is 3422M.",
+                  "type" : "string",
+                  "minlength" : 1
+                },
+                "limit" : {
+                  "description" : "Memory limit value. Default value is 3422M.",
+                  "type" : "string",
+                  "minlength" : 1
+                }
+              },
+              "additionalProperties" : false
+            },
+            "cpu" : {
+              "description" : "CPU limit and request values.",
+              "type" : "object",
+              "properties" : {
+                "request" : {
+                  "description" : "CPU request value. Default value is 2.0.",
+                  "type" : "string",
+                  "minlength" : 1
+                },
+                "limit" : {
+                  "description" : "CPU limit value. Default value is 4.0.",
+                  "type" : "string",
+                  "minlength" : 1
+                }
+              },
+              "additionalProperties" : false
+            }
+          },
+          "additionalProperties" : false
+        },
+        "lifecycle" : {
+          "description" : "Container lifecycle settings.",
+          "type" : "object",
+          "properties" : {
+            "preTerminationPeriodSeconds" : {
+              "description" : "Default value is 5.",
+              "type" : "integer",
+              "exclusiveMinimum" : 0,
+              "maximum" : 3600
+            },
+            "terminationGracePeriodSeconds" : {
+              "description" : "Default value is 60.",
+              "type" : "integer",
+              "exclusiveMinimum" : 0,
+              "maximum" : 3600
+            }
+          },
+          "additionalProperties" : false
+        },
+        "probes" : {
+          "description" : "Probes configuration.",
+          "type" : "object",
+          "properties" : {
+            "liveness" : {
+              "$ref" : "#/definitions/probe"
+            },
+            "readiness" : {
+              "$ref" : "#/definitions/probe"
+            },
+            "startup" : {
+              "$ref" : "#/definitions/probe"
+            }
+          },
+          "required" : [ "liveness", "readiness", "startup" ],
+          "additionalProperties" : false
+        },
+        "podAnnotations" : {
+          "description" : "Additional annotations to be added to the pods.",
+          "type" : "object"
+        },
+        "serviceAccountName" : {
+          "description" : "Name of the service account to be used. Default value is \"default\".",
+          "type" : "string"
+        },
+        "service" : {
+          "description" : "Configuration of the OPF Service.",
+          "type" : "object",
+          "properties" : {
+            "nodePort" : {
+              "type" : "object",
+              "properties" : {
+                "https" : {
+                  "description" : "Service https port. Default is 9443.",
+                  "type" : "integer",
+                  "exclusiveMinimum" : 0,
+                  "maximum" : 65535
+                },
+                "http" : {
+                  "description" : "Service http port. Default is 9080.",
+                  "type" : "integer",
+                  "exclusiveMinimum" : 0,
+                  "maximum" : 65535
+                },
+                "ssh" : {
+                  "description" : "Service ssh port. Default is 22.",
+                  "type" : "integer",
+                  "exclusiveMinimum" : 0,
+                  "maximum" : 65535
+                }
+              }
+            },
+            "clusterIP" : {
+              "type" : "object",
+              "properties" : {
+                "https" : {
+                  "description" : "Service https port. Default is 9443.",
+                  "type" : "integer",
+                  "exclusiveMinimum" : 0,
+                  "maximum" : 65535
+                },
+                "http" : {
+                  "description" : "Service http port. Default is 9080.",
+                  "type" : "integer",
+                  "exclusiveMinimum" : 0,
+                  "maximum" : 65535
+                },
+                "ssh" : {
+                  "description" : "Service ssh port. Default is 22.",
+                  "type" : "integer",
+                  "exclusiveMinimum" : 0,
+                  "maximum" : 65535
+                }
+              }
+            },
+            "loadBalancer" : {
+              "type" : "object",
+              "properties" : {
+                "https" : {
+                  "description" : "Service https port. Default is 9443.",
+                  "type" : "integer",
+                  "exclusiveMinimum" : 0,
+                  "maximum" : 65535
+                },
+                "http" : {
+                  "description" : "Service http port. Default is 9080.",
+                  "type" : "integer",
+                  "exclusiveMinimum" : 0,
+                  "maximum" : 65535
+                },
+                "ssh" : {
+                  "description" : "Service ssh port. Default is 22.",
+                  "type" : "integer",
+                  "exclusiveMinimum" : 0,
+                  "maximum" : 65535
+                }
+              }
+            },
+            "annotations" : {
+              "description" : "Additional annotations to be added to the Service.",
+              "type" : "object"
+            }
+          },
+          "additionalProperties" : false
+        },
+        "ingress" : {
+          "description" : "Kubernetes ingress related configuration.",
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "Should Ingress be enabled. Default is true.",
+              "type" : "boolean"
+            },
+            "host" : {
+              "description" : "(Virtual) host to mount the application on. Default is \"opf.clear2pay.com\"",
+              "type" : "string",
+              "minLength" : 1
+            },
+            "path" : {
+              "description" : "Path to mount application on (recommended: /). Default is /.",
+              "type" : "string"
+            },
+            "secret" : {
+              "description" : "Path to mount application on (recommended: /). Default is /.",
+              "type" : "string"
+            },
+            "annotations" : {
+              "description" : "Additional annotations to be added to the Ingress.",
+              "type" : "object"
+            },
+            "pathType" : {
+              "description" : "Ingress is required to have a corresponding path type",
+              "type" : "string"
+            },
+            "tls" : {
+              "type" : "object",
+              "properties" : {
+                "enabled" : {
+                  "description" : "Should tls be enabled on ingress. Default is true.",
+                  "type" : "boolean"
+                },
+                "secret" : {
+                  "description" : "Tls secret name for ingress.",
+                  "type" : "string"
+                }
+              },
+              "anyOf" : [ {
+                "properties" : {
+                  "enabled" : {
+                    "const" : true
+                  }
+                },
+                "required" : [ "secret" ]
+              }, {
+                "properties" : {
+                  "enabled" : {
+                    "const" : false
+                  }
+                }
+              } ]
+            }
+          },
+          "anyOf" : [ {
+            "properties" : {
+              "enabled" : {
+                "const" : true
+              }
+            },
+            "required" : [ "host" ]
+          }, {
+            "properties" : {
+              "enabled" : {
+                "const" : false
+              }
+            }
+          } ],
+          "additionalProperties" : false
+        },
+        "opfBootstrapConfigMap" : {
+          "description" : "Name of the configMap containing the opf bootstrap configuration (deployed by opf helm chart). Default value is opf-bootstrap-config.",
+          "type" : "string"
+        }
+      },
+      "required" : [ "image" ],
+      "additionalProperties" : false
+    },
+    "db" : {
+      "description" : "specify the database related attributes",
+      "type" : "object",
+      "properties" : {
+        "type" : {
+          "description" : "specify the database type to be used oracle or postgres.",
+          "type" : "string",
+          "enum" : [ "oracle", "postgres" ]
+        },
+        "additionalProperties" : false
+      },
+      "additionalProperties" : false
+    },
+    "serverConfig" : {
+      "description" : "Application server configuration.",
+      "type" : "object",
+      "properties" : {
+        "jvm" : {
+          "type" : "object",
+          "properties" : {
+            "memory" : {
+              "type" : "object",
+              "properties" : {
+                "initMemorySize" : {
+                  "description" : "Initial memory sizes available to the JVM.",
+                  "type" : "string"
+                },
+                "maxMemorySize" : {
+                  "description" : "Maximum memory sizes available to the JVM.",
+                  "type" : "string"
+                },
+                "initPermSize" : {
+                  "description" : "Initial value of permanent space which is allocated at startup of JVM.",
+                  "type" : "string"
+                },
+                "maxPermSize" : {
+                  "description" : "Maximum value of permanent space that JVM can allot up to.",
+                  "type" : "string"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "runtimeOptimization" : {
+              "type" : "object",
+              "properties" : {
+                "enabled" : {
+                  "description" : "Enable server application runtime optimizations. The directory server will take longer to start and \"warm up\" but will be more aggressively optimized to produce higher throughput. This is enabled by default.",
+                  "type" : "boolean"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "CMSCollector" : {
+              "description" : "Concurrent Mark Sweep (CMS) collector configuration. The CMS is  designed for applications that prefer shorter garbage collection pauses and that can afford to share processor resources with the garbage collector while the application is running. CMS is enabled by default.",
+              "type" : "object",
+              "properties" : {
+                "enabled" : {
+                  "description" : "Enable the Concurrent Mark Sweep (CMS) collector.",
+                  "type" : "boolean"
+                },
+                "classUnloading" : {
+                  "type" : "object",
+                  "properties" : {
+                    "enabled" : {
+                      "description" : "Enable class unloading when using the concurrent mark-sweep (CMS) garbage collector. This option is enabled by default.",
+                      "type" : "boolean"
+                    }
+                  },
+                  "additionalProperties" : false
+                }
+              },
+              "additionalProperties" : false
+            }
+          },
+          "additionalProperties" : false
+        },
+        "remoteDebug" : {
+          "description" : "Java remote debug related configuration.",
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "Should remote debug be activated (port=7777). Default value is false.",
+              "type" : "boolean"
+            }
+          },
+          "additionalProperties" : false
+        }
+      },
+      "additionalProperties" : false
+    },
+    "security" : {
+      "description" : "Security configuration.",
+      "type" : "object",
+      "properties" : {
+        "k8sSecrets" : {
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "If enabled, the opf deployment will look for a K8s secret containing the opf credentials and mount it as a bootstrap.properties file. Default value is true. Note that if you disable this, you should make the credentials available by any other way (eg. Hashicorp vault) as a file called 'bootstrap.secret.extension.properties' located in /secrets.",
+              "type" : "boolean"
+            },
+            "opfSecretName" : {
+              "description" : "The name of the K8s secret containing the opf credentials.",
+              "type" : "string"
+            }
+          },
+          "anyOf" : [ {
+            "properties" : {
+              "enabled" : {
+                "const" : true
+              }
+            },
+            "required" : [ "opfSecretName" ]
+          }, {
+            "properties" : {
+              "enabled" : {
+                "const" : false
+              }
+            }
+          } ],
+          "additionalProperties" : false
+        },
+        "tls" : {
+          "description" : "OPF server tls configuration.",
+          "type" : "object",
+          "properties" : {
+            "secretName" : {
+              "description" : "The name of the k8s secret containing the OPF server keystores and truststores.",
+              "type" : "string"
+            },
+            "mountPath" : {
+              "description" : "Path to the directory where the tls secret has to be mounted.",
+              "type" : "string"
+            },
+            "itemsProjection" : {
+              "description" : "Optionally, you can specify a target path for all or certain secret keys."
+            },
+            "serverKeystore" : {
+              "type" : "object",
+              "properties" : {
+                "type" : {
+                  "description" : "Type of the server keystore.",
+                  "type" : "string"
+                },
+                "location" : {
+                  "description" : "Location of the server keystore.",
+                  "type" : "string"
+                }
+              },
+              "required" : [ "type", "location" ],
+              "additionalProperties" : false
+            },
+            "serverTruststore" : {
+              "type" : "object",
+              "properties" : {
+                "type" : {
+                  "description" : "Type of the server truststore.",
+                  "type" : "string"
+                },
+                "location" : {
+                  "description" : "Location of the server truststore.",
+                  "type" : "string"
+                }
+              },
+              "required" : [ "type", "location" ],
+              "additionalProperties" : false
+            }
+          },
+          "required" : [ "secretName", "mountPath", "serverKeystore", "serverTruststore" ],
+          "additionalProperties" : false
+        }
+      },
+      "required" : [ "k8sSecrets", "tls" ],
+      "additionalProperties" : false
+    },
+    "environmentVariables" : {
+      "description" : "Additional environment variables. These have to be given as key value pairs.",
+      "type" : "object"
+    },
+    "jvm" : {
+      "description" : "Server additional JVM configuration.",
+      "type" : "object",
+      "properties" : {
+        "options" : {
+          "description" : "JVM options. Must be given in the form of key value pairs even if only the values will be actually used and added as jvm options.",
+          "type" : "object"
+        },
+        "systemProperties" : {
+          "description" : "JVM system properties. These have to be given as key value pairs.",
+          "type" : "object"
+        }
+      },
+      "additionalProperties" : false
+    },
+    "testear" : {
+      "description" : "Server additional JVM configuration.",
+      "type" : "object",
+      "properties" : {
+        "name" : {
+          "description" : "test ear name.",
+          "type" : "string"
+        },
+        "hierarchy" : {
+          "description" : "test ear name.",
+          "type" : "string"
+        }
+      },
+      "additionalProperties" : false
+    },
+    "authorization" : {
+      "description" : "K8s authorization for kube-api call listPods",
+      "type" : "object",
+      "properties" : {
+        "role" : {
+          "description" : "k8s authorization role",
+          "type" : "object",
+          "properties" : {
+            "rules" : {
+              "description" : "k8s role rules",
+              "type" : "object",
+              "properties" : {
+                "apiGroups" : {
+                  "description" : "k8s Role api groups",
+                  "type" : "string"
+                },
+                "resources" : {
+                  "description" : "k8s Role Resource Group",
+                  "type" : "string"
+                },
+                "verbs" : {
+                  "description" : "k8s Role verbs",
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
+        "roleBinding" : {
+          "description" : "RoleBinding for the k8s authorization",
+          "type" : "object",
+          "properties" : {
+            "serviceAccountName" : {
+              "description" : "ServiceAccount name to authorize for kube-api calls",
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "additionalProperties" : false
+    },
+    "httpBridge" : {
+      "description" : "Http Bridge configuration",
+      "type" : "object",
+      "properties" : {
+        "url" : {
+          "description" : "Url of the Http Bridge, same url context is used for pod discovery urls",
+          "type" : "string"
+        },
+        "user" : {
+          "description" : "Credentials for the Http Bridge",
+          "type" : "string"
+        },
+        "password" : {
+          "description" : "Credentials for the Http Bridge",
+          "type" : "string"
+        },
+        "authmode" : {
+          "description" : "Specify the authentication mode to be used. Allowed Values are 'basic' or 'openid'",
+          "type" : "string",
+          "enum" : [ "basic", "openid" ]
+        },
+        "openidTokenEndpointUrl" : {
+          "description" : "Token endpoint for OpenId Provider",
+          "type" : "string"
+        },
+        "clientId" : {
+          "description" : "client id for test application",
+          "type" : "string"
+        },
+        "secret" : {
+          "description" : "client secret for test appliction",
+          "type" : "string"
+        },
+        "k8sPodUrlDiscovery" : {
+          "description" : "Pod Discovery from kube-api ",
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "To enable Pod Discovery",
+              "type" : "boolean"
+            },
+            "podSelectors" : {
+              "description" : "k8s pod selectors to list needed pods",
+              "type" : "string"
+            },
+            "namespace" : {
+              "description" : "Namespace of deployed pods",
+              "type" : "string"
+            },
+            "containerPort" : {
+              "description" : "Name or number of the port to access on the container. Number must be in the range 1 to 65535.",
+              "type" : "integer",
+              "exclusiveMinimum" : 0,
+              "maximum" : 65535
+            }
+          },
+          "additionalProperties" : false
+        }
+      },
+      "additionalProperties" : false
+    },
+    "extension" : {
+      "type" : "object",
+      "properties" : {
+        "additionalBootstrapConfigMaps" : {
+          "description" : "Name of the additional bootstrap configMap to be mounted as a bootstrap.properties file in the OPF server. The configMap must contain a data entry called \"bootstrap.extension.properties\". These additional configMaps have to be given as key value pairs, the name can be anything, only the value is used to determine the file name to be used.",
+          "type" : "object"
+        },
+        "additionalJvmConfigMap" : {
+          "description" : "Name of the (only one) configMap containing the additional JVM options and properties to be injected in the server configuration. The configMap must contain a data entry called \"jvm.options\".",
+          "type" : "string"
+        },
+        "additionalSecrets" : {
+          "description" : "Name of the additional K8s secrets to be mounted as bootstrap.properties file in the OPF server. The configMap must contain a data entry called \"opf-secrets\". These additional secrets have to be given as key value pairs, the name can be anything, only the value is used to determine the file name to be used.",
+          "type" : "object"
+        }
+      },
+      "additionalProperties" : false
+    },
+    "simulationQueueListener" : {
+      "type" : "object",
+      "properties" : {
+        "jmsMessageListener" : {
+          "description" : "",
+          "type" : "object",
+          "properties" : {
+            "continuouslyPoll" : {
+              "description" : "Simulation Queue Listener - Start Continuous Polling",
+              "type" : "boolean"
+            },
+            "countPerQueue" : {
+              "description" : "Set count of Threads Per Queue",
+              "type" : "integer"
+            },
+            "maxProcessingThreadPerQueue" : {
+              "description" : "Set Continuous Polling Mode Max Processing Thread Count per Queue",
+              "type" : "integer"
+            },
+            "partialSleepInMillis" : {
+              "description" : "Set Partial Sleep Time in Millis",
+              "type" : "integer"
+            },
+            "jmsSimulatorBaseUrl" : {
+              "description" : "JMS simulator base url. If provided, other JMS connection configuration will be ignored and the simulator will be used instead.",
+              "type" : "string"
+            },
+            "pollingIntervalInMillis" : {
+              "description" : "Set Polling Interval in Millis",
+              "type" : "integer"
+            }
+          },
+          "additionalProperties" : false
+        },
+        "additionalProperties" : false
+      },
+      "additionalProperties" : false
+    },
+    "additionalProperties" : false,
+    "messaging" : {
+      "description" : "JMS related configuration",
+      "type" : "object",
+      "properties" : {
+        "db" : {
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "Should the application use internal queues in database as an alternative to MQ",
+              "type" : "boolean"
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties" : false
+}

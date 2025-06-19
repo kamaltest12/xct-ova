@@ -1,0 +1,24 @@
+{{- if .Values.deployment.volumes.interchanges.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "xct.fullname" . }}-interchanges-pvc
+  labels:
+    app.kubernetes.io/name: {{ include "xct.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "xct.chart" $ }}
+    {{- with .Values.deployment.labels }}
+    {{ toYaml . | nindent 4 | trim -}}
+    {{- end }}
+spec:
+  volumeMode: Filesystem
+  # Must remain ReadWrite because some customers are writing ack in same directory to confirm it was consumed.
+  accessModes:
+    - ReadWriteMany
+  storageClassName: {{ .Values.deployment.volumes.interchanges.storageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.deployment.volumes.interchanges.requestedStorageCapacity }}
+{{- end }}

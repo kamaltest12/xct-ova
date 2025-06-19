@@ -1,0 +1,145 @@
+# Default values for ova.
+# Default values for xct-ova.
+deployment:
+  image:
+    name: "quay.io/royraj/xct-docker.coastguard.clear2pay.com/ova-cloud"
+    tag: "17.2.7-70880-eed75aac"
+    pullPolicy: Always
+  replicasCount: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: "0"
+      maxSurge: "1"
+  containerHttpsPort: 9443
+  containerHttpPort: 9080
+  serviceAccountName: default
+  resources:
+    enabled: true
+    memory:
+      request: "1Gi"
+      limit: "1920M"
+    cpu:
+      request: "300m"
+      limit: "1.0"
+  lifecycle:
+    preTerminationPeriodSeconds: 5
+    terminationGracePeriodSeconds: 60
+  probes:
+    liveness:
+      enabled: true
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 5
+      httpGet:
+        path: "/ova/static/probe.html"
+        port: 9443
+        scheme: HTTPS
+    readiness:
+      enabled: true
+      initialDelaySeconds: 60
+      periodSeconds: 5
+      timeoutSeconds: 2
+      successThreshold: 2
+      failureThreshold: 2
+      httpGet:
+        path: "/ova/static/probe.html"
+        port: 9443
+        scheme: HTTPS
+    startup:
+      enabled: true
+      initialDelaySeconds: 60
+      periodSeconds: 30
+      timeoutSeconds: 3
+      failureThreshold: 10
+      httpGet:
+        path: "/ova/static/probe.html"
+        port: 9443
+        scheme: HTTPS
+  service:
+    httpsEnabled: true
+    httpEnabled: false
+    type: ClusterIP
+    port: 9443
+  ingress:
+    enabled: true
+    # (Virtual) host to mount application on.
+    host: "ova.clear2pay.com"
+    # Path to mount application on (recommended: /).
+    path: /
+    tls:
+      enabled: false
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-body-size: "300m"
+      nginx.org/client-max-body-size: "300m"
+  budget:
+    minAvailable: "0"
+  shareProcessNamespace: true
+serverConfig:
+  osgi:
+    frameworkReadinessRetryLimit: 600
+  jvm:
+    runtimeOptimization:
+      enabled: true
+  authentication:
+    authCache:
+      timeout: 40m
+      initSize: 50
+      maxSize: 25000
+  httpSession:
+    timeout: 60m
+  monitoring:
+    metrics:
+      enabled: false
+    scraping:
+      enabled: false
+      podAnnotations:
+        prometheus.io/sslport: "9443"
+        prometheus.io/sslscrape: "true"
+        prometheus.io/sslpath: "/metrics"
+  test:
+    configurationName: common
+  remoteDebug:
+    enabled: false
+security:
+  k8sSecrets:
+    enabled: true
+    type: "bootstrapProperties"
+  ssoRequiresSSL: true
+  tls:
+    enabled: true
+    verifyHostname: true
+  urlPathFilters:
+    ova: "ova/secure"
+  openid:
+    enabled: true
+    ova:
+      authFilterMatchType: "contains"
+    idpConfig:
+      scope: "openid profile"
+      revokeEnabled: true
+      revokeTokens: "refresh_token,access_token"
+      httpsRequired: true
+ui:
+  slaveMode:
+    enabled: false
+  hideSearchLimitOverride: -1
+  banksContextMode: "ALLOW_ALL"
+  bankingEntitiesContextMode: "FORCE_ALL"
+  automaticLogout:
+    timeout: 3600
+    timeoutWarning: 120
+cache:
+  size: 5
+  ttl: 300
+resourceServer:
+  readTimeout: 60000
+  connectTimeout: 30000
+logging:
+  httpLoggingStrategy: "full"
+  consoleSources: "message,trace,ffdc"
+  consoleFormat: "json"
+  consoleLogLevel: "AUDIT"
+  traceSpecification: "*=info"
+  traceFormat: "ENHANCED"

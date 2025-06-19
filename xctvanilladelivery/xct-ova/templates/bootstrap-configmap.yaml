@@ -1,0 +1,108 @@
+# Configuration map for open liberty configuration extension (bootstrap.properties)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "xct-ova.fullname" . }}-bootstrap-config
+  labels:
+    app.kubernetes.io/name: {{ include "xct-ova.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "xct-ova.chart" $ }}
+    {{- with .Values.deployment.labels }}
+    {{ toYaml . | nindent 4 | trim -}}
+    {{- end }}
+data:
+  bootstrap.extension.properties: |-
+    {{- with .Values.logging }}
+    com.ibm.ws.logging.console.source={{ .consoleSources | default "message,trace,ffdc" }}
+    com.ibm.ws.logging.console.format={{ .consoleFormat | default "json" }}
+    com.ibm.ws.logging.console.log.level={{ .consoleLogLevel | default "AUDIT" }}
+    com.ibm.ws.logging.trace.format={{ .traceFormat | default "ENHANCED" }}
+    {{- if .traceSpecification }}
+    com.ibm.ws.logging.trace.specification={{ .traceSpecification }}
+    logging.traceSpecification={{ .traceSpecification }}
+    {{- end }}
+    {{- if .hideMessage }}
+    com.ibm.ws.logging.hideMessage={{ .hideMessage }}
+    {{- end }}
+    {{- end }}
+    {{- if .Values.serverConfig.monitoring.metrics.enabled }}
+    metrics.option.name=2.0
+    {{- else }}
+    metrics.option.name=off
+    {{- end }}
+    # URL filter for security, this is used by OVA OpenidConnectClient
+    ovaUrl.pathFilter={{ .Values.security.urlPathFilters.ova | default "ova/secure" }}
+    {{- if .Values.security.openid.enabled }}
+    # OpenId SSO configuration
+    security.option.name=openidsso
+    openid.ovaFilter.matchType={{ .Values.security.openid.ova.authFilterMatchType | default "contains" }}
+    {{- if .Values.security.openid.idpConfig.tokenEndpointUrl }}
+    openid.token.endpoint.url={{ .Values.security.openid.idpConfig.tokenEndpointUrl }}
+    {{- end }}
+    {{- if .Values.security.openid.idpConfig.discoveryEndpointUrl }}
+    openid.discovery.endpoint.url={{ .Values.security.openid.idpConfig.discoveryEndpointUrl }}
+    {{- end }}
+    openid.jwk.endpoint.url={{ required ".Values.security.openid.idpConfig.jwkEndpointUrl is required." .Values.security.openid.idpConfig.jwkEndpointUrl }}
+    openid.authorization.endpoint.redirect.url={{ required ".Values.security.openid.idpConfig.authorizationEndpointRedirectUrl is required." .Values.security.openid.idpConfig.authorizationEndpointRedirectUrl }}
+    openid.issuer.identifier={{ required ".Values.security.openid.idpConfig.issuerIdentifier is required." .Values.security.openid.idpConfig.issuerIdentifier }}
+    openid.realm.identifier={{ .Values.security.openid.idpConfig.realmIdentifier | default "iss" }}
+    openid.signature.algorithm={{ .Values.security.openid.idpConfig.signatureAlgorithm | default "RS256" }}
+    openid.user.identifier={{ .Values.security.openid.idpConfig.userIdentifier | default "preferred_username" }}
+    openid.redirect.junction.path={{ .Values.security.openid.idpConfig.redirectJunctionPath | default "" }}
+    openid.scope={{ .Values.security.openid.idpConfig.scope | default "openid profile" }}
+    openid.audience={{ .Values.security.openid.idpConfig.audience | default "ova,opfrest" }}
+    openid.token.endpoint.auth.method={{ .Values.security.openid.idpConfig.tokenEndpointAuthMethod | default "post" }}
+    openid.httpsRequired={{ .Values.security.openid.idpConfig.httpsRequired }}
+    openid.redirectToRPHostAndPort={{ .Values.security.openid.idpConfig.redirectToRPHostAndPort | default "" }}
+    {{- else }}
+    security.option.name=opfnative
+    {{- end }}
+    {{- with .Values.serverConfig }}
+    #Session, authentication and auth cache configuration
+    httpSession.invalidation.timeout={{ .httpSession.timeout | default "30m"}}
+    authentication.cache.timeout={{ .authentication.authCache.timeout | default "65m" }}
+    authentication.cache.initSize={{ include "numericSafe" .authentication.authCache.initSize | default "50" }}
+    authentication.cache.maxSize={{ include "numericSafe" .authentication.authCache.maxSize | default "25000" }}
+    {{- end }}
+    # Additional bootstrap properties
+    default.https.port={{ include "numericSafe" .Values.deployment.containerHttpsPort | default 9443 }}
+    {{- range .Values.bootstrapProperties }}
+    {{- if .description }}
+    # {{ .description }}
+    {{- end }}
+    {{ .name }}={{ .value }}
+    {{- end }}
+    {{- if .Values.security.tls.enabled }}
+    # TLS configuration
+    ssl.keystore.location={{ required ".Values.security.tls.serverKeystore.location is required." .Values.security.tls.serverKeystore.location }}
+    ssl.keystore.type={{ .Values.security.tls.serverKeystore.type | default "jks" }}
+    ssl.truststore.location={{ required ".Values.security.tls.serverTruststore.location is required." .Values.security.tls.serverTruststore.location }}
+    ssl.truststore.type={{ .Values.security.tls.serverTruststore.type | default "jks" }}
+    ssl.verifyHostname={{ list nil true | has .Values.security.tls.verifyHostname }}
+    security.option.ssl=ssl
+    {{- else }}
+    security.option.ssl=nossl
+    {{- end }}
+    webAppSecurity.ssoRequiresSSL={{ include "booleanSafe" .Values.security.ssoRequiresSSL | default "true" }}
+    # Logging trace configuration
+    com.ibm.ws.logging.trace.specification={{ .Values.logging.traceSpecification | default "*=info" }}
+    logging.traceSpecification={{ .Values.logging.traceSpecification | default "*=info" }}
+    {{- if eq .Values.security.k8sSecrets.type "bootstrapProperties" }}
+    # Secrets inclusion and additional includes
+    bootstrap.include= ./secrets/bootstrap.secret.extension.properties
+    {{- with .Values.extension -}}
+    {{- range $k, $v := .additionalSecrets -}}
+    ,./secrets/bootstrap.{{ $v }}.extension.properties
+    {{- end -}}
+    {{- end -}}
+    {{- end -}}
+    {{- with .Values.extension -}}
+    {{- if .additionalBootstrapConfigMaps -}}
+    ,
+    {{- end -}}
+    {{- range $k, $v := .additionalBootstrapConfigMaps -}}
+    {{- join "," (printf "%s.%s" $v "properties") -}}
+    {{- end -}}
+    {{- end -}}

@@ -1,0 +1,49 @@
+{{- if .Values.deployment.service.clusterIP }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "test-app.fullname" . }}-service
+  labels:
+    app.kubernetes.io/name: {{ include "test-app.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "test-app.chart" $ }}
+    {{- with .Values.deployment.labels }}
+    {{ toYaml . | nindent 4 | trim -}}
+    {{- end }}
+  annotations:
+    sidecar.istio.io/inject: "false"
+    {{- with .Values.deployment.service.annotations }}
+    {{ toYaml . | nindent 4 | trim -}}
+    {{- end }}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: {{ include "test-app.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+  ports:
+    {{- if .Values.deployment.service.clusterIP.https }}
+    - name: https
+      protocol: TCP
+      port: {{ .Values.deployment.service.clusterIP.https | default 9443 }}
+      targetPort: 9443
+    {{- end }}
+    {{- if .Values.deployment.service.clusterIP.http }}
+    - name: http
+      protocol: TCP
+      port: {{ .Values.deployment.service.clusterIP.http | default 8080 }}
+      targetPort: 9080
+    {{- end }}
+    {{- if .Values.deployment.service.clusterIP.ssh }}
+    - name: ssh
+      port: {{ .Values.deployment.service.clusterIP.ssh | default 22 }}
+      targetPort: 22
+    {{- end }}
+    {{- if .Values.serverConfig.remoteDebug.enabled }}
+    - name: debug
+      protocol: TCP
+      port: 7777
+      targetPort: 7777
+    {{- end }}
+{{- end }}

@@ -1,0 +1,97 @@
+deployment:
+  image:
+    name: "xct-docker.coastguard.clear2pay.com/test/xct-testapp"
+    tag: "17.2.7-70880-eed75aac"
+  resources:
+    enabled: true
+    memory:
+      request: "2048M"
+      limit: "2048M"
+    cpu:
+      request: "100m"
+      limit: "2.0"
+  lifecycle:
+    preTerminationPeriodSeconds: 5
+    terminationGracePeriodSeconds: 60
+  probes:
+    liveness:
+      enabled: true
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 5
+      httpGet:
+        path: "opfresttest/probe/healthcheck"
+        port: 9443
+        scheme: HTTPS
+    readiness:
+      enabled: true
+      initialDelaySeconds: 60
+      periodSeconds: 5
+      timeoutSeconds: 2
+      successThreshold: 2
+      failureThreshold: 2
+      httpGet:
+        path: "opfresttest/probe/healthcheck"
+        port: 9443
+        scheme: HTTPS
+    startup:
+      enabled: true
+      initialDelaySeconds: 60
+      periodSeconds: 30
+      timeoutSeconds: 3
+      failureThreshold: 20
+      httpGet:
+        path: "opfresttest/probe/healthcheck"
+        port: 9443
+        scheme: HTTPS
+  ingress:
+    enabled: true
+    # (Virtual) host to mount application on.
+    host: "opf-test-app.clear2pay.com"
+    # Path to mount application on (recommended: /).
+    path: /
+  opfBootstrapConfigMap: opf-bootstrap-config
+  service: {}
+serverConfig:
+  jvm:
+    runtimeOptimization:
+      enabled: true
+    CMSCollector:
+      enabled: true
+      classUnloading:
+        enabled: true
+  remoteDebug:
+    enabled: false
+simulationQueueListener:
+  jmsMessageListener:
+    jmsSimulatorBaseUrl: "https://localhost:9443/opfresttest/jms/success"
+testear:
+  name: CORALServicesTestEAR
+  hierarchy: opf,opfcommon,opfpayment,standingorder,resttest,resttestopf,resttestso,coral,externalkafka,externalkafkassl,genericsimulator
+security:
+  k8sSecrets:
+    enabled: true
+httpBridge:
+  k8sPodUrlDiscovery:
+    enabled: false
+    containerPort: 9443
+authorization:
+  role:
+    rules:
+      apiGroups: '[""]'
+      resources: '["pods"]'
+      verbs: '["get", "watch", "list"]'
+  roleBinding:
+    serviceAccountName: default
+messaging:
+  db:
+    enabled: true
+# for NFT
+#simulationQueueListener:
+#  jmsMessageListener:
+#    continuouslyPoll: false
+#    countPerQueue: 1
+#    maxProcessingThreadPerQueue: 50
+#    partialSleepInMillis: 100
+#    pollingIntervalInMillis: 2000

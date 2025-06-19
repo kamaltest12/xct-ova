@@ -1,0 +1,328 @@
+# Default values for opf.
+# Default values for xct opf.
+deployment:
+  image:
+    name: "xct-docker.coastguard.clear2pay.com/xct-cloud"
+    tag: "17.2.7-70880-eed75aac"
+    pullPolicy: Always
+  replicasCount: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: "0"
+      maxSurge: "1"
+  containerHttpsPort: 9443
+  serviceAccountName: default
+  resources:
+    enabled: true
+    memory:
+      request: "5G"
+      limit: "5G"
+    cpu:
+      request: "500m"
+      limit: "4.0"
+  lifecycle:
+    preTerminationPeriodSeconds: 5
+    terminationGracePeriodSeconds: 60
+  probes:
+    liveness:
+      enabled: true
+      initialDelaySeconds: 60
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 5
+      httpGet:
+        path: "xctrest/webapi/v1/probes/alive"
+        port: 9443
+        scheme: HTTPS
+    readiness:
+      enabled: true
+      initialDelaySeconds: 60
+      periodSeconds: 5
+      timeoutSeconds: 2
+      successThreshold: 2
+      failureThreshold: 2
+      httpGet:
+        path: "xctrest/webapi/v1/probes/ready"
+        port: 9443
+        scheme: HTTPS
+    startup:
+      enabled: true
+      initialDelaySeconds: 60
+      periodSeconds: 30
+      timeoutSeconds: 3
+      failureThreshold: 20
+      httpGet:
+        path: "xctrest/webapi/v1/probes/started"
+        port: 9443
+        scheme: HTTPS
+  volumes:
+    transactionsLog:
+      enabled: true
+    interchanges:
+      enabled: false
+      mountPath: "/data/shared/interchanges"
+      storageClassName: "opf-fs-interchanges"
+      requestedStorageCapacity: 1Gi
+  service:
+    type: ClusterIP
+    port: 9443
+  ingress:
+    enabled: true
+    # (Virtual) host to mount application on.
+    host: "opf.clear2pay.com"
+    # Path to mount application on (recommended: /).
+    path: /
+    tls:
+      enabled: false
+  budget:
+    minAvailable: "0"
+serverConfig:
+  jvm:
+    runtimeOptimization:
+      enabled: true
+    CMSCollector:
+      enabled: true
+      classUnloading:
+        enabled: true
+  authentication:
+    ltpa:
+      timeout: 120m
+    authCache:
+      timeout: 42m
+      initSize: 100
+      maxSize: 50000
+  httpSession:
+    timeout: 30m
+  monitoring:
+    metrics:
+      enabled: false
+    scraping:
+      enabled: false
+      podAnnotations:
+        prometheus.io/sslport: "9443"
+        prometheus.io/sslscrape: "true"
+  transactions:
+    OnePCOptimization: true
+    defaultMaxShutdownDelay: "2s"
+    enableLogRetries: false
+    logRetryInterval: "10"
+    logRetryLimit: "180"
+    recoverOnStartup: false
+    shutdownOnLogFailure: true
+    waitForRecovery: false
+    timeouts:
+      clientInactivity: 12m
+      totalTranLifetime: 15m
+    heuristics:
+      acceptHeuristicHazard: true
+      enableLoggingForHeuristicReporting: false
+      heuristicRetryInterval: "60s"
+      heuristicRetryLimit: "0"
+      heuristicRetryWait: "60s"
+      lpsHeuristicCompletion: "ROLLBACK"
+    lease:
+      leaseCheckInterval: "60s"
+      leaseLength: "60s"
+      leaseRenewalThreshold: "90"
+  transactionLogs:
+    mode: file
+  ejbContainer:
+    poolCleanupInterval: 24h
+    startEJBsAtAppStart: true
+    cacheSize: 10000
+  concurrencyPolicy:
+    maxConcurrentTasks: 10
+    maxQueueSize: 50
+  warmUp:
+    enabled: false
+  test:
+    configurationName: common
+  remoteDebug:
+    enabled: false
+db:
+  xaConfig:
+    minPoolSize: 10
+    maxPoolSize: 150
+    purgePolicy: EntirePool
+    agedTimeout: "-1"
+    maxIdleTime: 30m
+    connectionTimeout: 30s
+    reapTime: 3m
+  nonxaConfig:
+    minPoolSize: 0
+    maxPoolSize: 10
+    purgePolicy: EntirePool
+    agedTimeout: "-1"
+    maxIdleTime: 30m
+    connectionTimeout: 30s
+    reapTime: 3m
+  compat:
+    minPoolSize: 0
+    maxPoolSize: 50
+    purgePolicy: EntirePool
+    agedTimeout: "-1"
+    maxIdleTime: 30m
+    connectionTimeout: 30s
+    reapTime: 3m
+  tranlog:
+    connectionManagerConfig:
+      minPoolSize: 0
+      maxPoolSize: 50
+      purgePolicy: EntirePool
+      agedTimeout: "-1"
+      maxIdleTime: 30m
+      connectionTimeout: 30s
+      reapTime: 3m
+#extension:
+#  additionalBootstrapConfigMaps:
+#    bootstrap.xct.extension : xct-bootstrap-configmap
+messaging:
+  mq:
+    resourceAdapter: {}
+    cfDefaultValues:
+      port: 1414
+      channel: channel1
+      queueManager: MQ.QUEUE.MANAGER
+      connectionManagerConfig:
+        minPoolSize: 0
+        maxPoolSize: 20
+        purgePolicy: EntirePool
+        agedTimeout: "-1"
+        maxIdleTime: 5m
+        connectionTimeout: 30s
+        reapTime: 3m
+    connectionFactories:
+      QCF:
+        connectionManagerConfig: {}
+      SWIFTSAAQCF:
+        connectionManagerConfig: {}
+      MQHAQCF:
+        connectionManagerConfig: {}
+      AMHQCF:
+        connectionManagerConfig: {}
+      AMH1QCF:
+        connectionManagerConfig: {}
+      AMH2QCF:
+        connectionManagerConfig: {}
+      FromSWIFTQCF:
+        connectionManagerConfig: {}
+      ReceiptQCF:
+        connectionManagerConfig: {}
+    ndu:
+      MYQCF:
+        connectionManagerConfig: {}
+      OTHERQCF:
+        connectionManagerConfig: {}
+      otherHandoverSetup: single
+  kafka:
+    enabled: true
+    connectionFactories:
+      KafkaCF:
+        sslKeystoreLocation: "/tmp/jks/kafka/client/kafka.client.keystore.jks"
+        sslTruststoreLocation: "/tmp/jks/kafka/client/kafka.client.truststore.jks"
+        protocol: "SSL"
+        connectionManagerConfig:
+          maxPoolSize: 5
+          connectionTimeout: "0"
+        tune: {}
+  db:
+    enabled: false
+    control: {}
+    redelivery: {}
+  AMHIntegration:
+    enabled: false
+  swiftsaa: {}
+  fromswift: {}
+  receipt: {}
+cache:
+  relayCacheManager:
+      peerProvider: "k8s" # @OPFPatch US1832627 Distroless image for OPF - to be removed once delivered
+      dbCacheManagerPeerProvider:
+        nodeMaxInactiveMinutes: 2880 # @OPFPatch US1832627 Distroless image for OPF - to be removed once delivered
+        nodeActiveMillis: 5000 # @OPFPatch US1832627 Distroless image for OPF - to be removed once delivered
+        lookupIntervalMillis: 1000 # @OPFPatch US1832627 Distroless image for OPF - to be removed once delivered
+      cacheManagerPeerListener:
+        port: 40001 # @OPFPatch US1832627 Distroless image for OPF - to be removed once delivered
+        socketTimeout: 20000 # @OPFPatch US1832627 Distroless image for OPF - to be removed once delivered
+      k8sCacheManagerPeerProvider:
+        lookupIntervalMillis: 1000 # @OPFPatch US1832627 Distroless image for OPF - to be removed once delivered
+k8sAuthorization:
+  enabled: true
+  role:
+    rules:
+      apiGroups: '[""]'
+      resources: '["pods"]'
+      verbs: '["list"]'
+security:
+  k8sSecrets:
+    enabled: true
+  urlPathFilters:
+    opf: "opfrest"
+    metrics: "opfrest/metrics"
+    infraOps: "/v1/reference-data-import-jobs|/v1/dewarehousing-jobs|/v1/account-posting-jobs|/v1/data-information-contents"
+  openid:
+    enabled: true
+    opf:
+      authFilterMatchType: "contains"
+    # default values for JWT token
+    identityConfig:
+      authorisationsClaim:
+        application: "OPF"
+        defaultBankGroup: "OPFBankgroup"
+      paths: {}
+    idpConfig:
+      scope: "openid profile"
+  tls:
+    mqQCFKeystore: {}
+    mqQCFTruststore: {}
+    mqSWIFTSAAQCFKeystore: {}
+    mqSWIFTSAAQCFTruststore: {}
+    mqOTHERQCFKeystore: {}
+    mqOTHERQCFTruststore: {}
+    mqMYQCFKeystore: {}
+    mqMYQCFTruststore: {}
+    mqAMHQCFKeystore: {}
+    mqAMHQCFTruststore: {}
+    mqAMH1QCFKeystore: {}
+    mqAMH1QCFTruststore: {}
+    mqAMH2QCFKeystore: {}
+    mqAMH2QCFTruststore: {}
+monitoring:
+  whitebox:
+    allowRuntimeSet: false
+    inMemoryEvents:
+      enabled: false
+    influxDb:
+      enabled: false
+      # should be mapped as per env
+      #host: "localhost"
+      port: 8086
+      database: opf_cloud
+      measurement: opf_cloud
+      categories:
+        - "TIMER;component=Parser"
+        - "TIMER;class=BaseMDBBean"
+        - "TIMER;category=BusinessTimersContinuous"
+      batchPointsMaxSize: -1
+      batchPointsWriteConcurrency: 1
+      logLevel: full
+    scraping:
+      enabled: false
+      podAnnotations:
+        prometheus.io/sslport2: "9443"
+        prometheus.io/sslscrape2: "true"
+        prometheus.io/sslpath2: "/opfrest/metrics"
+  deepsea:
+    enabled:
+      false
+logging:
+  httpLoggingStrategy: opf
+  consoleSources: "message,trace,ffdc"
+  consoleFormat: "json"
+  consoleLogLevel: "AUDIT"
+  # org.glassfish.jersey.servlet.*=FINE is added to log jersey exception thrown by jersey after verification of request (e.g content-type header added twice etc) resulting in: Error 400: Bad Request
+  traceSpecification: "*=info:org.glassfish.jersey.servlet.*=FINE"
+  # debug sso/openid
+  #traceSpecification: "*=info:com.ibm.ws.security.*=all:com.ibm.ws.webcontainer.security.*=all:com.ibm.oauth.*=all:com.ibm.wsspi.security.oauth20.*=all:com.ibm.ws.transport.http.*=all:org.apache.http.client.*=all"
+  traceFormat: "ENHANCED"

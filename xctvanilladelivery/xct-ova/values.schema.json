@@ -1,0 +1,1090 @@
+{
+  "$schema" : "https://json-schema.org/draft-07/schema#",
+  "$id" : "http://clear2pay.com/xct.ova/values.schema.json",
+  "title" : "XCT kubernetes deployment schema for values.yaml",
+  "description" : "Schema describes values.yaml for XCT kubernetes deployment.",
+  "type" : "object",
+  "definitions" : {
+    "probe" : {
+      "description" : "Single probe configuration.",
+      "type" : "object",
+      "properties" : {
+        "enabled" : {
+          "description" : "Should the probe be enabled. Default value is true.",
+          "type" : "boolean"
+        },
+        "httpGet" : {
+          "description" : "HTTP GET endpoint configuration.",
+          "type" : "object",
+          "properties" : {
+            "path" : {
+              "description" : "Path to access on the HTTP server.",
+              "type" : "string"
+            },
+            "port" : {
+              "description" : "Name or number of the port to access on the container. Number must be in the range 1 to 65535.",
+              "type" : "integer",
+              "exclusiveMinimum" : 0,
+              "maximum" : 65535
+            },
+            "scheme" : {
+              "description" : "Scheme to use for connecting to the host (HTTP or HTTPS). Default value is HTTPS.",
+              "type" : "string",
+              "enum" : [ "HTTP", "HTTPS" ]
+            }
+          },
+          "required" : [ "path", "port" ],
+          "additionalProperties" : false
+        },
+        "initialDelaySeconds" : {
+          "description" : "Number of seconds after the container has started before liveness or readiness probes are initiated. Defaults to 0 seconds.",
+          "type" : "integer",
+          "minimum" : 0
+        },
+        "periodSeconds" : {
+          "description" : "How often (in seconds) to perform the probe.",
+          "type" : "integer",
+          "minimum" : 1
+        },
+        "timeoutSeconds" : {
+          "description" : "Number of seconds after which the probe times out.",
+          "type" : "integer",
+          "minimum" : 1
+        },
+        "successThreshold" : {
+          "description" : "Minimum consecutive successes for the probe to be considered successful after having failed. Defaults to 1. Must be 1 for liveness and startup Probes.",
+          "type" : "integer",
+          "minimum" : 1
+        },
+        "failureThreshold" : {
+          "description" : "When a probe fails, Kubernetes will try failureThreshold times before giving up. Giving up in case of liveness probe means restarting the container. In case of readiness probe the Pod will be marked Unready.",
+          "type" : "integer",
+          "minimum" : 1
+        }
+      },
+      "anyOf" : [ {
+        "properties" : {
+          "enabled" : {
+            "const" : true
+          }
+        },
+        "required" : [ "httpGet" ]
+      }, {
+        "properties" : {
+          "enabled" : {
+            "const" : false
+          }
+        }
+      } ],
+      "additionalProperties" : false
+    }
+  },
+  "properties" : {
+    "global" : {
+      "description" : "Placeholder for global values when the chart is used as a sub-chart. If not there it fails to install.",
+      "type" : "object",
+      "additionalProperties" : false
+    },
+    "enabled" : {
+      "description" : "Should OVA chart be enabled as a sub-chart.",
+      "type" : "boolean"
+    },
+    "nameOverride" : {
+      "description" : "Name of the application. By default, it uses the name of the chart.",
+      "type" : "string"
+    },
+    "fullnameOverride" : {
+      "description" : "Fully qualified app name used for naming the kubernetes objects. By default, it uses the release name followed by te app name except if the release name already contains the app name.",
+      "type" : "string"
+    },
+    "deployment" : {
+      "description" : "OVA deployment configuration.",
+      "type" : "object",
+      "properties" : {
+        "image" : {
+          "description" : "Container image settings.",
+          "type" : "object",
+          "properties" : {
+            "repository" : {
+              "description" : "Repository to get the image from.",
+              "type" : "string"
+            },
+            "name" : {
+              "description" : "Name of container image.",
+              "type" : "string",
+              "minLength" : 3
+            },
+            "tag" : {
+              "description" : "Tag name of container image.",
+              "minLength" : 1
+            },
+            "pullPolicy" : {
+              "description" : "When to pull the image. Default value is Always.",
+              "type" : "string",
+              "enum" : [ "IfNotPresent", "Always", "Never" ]
+            },
+            "pullSecrets" : {
+              "description" : "To avoid having to pull images from repository manually, you can add a 'default' imagePullSecrets to your servicer account",
+              "type" : "string"
+            }
+          },
+          "required" : [ "name", "tag" ],
+          "additionalProperties" : false
+        },
+        "nodeSelector" : {
+          "description" : "Specify the node labels you want the target node to have. Kubernetes only schedules the Pod onto nodes that have each of the labels you specify.",
+          "type" : "object"
+        },
+        "replicasCount" : {
+          "description" : "Number of desired replicas. Default value is 1.",
+          "type" : "integer",
+          "minimum" : 1
+        },
+        "strategy" : {
+          "description" : "Deployment update strategy.",
+          "type" : "object",
+          "properties" : {
+            "type" : {
+              "description" : "Deployment update strategy type. Can be set to RollingUpdate or Recreate. Default is RollingUpdate.",
+              "type" : "string",
+              "enum" : [ "RollingUpdate", "Recreate" ]
+            },
+            "rollingUpdate" : {
+              "description" : " A rolling update allows a Deployment update to take place with zero downtime. It does this by incrementally replacing the current Pods with new ones.",
+              "type" : "object",
+              "properties" : {
+                "maxUnavailable" : {
+                  "description" : "Maximum number of unavailable replicas when doing a rolling update. Default is 0.",
+                  "type" : "string"
+                },
+                "maxSurge" : {
+                  "description" : "Maximum number of additional replicas when doing a rolling update. Default is 1.",
+                  "type" : "string"
+                }
+              }
+            }
+          },
+          "additionalProperties" : false
+        },
+        "labels" : {
+          "description" : "Additional labels to be added to the Kubernetes objects.",
+          "type" : "object"
+        },
+        "containerHttpsPort" : {
+          "description" : "Port on which to deploy OVA in the pods on HTTPS. Default value is 9443.",
+          "type" : "integer",
+          "exclusiveMinimum" : 0,
+          "maximum" : 65535
+        },
+        "containerHttpPort" : {
+          "description" : "Port on which to deploy OVA in the pods on HTTP. Default value is 9080.",
+          "type" : "integer",
+          "exclusiveMinimum" : 0,
+          "maximum" : 65535
+        },
+        "serviceAccountName" : {
+          "description" : "Name of the service account to be used. Default value is \"default\".",
+          "type" : "string"
+        },
+        "resources" : {
+          "description" : "Kubernetes resources limits and requests.",
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "Should deployment resources be enabled. Default value is true.",
+              "type" : "boolean"
+            },
+            "memory" : {
+              "description" : "Memory limit and request values.",
+              "type" : "object",
+              "properties" : {
+                "request" : {
+                  "description" : "Memory request value. Default value is 1920M.",
+                  "type" : "string",
+                  "minlength" : 1
+                },
+                "limit" : {
+                  "description" : "Memory limit value. Default value is 1920M.",
+                  "type" : "string",
+                  "minlength" : 1
+                }
+              },
+              "additionalProperties" : false
+            },
+            "cpu" : {
+              "description" : "CPU limit and request values.",
+              "type" : "object",
+              "properties" : {
+                "request" : {
+                  "description" : "CPU request value. Default value is 0.3.",
+                  "type" : "string",
+                  "minlength" : 1
+                },
+                "limit" : {
+                  "description" : "CPU limit value. Default value is 1.0.",
+                  "type" : "string",
+                  "minlength" : 1
+                }
+              },
+              "additionalProperties" : false
+            }
+          },
+          "additionalProperties" : false
+        },
+        "lifecycle" : {
+          "description" : "Container lifecycle settings.",
+          "type" : "object",
+          "properties" : {
+            "preTerminationPeriodSeconds" : {
+              "description" : "Default value is 5.",
+              "type" : "integer",
+              "exclusiveMinimum" : 0,
+              "maximum" : 3600
+            },
+            "terminationGracePeriodSeconds" : {
+              "description" : "Default value is 60.",
+              "type" : "integer",
+              "exclusiveMinimum" : 0,
+              "maximum" : 3600
+            }
+          },
+          "additionalProperties" : false
+        },
+        "probes" : {
+          "description" : "Probes configuration.",
+          "type" : "object",
+          "properties" : {
+            "liveness" : {
+              "description" : "Checks if your application is still running.",
+              "$ref" : "#/definitions/probe"
+            },
+            "readiness" : {
+              "description" : "Checks if your application is ready to receive traffic.",
+              "$ref" : "#/definitions/probe"
+            },
+            "startup" : {
+              "description" : "Checks if your application has started.",
+              "$ref" : "#/definitions/probe"
+            }
+          },
+          "required" : [ "liveness", "readiness", "startup" ],
+          "additionalProperties" : false
+        },
+        "podAnnotations" : {
+          "description" : "Additional annotations to be added to the pods.",
+          "type" : "object"
+        },
+        "extraVolumes" : {
+          "description" : "Allows to mount additional volumes to OVA container. Syntax is the same as when defining one directly in k8s deployment."
+        },
+        "extraVolumeMounts" : {
+          "description" : "Volumes mounts corresponding to the additional volumes listed in extraVolumes. Syntax is the same as when defining one directly in k8s deployment."
+        },
+        "service" : {
+          "description" : "Configuration of the OPF Service.",
+          "type" : "object",
+          "properties" : {
+            "type" : {
+              "description" : "Type of Service. Set to either ClusterIP (default, needed when using Ingress) or LoadBalancer or NodePort.",
+              "type" : "string",
+              "enum" : [ "ClusterIP", "LoadBalancer", "NodePort" ]
+            },
+            "port" : {
+              "description" : "Service https port. Default is 9443.",
+              "type" : "integer",
+              "exclusiveMinimum" : 0,
+              "maximum" : 65535
+            },
+            "httpsEnabled" : {
+              "description" : "Should service be deployed on https (true)",
+              "type" : "boolean",
+              "default" : true
+            },
+            "httpPort" : {
+              "description" : "Service http port. Default is 9080.",
+              "type" : "integer",
+              "exclusiveMinimum" : 0,
+              "maximum" : 65535
+            },
+            "httpEnabled" : {
+              "description" : "Should service be deployed on http",
+              "type" : "boolean",
+              "default" : true
+            },
+            "annotations" : {
+              "description" : "Additional annotations to be added to the Service.",
+              "type" : "object"
+            },
+            "nodePort" : {
+              "description" : "NodePort can be assigned in case of service type is NodePort",
+              "type" : "integer",
+              "exclusiveMinimum" : 30000,
+              "maximum" : 32767
+            }
+          },
+          "required" : [ "type", "port" ],
+          "additionalProperties" : false
+        },
+        "ingress" : {
+          "description" : "Kubernetes ingress related configuration.",
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "Should ingress be enabled. Default is true.",
+              "type" : "boolean"
+            },
+            "host" : {
+              "description" : "(Virtual) host to mount the application on. Default is \"opf.clear2pay.com\"",
+              "type" : "string",
+              "minLength" : 1
+            },
+            "path" : {
+              "description" : "Path to mount application on (recommended: /). Default is /.",
+              "type" : "string"
+            },
+            "pathType" : {
+              "description" : "Ingress is required to have a corresponding path type",
+              "type" : "string"
+            },
+            "tls" : {
+              "type" : "object",
+              "properties" : {
+                "enabled" : {
+                  "description" : "Should tls be enabled on ingress. Default is true.",
+                  "type" : "boolean"
+                },
+                "secret" : {
+                  "description" : "Tls secret name for ingress.",
+                  "type" : "string"
+                }
+              },
+              "anyOf" : [ {
+                "properties" : {
+                  "enabled" : {
+                    "const" : true
+                  }
+                },
+                "required" : [ "secret" ]
+              }, {
+                "properties" : {
+                  "enabled" : {
+                    "const" : false
+                  }
+                }
+              } ]
+            },
+            "annotations" : {
+              "description" : "Additional annotations to be added to the Ingress.",
+              "type" : "object"
+            }
+          },
+          "anyOf" : [ {
+            "properties" : {
+              "enabled" : {
+                "const" : true
+              }
+            },
+            "required" : [ "host" ]
+          }, {
+            "properties" : {
+              "enabled" : {
+                "const" : false
+              }
+            }
+          } ],
+          "additionalProperties" : false
+        },
+        "budget" : {
+          "description" : "Pod Disruption Budget configuration.",
+          "type" : "object",
+          "properties" : {
+            "minAvailable" : {
+              "description" : "Number (or percentage) of pods that must always be available. Default is 0.",
+              "type" : "string",
+              "pattern" : "^(100|[1-9]?[0-9])%$|^\\d*$"
+            }
+          },
+          "required" : [ "minAvailable" ],
+          "additionalProperties" : false
+        },
+        "shareProcessNamespace" : {
+          "description" : "Container debugging via ephemeral containers. Processes, Container filesystems are visible to other containers in the pod through this flag, if set to true. Defaults to true",
+          "type" : "boolean"
+        }
+      },
+      "required" : [ "image" ],
+      "additionalProperties" : false
+    },
+    "serverConfig" : {
+      "description" : "Application server configuration.",
+      "type" : "object",
+      "properties" : {
+        "jvm" : {
+          "type" : "object",
+          "properties" : {
+            "memory" : {
+              "type" : "object",
+              "properties" : {
+                "initMemorySize" : {
+                  "description" : "Initial memory sizes available to the JVM.",
+                  "type" : "string"
+                },
+                "maxMemorySize" : {
+                  "description" : "Maximum memory sizes available to the JVM.",
+                  "type" : "string"
+                },
+                "initPermSize" : {
+                  "description" : "Initial value of permanent space which is allocated at startup of JVM.",
+                  "type" : "string"
+                },
+                "maxPermSize" : {
+                  "description" : "Maximum value of permanent space that JVM can allot up to.",
+                  "type" : "string"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "runtimeOptimization" : {
+              "type" : "object",
+              "properties" : {
+                "enabled" : {
+                  "description" : "Enable server application runtime optimizations. The directory server will take longer to start and \"warm up\" but will be more aggressively optimized to produce higher throughput. This is enabled by default.",
+                  "type" : "boolean"
+                }
+              },
+              "additionalProperties" : false
+            },
+            "CMSCollector" : {
+              "description" : "Concurrent Mark Sweep (CMS) collector configuration. The CMS is designed for applications that prefer shorter garbage collection pauses and that can afford to share processor resources with the garbage collector while the application is running. CMS is enabled by default.",
+              "type" : "object",
+              "properties" : {
+                "enabled" : {
+                  "description" : "Enable the Concurrent Mark Sweep (CMS) collector.",
+                  "type" : "boolean"
+                },
+                "classUnloading" : {
+                  "type" : "object",
+                  "properties" : {
+                    "enabled" : {
+                      "description" : "Enable class unloading when using the concurrent mark-sweep (CMS) garbage collector. This option is enabled by default.",
+                      "type" : "boolean"
+                    }
+                  },
+                  "additionalProperties" : false
+                }
+              },
+              "additionalProperties" : false
+            }
+          },
+          "additionalProperties" : false
+        },
+        "authentication" : {
+          "type" : "object",
+          "properties" : {
+            "authCache" : {
+              "type" : "object",
+              "properties" : {
+                "timeout" : {
+                  "description" : "Authentication cache timeout (cache for subject). If a user is inactive for longer than period that is specified by the timeout attribute, then the entry for that user is removed from the cache. Specify a positive integer followed by a unit of time, which can be hours (h), minutes (m), seconds (s), or milliseconds (ms)£. Default value is 10m.",
+                  "type" : "string"
+                },
+                "initSize" : {
+                  "description" : "Initial number of entries supported by the authentication cache.",
+                  "type" : "integer"
+                },
+                "maxSize" : {
+                  "description" : "Maximum number of entries supported by the authentication cache.",
+                  "type" : "integer"
+                }
+              }
+            }
+          },
+          "additionalProperties" : false
+        },
+        "httpSession" : {
+          "type" : "object",
+          "properties" : {
+            "timeout" : {
+              "description" : "Amount of time an http session can go unused before it is no longer valid, in seconds if unit of time isn't specified. Specify a positive integer followed by a unit of time, which can be hours (h), minutes (m), or seconds (s). Default value is 30m.",
+              "type" : "string"
+            }
+          },
+          "additionalProperties" : false
+        },
+        "monitoring" : {
+          "type" : "object",
+          "properties" : {
+            "metrics" : {
+              "type" : "object",
+              "properties" : {
+                "enabled" : {
+                  "description" : "Enable/disable liberty MicroProfile Metrics on /metrics endpoint (OpenMetric format). Default value is false.",
+                  "type" : "boolean"
+                }
+              },
+              "required" : [ "enabled" ]
+            },
+            "scraping" : {
+              "type" : "object",
+              "properties" : {
+                "enabled" : {
+                  "description" : "Enable/Disable liberty MicroProfile metrics scrapping. Default value is false.",
+                  "type" : "boolean"
+                },
+                "podAnnotations" : {
+                  "description" : "Annotations to be added to the pods for them to be scrapped properly by the reporting agent (eg.: Prometheus)",
+                  "type" : "object"
+                }
+              }
+            }
+          },
+          "required" : [ "metrics", "scraping" ],
+          "additionalProperties" : false
+        },
+        "test" : {
+          "type" : "object",
+          "properties" : {
+            "configurationName" : {
+              "description" : "Test configuration name (common|ci). Default value is common.",
+              "type" : "string",
+              "enum" : [ "common", "ci" ]
+            }
+          },
+          "required" : [ "configurationName" ],
+          "additionalProperties" : false
+        },
+        "remoteDebug" : {
+          "description" : "Java remote debug related configuration.",
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "Should remote debug be activated (port=7777). Default value is false.",
+              "type" : "boolean"
+            }
+          },
+          "additionalProperties" : false
+        },
+        "osgi" : {
+          "description" : "OSGI related configuration.",
+          "type" : "object",
+          "properties" : {
+            "frameworkReadinessRetryLimit" : {
+              "description" : "Default value is 600.",
+              "type" : "integer",
+              "exclusiveMinimum" : 0,
+              "maximum" : 3600
+            },
+            "stateMonitorBundleAvailabilityRetryLimit" : {
+              "description" : "Default value is 600.",
+              "type" : "integer",
+              "exclusiveMinimum" : 0,
+              "maximum" : 3600
+            }
+          },
+          "additionalProperties" : false
+        }
+      },
+      "required" : [ "jvm", "monitoring" ],
+      "additionalProperties" : false
+    },
+    "security" : {
+      "description" : "Security configuration.",
+      "type" : "object",
+      "properties" : {
+        "k8sSecrets" : {
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "If enabled, the opf deployment will look for a K8s secret containing the opf credentials and mount it as a bootstrap.properties file. Default value is true. Note that if you disable this, you should make the credentials available by any other way (eg. Hashicorp vault) as a file called 'bootstrap.secret.extension.properties' located in /secrets.",
+              "type" : "boolean"
+            },
+            "type" : {
+              "description" : "K8s secrets can be provided as extension bootstrap properties with subpath or configuration variables with VARIABLE_SOURCE_DIRS",
+              "type" : "string",
+              "enum" : [ "bootstrapProperties", "configVariables" ]
+            },
+            "ovaSecretName" : {
+              "description" : "The name of the K8s secret containing the ova credentials.",
+              "type" : "string"
+            }
+          },
+          "anyOf" : [ {
+            "properties" : {
+              "enabled" : {
+                "const" : true
+              }
+            },
+            "required" : [ "ovaSecretName" ]
+          }, {
+            "properties" : {
+              "enabled" : {
+                "const" : false
+              }
+            }
+          } ],
+          "additionalProperties" : false
+        },
+        "urlPathFilters" : {
+          "type" : "object",
+          "properties" : {
+            "ova" : {
+              "description" : "Identifying part of the OVA url. It is used used by OpenidConnectClient's and OpenIdLoginModule when openId is enabled or the PersonRegistryLoginModule when it is not. Default value is \"ova/secure\".",
+              "type" : "string"
+            }
+          },
+          "additionalProperties" : false
+        },
+        "ssoRequiresSSL" : {
+          "description" : "If set to true, sso cookies have secure setting. Attribute of webAppSecurity.",
+          "type" : "boolean",
+          "default" : true
+        },
+        "openid" : {
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "Should OpenId authentication mechanism be enabled. Default value is true.",
+              "type" : "boolean"
+            },
+            "ova" : {
+              "type" : "object",
+              "properties" : {
+                "authFilterMatchType" : {
+                  "description" : "Match type used to match the OVA urlPathFilter in order to decide if the OpenIdConnect client should intercept the request. Default value is \"contains\".",
+                  "type" : "string",
+                  "enum" : [ "contains", "equals", "notContain" ]
+                },
+                "clientId" : {
+                  "type" : "string"
+                },
+                "clientSecret" : {
+                  "type" : "string"
+                }
+              },
+              "required" : [ ],
+              "additionalProperties" : false
+            },
+            "idpConfig" : {
+              "description" : "Ova idp configuration which specifies authorization tokens ova will use to communicate with ova-services.",
+              "type" : "object",
+              "properties" : {
+                "httpsRequired" : {
+                  "description" : "Is HTTPS required for idp login",
+                  "type" : "boolean",
+                  "default" : true
+                },
+                "tokenEndpointUrl" : {
+                  "description" : "Endpoint for OpenId authorization token.",
+                  "type" : "string"
+                },
+                "discoveryEndpointUrl" : {
+                  "description" : "Discovery endpoint. Will be used if tokenEndpointUrl is empty.",
+                  "type" : "string"
+                },
+                "authorizationEndpointRedirectUrl" : {
+                  "description" : "OpenId endpoint to authenticate.",
+                  "type" : "string"
+                },
+                "logoutEndpointUrl" : {
+                  "description" : "OpenId endpoint to call when user logs out.",
+                  "type" : "string"
+                },
+                "revokeEnabled" : {
+                  "description" : "Enable token revocation on logout. Default to true.",
+                  "type" : "boolean"
+                },
+                "revocationUrl" : {
+                  "description" : "Url to revoke tokens. If empty then taken from OIDC.",
+                  "type" : "string"
+                },
+                "revokeTokens" : {
+                  "description" : "Coma separated token names to revoke.",
+                  "type" : "string"
+                },
+                "invalidateCookiesOnLogoutPattern" : {
+                  "description" : "Additional cookies to invalidate upon logout. Default: 'WASOidcClient.*|/,WASReqURL.*|/'.",
+                  "type" : "string"
+                },
+                "jwkEndpointUrl" : {
+                  "description" : "Specifies a JWK endpoint URL.",
+                  "type" : "string"
+                },
+                "signatureAlgorithm" : {
+                  "description" : "Specifies the signature algorithm that will be used to verify the signature of the ID token.",
+                  "type" : "string"
+                },
+                "realmIdentifier" : {
+                  "description" : "Specifies a JSON attribute in the ID token that is used as the realm name.",
+                  "type" : "string"
+                },
+                "issuerIdentifier" : {
+                  "description" : "A case-sensitive URL using the HTTPS scheme that contains scheme, host and optionally port number and path components. Specify multiple values as a comma separated list.",
+                  "type" : "string"
+                },
+                "userIdentifier" : {
+                  "description" : "Specifies a JSON attribute in the ID token that is used as the user principal name in the subject.",
+                  "type" : "string"
+                },
+                "accessTokenMinValidityTime" : {
+                  "description" : "Default: 0.",
+                  "type" : "integer"
+                },
+                "targetRelyingParty" : {
+                  "description" : "By default not used. Only valid in case of OPENID_SECURITY_EXCHANGE_TOKEN profile ID. In case of the exchange token flow, this is the audience ova is going to ask for to acquire a token for communicating with ova-services.  For example: ova-services. Default: opf-rest.",
+                  "type" : "string"
+                },
+                "redirectJunctionPath" : {
+                  "description" : "Specifies whether JSON Web Tokens can be reused.",
+                  "type" : "string"
+                },
+                "scope" : {
+                  "description" : "OPF client scope as defined in the OpenId provider.",
+                  "type" : "string"
+                },
+                "exchangeToken" : {
+                  "description" : "Should OVA exchange its token for one tailored to the resource server when calling it or use its own one.",
+                  "type" : "boolean"
+                },
+                "audience" : {
+                  "description" : "Audience for the ova authorization token. The default and recommended security profile is the OPENID_SECURITY_PROPAGATE_TOKEN, where the token is used to authorize access to ova as well as ova-services. Hence, an example is: ova,ovaservices.",
+                  "type" : "string"
+                },
+                "tokenEndpointAuthMethod" : {
+                  "description" : "The method to use for sending credentials to the token endpoint of the OpenID Connect provider in order to authenticate the client.",
+                  "type" : "string"
+                },
+                "redirectToRPHostAndPort" : {
+                  "description" : "redirectToRPHostandPort value for openid client.",
+                  "type" : "string"
+                }
+              },
+              "required" : [ "tokenEndpointUrl", "discoveryEndpointUrl", "authorizationEndpointRedirectUrl", "jwkEndpointUrl", "signatureAlgorithm", "realmIdentifier", "issuerIdentifier", "userIdentifier", "accessTokenMinValidityTime", "targetRelyingParty", "exchangeToken" ],
+              "additionalProperties" : false
+            }
+          },
+          "anyOf" : [ {
+            "properties" : {
+              "enabled" : {
+                "const" : true
+              }
+            },
+            "required" : [ "idpConfig" ]
+          }, {
+            "properties" : {
+              "enabled" : {
+                "const" : false
+              }
+            }
+          } ],
+          "additionalProperties" : false
+        },
+        "tls" : {
+          "description" : "OVA server tls configuration.",
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "Should tls be enabled on OVA server. Default is true.",
+              "type" : "boolean",
+              "default" : true
+            },
+            "secretName" : {
+              "description" : "The name of the k8s secret containing the OVA server keystore and truststore.",
+              "type" : "string"
+            },
+            "mountPath" : {
+              "description" : "Path to the directory where the tls secret has to be mounted.",
+              "type" : "string"
+            },
+            "itemsProjection" : {
+              "description" : "Optionally, you can specify a target path for all or certain secret keys."
+            },
+            "serverKeystore" : {
+              "type" : "object",
+              "properties" : {
+                "type" : {
+                  "description" : "Type of the server keystore.",
+                  "type" : "string"
+                },
+                "location" : {
+                  "description" : "Location of the server keystore.",
+                  "type" : "string"
+                }
+              },
+              "required" : [ "type", "location" ],
+              "additionalProperties" : false
+            },
+            "serverTruststore" : {
+              "type" : "object",
+              "properties" : {
+                "type" : {
+                  "description" : "Type of the server truststore.",
+                  "type" : "string"
+                },
+                "location" : {
+                  "description" : "Location of the server truststore.",
+                  "type" : "string"
+                }
+              },
+              "required" : [ "type", "location" ],
+              "additionalProperties" : false
+            },
+            "verifyHostname" : {
+              "description" : "Should OVA verify hostname with https certificate for external calls.",
+              "type" : "boolean",
+              "default" : true
+            }
+          },
+          "anyOf" : [ {
+            "properties" : {
+              "enabled" : {
+                "const" : true
+              }
+            },
+            "required" : [ "secretName", "mountPath", "serverKeystore", "serverTruststore" ]
+          }, {
+            "properties" : {
+              "enabled" : {
+                "const" : false
+              }
+            }
+          } ],
+          "additionalProperties" : false
+        },
+        "enabled" : {
+          "type" : "boolean"
+        }
+      },
+      "required" : [ "k8sSecrets", "openid", "tls" ],
+      "additionalProperties" : false
+    },
+    "ui" : {
+      "description" : "OVA user interface configuration.",
+      "type" : "object",
+      "properties" : {
+        "slaveMode" : {
+          "description" : "Deprecated. Used in case OVA UI should be part of another UI, for example in an iframe. ",
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "Deprecated. Default value is set to false.",
+              "type" : "boolean"
+            },
+            "baseCallbackUrl" : {
+              "description" : "Deprecated. An URL for the OVA to get back to the wrapper application.",
+              "type" : "string"
+            }
+          },
+          "additionalProperties" : false,
+          "anyOf" : [ {
+            "properties" : {
+              "enabled" : {
+                "const" : true
+              }
+            },
+            "required" : [ "baseCallbackUrl" ],
+            "additionalProperties" : false
+          }, {
+            "properties" : {
+              "enabled" : {
+                "const" : false
+              }
+            }
+          } ]
+        },
+        "hideSearchLimitOverride" : {
+          "description" : "Overrides the minimum number of search results required to display search parameters. Only used when auto query is enabled. Default value is -1.",
+          "type" : "integer"
+        },
+        "banksContextMode" : {
+          "description" : "Controls the way bank dropdown in the top-right of OVA behaves. Either user is forced to pick one (CHOOSE_ONE) or allowed to pick or not a particular bank (ALLOW_ALL) or forbidden to pick any particular bank (FORCE_ALL). Default value is ALLOW_ALL.",
+          "type" : "string",
+          "enum" : [ "CHOOSE_ONE", "ALLOW_ALL", "FORCE_ALL" ]
+        },
+        "bankingEntitiesContextMode" : {
+          "description" : "Controls the way banking entity dropdown in the top-right of OVA behaves. Either user is forced to pick one (CHOOSE_ONE) or allowed to pick or not a particular banking entity (ALLOW_ALL) or forbidden to pick any particular banking entity (FORCE_ALL). Default value is FORCE_ALL.",
+          "type" : "string",
+          "enum" : [ "CHOOSE_ONE", "ALLOW_ALL", "FORCE_ALL" ]
+        },
+        "automaticLogout" : {
+          "description" : "Feature performs an automatic logout after configured amount of user idle time. There is also the option to configure a warning message to appear a configurable amount of time before it happens. ",
+          "type" : "object",
+          "properties" : {
+            "timeout" : {
+              "description" : "Session timeout in seconds which should reflect the timeout set on the server. It is used by OVA only to show a warning message when the session is close to expire. In seconds.",
+              "type" : "integer"
+            },
+            "timeoutWarning" : {
+              "description" : "Time left for the session to timeout when a warning with timer should appear. In seconds.",
+              "type" : "integer"
+            }
+          },
+          "additionalProperties" : false
+        }
+      },
+      "additionalProperties" : false
+    },
+    "cache" : {
+      "description" : "Configuration of searches and operations templates cache.",
+      "type" : "object",
+      "properties" : {
+        "size" : {
+          "description" : "Maximum number of entries in the cache. Default value is set to 5.",
+          "type" : "integer"
+        },
+        "ttl" : {
+          "description" : "Time to live. Default value is set to 300 seconds",
+          "type" : "integer"
+        }
+      }
+    },
+    "resourceServer" : {
+      "description" : "Resource server configuration.",
+      "type" : "object",
+      "properties" : {
+        "apiUrl" : {
+          "description" : "Base URL for ova-services REST endpoints.",
+          "type" : "string"
+        },
+        "readTimeout" : {
+          "description" : "Default value is set to 60000 seconds.",
+          "type" : "integer"
+        },
+        "connectTimeout" : {
+          "description" : "Default value is set to 30000 seconds.",
+          "type" : "integer"
+        }
+      },
+      "required" : [ "apiUrl" ],
+      "additionalProperties" : false
+    },
+    "logging" : {
+      "description" : "Logging configuration.",
+      "type" : "object",
+      "properties" : {
+        "httpLoggingStrategy" : {
+          "description" : "Default value is off.",
+          "type" : "string",
+          "enum" : [ "off", "basic", "full" ]
+        },
+        "consoleSources" : {
+          "description" : "The list of comma-separated sources that route to the console. This property applies only when consoleFormat=json. Valid values are message, trace, accessLog, ffdc, and audit.",
+          "type" : "string"
+        },
+        "consoleFormat" : {
+          "description" : "The required format for the console. Valid values are dev, simple or json format. By default, consoleFormat is set to dev.",
+          "type" : "string",
+          "enum" : [ "dev", "simple", "json" ]
+        },
+        "consoleLogLevel" : {
+          "description" : "This filter controls the granularity of messages that go to the console. The valid values are INFO, AUDIT, WARNING, ERROR, and OFF. By default, the consoleLogLevel is set to AUDIT.",
+          "type" : "string",
+          "enum" : [ "INFO", "AUDIT", "WARNING", "ERROR", "OFF" ]
+        },
+        "traceSpecification" : {
+          "description" : "This setting is used to selectively enable trace. The log detail level specification is in the following format: component = level. Default value is *=info",
+          "type" : "string"
+        },
+        "traceFormat" : {
+          "description" : "This attribute controls the format of the trace log. The default format for Liberty is ENHANCED. You can also use BASIC and ADVANCED.",
+          "type" : "string",
+          "enum" : [ "ENHANCED", "BASIC", "ADVANCED" ]
+        }
+      },
+      "additionalProperties" : false
+    },
+    "bootstrapProperties" : {
+      "description" : "Server additional bootstrap properties",
+      "type" : "array",
+      "uniqueItems" : true,
+      "items" : {
+        "type" : "object",
+        "properties" : {
+          "name" : {
+            "description" : "Property name",
+            "type" : "string"
+          },
+          "value" : {
+            "description" : "Property value",
+            "type" : "string"
+          },
+          "description" : {
+            "description" : "Property description",
+            "type" : "string"
+          }
+        },
+        "additionalProperties" : false,
+        "required" : [ "name", "value" ]
+      }
+    },
+    "environmentVariables" : {
+      "description" : "Additional environment variables. These have to be given as key value pairs.",
+      "type" : "object"
+    },
+    "jvm" : {
+      "description" : "Server additional JVM configuration.",
+      "type" : "object",
+      "properties" : {
+        "options" : {
+          "description" : "JVM options. Must be given in the form of key value pairs even if only the values will be actually used and added as jvm options.",
+          "type" : "object"
+        },
+        "systemProperties" : {
+          "description" : "JVM system properties. These have to be given as key value pairs.",
+          "type" : "object"
+        },
+        "heapDumps" : {
+          "description" : "Heap dump properties",
+          "type" : "object",
+          "properties" : {
+            "enabled" : {
+              "description" : "Enables heap dumps settings. If enabled, persistent volume configuration is required.",
+              "type" : "boolean"
+            },
+            "heapDumpsPath" : {
+              "description" : "Path for heap-dumps to be stored. It'll be also mount path for volume mount",
+              "type" : "string"
+            },
+            "storageClassName" : {
+              "description" : "Class name of storage to claim",
+              "type" : "string"
+            },
+            "storageCapacity" : {
+              "description" : "Capacity of PVC required for heap dumps storage",
+              "type" : "string"
+            },
+            "securityContext" : {
+              "description" : "Additional settings required to match file permissions on volumes.",
+              "type" : "object",
+              "fsGroup" : {
+                "description" : "GID for files created on volume by container.",
+                "type" : "string"
+              }
+            }
+          },
+          "dependentRequired" : {
+            "heapDumpsPath" : [ "storageClassName", "storageCapacity" ],
+            "storageClassName" : [ "heapDumpsPath" ],
+            "storageCapacity" : [ "heapDumpsPath" ]
+          }
+        }
+      },
+      "additionalProperties" : false
+    },
+    "extension" : {
+      "type" : "object",
+      "properties" : {
+        "additionalBootstrapConfigMaps" : {
+          "description" : "Name of the additional bootstrap configMap to be mounted as a bootstrap.properties file in the OVA server. The configMap must contain a data entry called \"bootstrap.extension.properties\". These additional configMaps have to be given as key value pairs, the name can be anything, only the value is used to determine the file name to be used.",
+          "type" : "object"
+        },
+        "additionalSecrets" : {
+          "description" : "Name of the additional K8s secrets to be mounted as bootstrap.properties file in the OVA server. The configMap must contain a data entry called \"opf-secrets\". These additional secrets have to be given as key value pairs, the name can be anything, only the value is used to determine the file name to be used.",
+          "type" : "object"
+        }
+      },
+      "additionalProperties" : false
+    }
+  },
+  "required" : [ "deployment", "serverConfig", "security", "ui", "resourceServer" ],
+  "additionalProperties" : false
+}

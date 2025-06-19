@@ -1,0 +1,16 @@
+{{- if .Values.httpBridge.k8sPodUrlDiscovery.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "test-app.fullname" . }}-role
+  labels:
+    app.kubernetes.io/name: {{ include "test-app.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "test-app.chart" $ }}
+rules:
+- apiGroups: {{ required ".Values.authorization.role.rules.apiGroups" .Values.authorization.role.rules.apiGroups }}
+  resources: {{ required ".Values.authorization.role.rules.resources" .Values.authorization.role.rules.resources }}
+  verbs: {{ required ".Values.authorization.role.rules.verbs" .Values.authorization.role.rules.verbs }}
+{{- end }}

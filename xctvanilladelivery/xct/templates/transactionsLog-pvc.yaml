@@ -1,0 +1,23 @@
+{{- if .Values.deployment.volumes.transactionsLog.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "xct.fullname" . }}-transactions-log
+  labels:
+    app.kubernetes.io/name: {{ include "xct.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "xct.chart" $ }}
+    {{- with .Values.deployment.labels }}
+    {{ toYaml . | nindent 4 | trim -}}
+    {{- end }}
+spec:
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  storageClassName: {{ required ".Values.deployment.volumes.transactionsLog.storageClassName is required." .Values.deployment.volumes.transactionsLog.storageClassName }}
+  resources:
+    requests:
+      storage: 1Gi
+{{- end }}

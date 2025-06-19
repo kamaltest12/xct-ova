@@ -1,0 +1,90 @@
+#external-db:
+  #enabled: false
+nfs-server:
+  enabled: false
+secrets:
+  enabled: true
+  opf:
+    messaging:
+      mq:
+        username: mqm
+        password: password
+    serverConfig:
+      admin:
+        username: admin
+        password: password
+      jmx:
+        username: jmx
+        password: password
+    externalSystems:
+      fsis:
+        username: fsis
+        password: password
+      sanctionsCheck:
+        username: sanctions_check
+        password: password
+      paymentUploadPush:
+        username: payment_upload_push
+        password: password
+      universalExecutionCallback:
+        username: universal_execution_callback
+        password: password
+      universalExecution:
+        username: universal_execution
+        password: password
+      CHANNELS:
+        username: admin
+        password: password
+      xctGpiCct:
+        username: gpi
+        password: password
+      xctGpiCov:
+        username: gpi
+        password: password
+      xctGpiFit:
+        username: gpi
+        password: password
+      xctGpiUcon:
+        username: gpi
+        password: password
+      xctGpiGct:
+        username: gpi
+        password: password
+      xctGpiGpt:
+        username: gpi
+        password: password
+      xctGpiGsrp:
+        username: gpi
+        password: password
+      xctSwiftMicrogateway:
+        busAppName: BO2
+        profileId: trackerProfileChannel
+        sharedKey: Abcd1234Abcd1234Abcd1234Abcd1234
+    openid:
+      opf:
+        clientId: opfrest
+        clientSecret: "07720bc0-d1b0-44aa-93da-9ac9cb85a6b4"
+      bva:
+        clientId: bva
+        clientSecret: "011f14e2-11f8-4237-95d3-45d0b9202daf"
+    tls:
+      keystore:
+        password: password
+      truststore:
+        password: password
+keystores:
+    opf-server-keystore.jks: jks/opf-server/opf-server-keystore.jks
+    opf-server-truststore.jks: jks/opf-server/opf-server-truststore.jks
+    kafka.server.keystore.jks: jks/kafka/broker/kafka.server.keystore.jks
+    kafka.server.truststore.jks: jks/kafka/broker/kafka.server.truststore.jks
+    kafka.client.keystore.jks: jks/kafka/client/kafka.client.keystore.jks
+    kafka.client.truststore.jks: jks/kafka/client/kafka.client.truststore.jks
+    ist.client.keystore.jks: jks/ist/client/ist.client.keystore.jks
+    ist.client.truststore.jks: jks/ist/client/ist.client.truststore.jks
+    saa.keystore.jceks: jks/swift/saa.keystore.jceks
+    server-keystore.jks: jks/keycloak/keycloak-server.jks
+mqConfigs:
+  mqConfigFiles:
+    - mqconfig/xct_config_file.yaml
+  mqConfigScripts:
+    - mqconfig/opf_mq_75_compat.mqsc

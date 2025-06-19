@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "xct.fullname" . }}-service
+  labels:
+    app.kubernetes.io/name: {{ include "xct.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "xct.chart" $ }}
+    {{- with .Values.deployment.labels }}
+    {{ toYaml . | nindent 4 | trim -}}
+    {{- end }}
+  annotations:
+    sidecar.istio.io/inject: "false"
+    {{- with .Values.deployment.service.annotations }}
+    {{ toYaml . | nindent 4 | trim -}}
+    {{- end }}
+spec:
+  type: {{ .Values.deployment.service.type | default "ClusterIP" }}
+  selector:
+    app.kubernetes.io/name: {{ include "xct.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+  ports:
+    - name: https
+      protocol: TCP
+      port: {{ .Values.deployment.service.port | default 9443 }}
+      targetPort: {{ .Values.deployment.containerHttpsPort | default 9443 }}
+      {{ if .Values.deployment.service.nodePort }}
+      nodePort: {{ .Values.deployment.service.nodePort }}
+      {{- end }}
+    {{- if .Values.serverConfig.remoteDebug.enabled }}
+    - name: debug
+      protocol: TCP
+      port: 7777
+      targetPort: 7777
+    {{- end }}

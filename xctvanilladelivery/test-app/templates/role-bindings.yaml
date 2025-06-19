@@ -1,0 +1,20 @@
+{{- if .Values.httpBridge.k8sPodUrlDiscovery.enabled }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "test-app.fullname" . }}-rolebinding
+  labels:
+    app.kubernetes.io/name: {{ include "test-app.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "test-app.chart" $ }}
+subjects:
+  # You can specify more than one "subject"
+  - kind: ServiceAccount
+    name: {{ required ".Values.authorization.roleBinding.serviceAccountName" .Values.authorization.roleBinding.serviceAccountName}}
+roleRef:
+  kind: Role
+  name: {{ include "test-app.fullname" . }}-role # this must match the name of the Role or ClusterRole you wish to bind to
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

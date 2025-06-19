@@ -1,0 +1,214 @@
+# Specific values for running XCT in dev
+deployment:
+  image:
+    name: "xct-docker.coastguard.clear2pay.com/xct-cloud"
+    tag: "17.2.7-70880-eed75aac"
+    pullPolicy: IfNotPresent
+  labels:
+    env: 'dev'
+  resources:
+    enabled: false
+  volumes:
+    transactionsLog:
+      enabled: false
+      storageClassName: "opf-nfs-transactionslog"
+    interchanges:
+      enabled: false
+  ingress:
+    enabled: false
+  probes:
+    liveness:
+      enabled: false
+    readiness:
+      enabled: false
+    startup:
+      enabled: false
+serverConfig:
+  warmUp:
+    enabled: false
+  remoteDebug:
+    enabled: false
+  jvm:
+    memory:
+      initMemorySize: 10g
+      maxMemorySize: 10g
+      maxStackSize: 3m
+  monitoring:
+    metrics:
+      enabled: false
+    scraping:
+      enabled: false
+messaging:
+  db:
+    enabled: true
+  mq:
+    cfDefaultValues:
+      hostname: mq
+    ndu:
+      color: blue
+  kafka:
+    connectionFactories:
+      KafkaCF:
+        bootstrapServers: "dev-kafka-0.dev-kafka-headless.xct.svc.cluster.local:9093"
+        sslKeystoreLocation: "/tmp/jks/kafka/client/kafka.client.keystore.jks"
+        sslTruststoreLocation: "/tmp/jks/kafka/client/kafka.client.truststore.jks"
+        sslEndpointIdentification: ""
+security:
+  k8sSecrets:
+    opfSecretName: opf-dev-chart-secrets
+  urlPathFilters:
+    opf: "xctrest"
+  openid:
+    enabled: false
+    idpConfig:
+      tokenEndpointUrl: "https://keycloak:8543/auth/realms/xctsso/protocol/openid-connect/token"
+      inboundPropagation: "supported"
+      authorizationEndpointRedirectUrl: "https://localhost:8543/auth/realms/xctsso/protocol/openid-connect/auth"
+      jwkEndpointUrl: "https://keycloak:8543/auth/realms/xctsso/protocol/openid-connect/certs"
+      signatureAlgorithm: "RS256"
+      realmIdentifier: iss
+      issuerIdentifier: "https://keycloak:8543/auth/realms/xctsso,https://localhost:8543/auth/realms/xctsso"
+      userIdentifier: preferred_username
+      accessTokenMinValidityTime: 0
+      propagatedTokenEnabled: true
+      clientCredentialsAudiences: xctrest,opfrest,ova
+    identityConfig:
+      identityClaim: opf-identity
+      paths:
+        bankGroupPath: "$.bank-group-id"
+        bankPath: "$.bank-users[*].bank-name"
+        bankingEntityPath: "$['bank-users'][?(@['bank-name'] == '${bank}')].banking-entity-name"
+        bankUserIdPath: "$['bank-users'][?(@['bank-name'] == '${bank}' && @['banking-entity-name'] == '${bankingEntity}')].user-id"
+        bankUserNamePath: "$['bank-users'][?(@['bank-name'] == '${bank}' && @['banking-entity-name'] == '${bankingEntity}')].user-name"
+        rolesPath: "$['bank-users'][?(@['bank-name'] == '${bank}' && @['banking-entity-name'] == '${bankingEntity}')].roles[*].role-name"
+        bankRolesPath: "$['bank-users'][?(@['bank-name'] == '${bank}' && @['banking-entity-name'] == '${bankingEntity}')].roles[?(@['role-name'] == '${role}')].bank-name"
+        bankingEntityRolesPath: "$['bank-users'][?(@['bank-name'] == '${bank}' && @['banking-entity-name'] == '${bankingEntity}')].roles[?(@['role-name'] == '${role}')].banking-entity-name"
+  tls:
+    secretName: opf-dev-chart-tls-secrets
+    mountPath: "/tmp/jks"
+    itemsProjection:
+      - key: opf-server-keystore.jks
+        path: opf-server/opf-server-keystore.jks
+      - key: opf-server-truststore.jks
+        path: opf-server/opf-server-truststore.jks
+      - key: kafka.client.keystore.jks
+        path: kafka/client/kafka.client.keystore.jks
+      - key: kafka.client.truststore.jks
+        path: kafka/client/kafka.client.truststore.jks
+      - key: ist.client.truststore.jks
+        path: ist/client/ist.client.truststore.jks
+      - key: ist.client.keystore.jks
+        path: ist/client/ist.client.keystore.jks
+      - key: saa.keystore.jceks
+        path: swift/saa.keystore.jceks
+    serverKeystore:
+      type: jks
+      location: "/tmp/jks/opf-server/opf-server-keystore.jks"
+    serverTruststore:
+      type: jks
+      location: "/tmp/jks/opf-server/opf-server-truststore.jks"
+externalSystems:
+  sanctionsCheck:
+    baseUrl: "https://test-app-service:9443/opfresttest/gfm/success"
+  paymentUploadPush:
+    baseUrl: "https://test-app-service:9443/opfresttest/rest/push"
+  fsisRiskAssessment:
+    baseUrl: "https://test-app-service:9443/opfresttest/fsis/success"
+    callbackUrl: "https://test-app-service:9443/xctrest/webapi/fsis"
+    alwaysTrust: true
+  universalExecutionCallback:
+    baseUrl: "https://test-app-service:9443/opfresttest/rest/uecr"
+  universalExecution:
+    baseUrl: "https://test-app-service:9443/opfresttest/rest/uecr"
+  channels:
+    baseUrl: "https://test-app-service:9443/opfresttest/rest/uecr"
+  xctGpiCct:
+    baseUrl: "https://test-app-service:9443/opfresttest/gpi/gcct/success"
+    timeout: 120000
+    alwaysTrust: true
+  xctGpiCov:
+    baseUrl: "https://test-app-service:9443/opfresttest/gpi/gcov/success"
+    timeout: 120000
+    alwaysTrust: true
+  xctGpiFit:
+    baseUrl: "https://test-app-service:9443/opfresttest/gpi/gfit/success"
+    timeout: 120000
+    alwaysTrust: true
+  xctGpiUcon:
+    baseUrl: "https://test-app-service:9443/opfresttest/gpi/ucon/success"
+    timeout: 120000
+    alwaysTrust: true
+  xctGpiGct:
+    baseUrl: "https://test-app-service:9443/opfresttest/gpi/gct/success"
+    timeout: 120000
+    alwaysTrust: true
+  xctGpiGpt:
+    baseUrl: "https://test-app-service:9443/opfresttest/gpi/gpt/success"
+    timeout: 12000
+    alwaysTrust: true
+  xctGpiGsrp:
+    baseUrl: "https://test-app-service:9443/opfresttest/gpi/gsrp/success"
+    timeout: 120000
+    alwaysTrust: true
+  xctFsis:
+    sanctionsCheckConnectorId: SanctionsCheck
+    fraudCheckConnectorId: FraudCheck
+    callback_max_repeat: 3
+    callback_break_time: 3000
+  universalExecutionInfraOps:
+    baseUrl: "https://localhost:9443/opfrest/webapi"
+monitoring:
+  whitebox:
+    inMemoryEvents:
+      enabled: false
+    influxDb:
+      enabled: false
+      host: dev-influxdb
+      categories: [
+        "TIMER;component=Parser",
+        "TIMER;class=BaseMDBBean",
+        "TIMER;category=BusinessTimersContinuous",
+        "TIMER;package=com.clear2pay.bph.opfcommon.sequencer",
+        "TIMER;package=com.clear2pay.bph.opfcommon.bpel",
+        "TIMER;package=com.clear2pay.bph.opfpayment.xmlmapper.formatter.impl",
+        "METER;class=OpfEhcache",
+        "METER;class=CacheManager",
+        "EVENT;class=BusinessTimerEventProducerDescriptor",
+        "TIMER;class=WhiteboxMetricsApplicationListener,package=com.clear2pay.bph.opf.rest.jersey.whitebox"
+      ]
+    scraping:
+      enabled: false
+  deepsea:
+    enabled: false
+logging:
+  consoleFormat: "dev"
+jvm:
+  systemProperties:
+    java.naming.provider.url: "corbaloc:iiop:127.0.0.1:2809"
+    client.api.support.mode: true
+    xct.rest.base.url: "https://xct-service:9443/xctrest/webapi"
+    com.clear2pay.opf.api.client.base.url.POM: "https://localhost:9443/opfresttest/rest/uecr"
+    com.clear2pay.bph.warmupEnabled.businessEventCatalogsLifecycle: false
+    fraud.check.rest.base.url: "https://localhost:9443/opfresttest/fraudcheck/success"
+    java.util.concurrent.ForkJoinPool.common.parallelism: 3
+    deepsea.coral.enabled: false
+    com.clear2pay.opf.sanctions_check.password: "password"
+    com.clear2pay.opf.payment_upload_push.password: "password"
+    com.clear2pay.xct.swiftsaa.decrypt: true
+    com.clear2pay.xct.swiftsaa.encrypt: true
+    com.clear2pay.ova.security.profile: APP_SECURITY
+    com.clear2pay.ova.opf.client.api.basic.authentication: true
+  options:
+    ParallelGCThreads: -XX:ParallelGCThreads=3
+    ConcGCThreads: -XX:ConcGCThreads=3
+    verboseGc: -verbose:gc
+    PrintGCDetails: -XX:+PrintGCDetails
+    PrintGCTimeStamps: -XX:+PrintGCTimeStamps
+    PrintGCDateStamps: -XX:+PrintGCDateStamps
+    PrintGCCause: -XX:+PrintGCCause
+    Xloggc: -Xloggc:/logs/gc.verbose.log
+extension:
+  additionalSecrets:
+    secrets.xct.extension: xct-secrets
+  additionalBootstrapConfigMaps:
+    xct-bootstrap-configmap: xct-bootstrap-configmap

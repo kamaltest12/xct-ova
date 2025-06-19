@@ -1,0 +1,25 @@
+{{- if .Values.deployment.budget.minAvailable -}}
+  {{- if semverCompare ">=1.21-0" .Capabilities.KubeVersion.GitVersion }}
+apiVersion: policy/v1
+  {{- else }}
+apiVersion: policy/v1beta1
+  {{- end }}
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "xct-ova.fullname" . }}-pdb
+  labels:
+    app.kubernetes.io/name: {{ include "xct-ova.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "xct-ova.chart" $ }}
+    {{- with .Values.deployment.labels }}
+    {{ toYaml . | nindent 4 | trim -}}
+    {{- end }}
+spec:
+  minAvailable: {{ .Values.deployment.budget.minAvailable | default 0 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "xct-ova.name" . }}
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+{{- end -}}

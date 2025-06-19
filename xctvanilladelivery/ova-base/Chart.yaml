@@ -1,0 +1,6 @@
+apiVersion: v2
+type: application
+name: ova-dev-chart
+description: Chart for deploying ova secrets and service-account for dev-purpose
+version: 17.2.7-70880-eed75aac
+appVersion: "17.2.7-70880-eed75aac"

@@ -1,0 +1,455 @@
+# Application server deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "xct.fullname" . }}-deployment
+  labels:
+    app.kubernetes.io/name: {{ include "xct.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "xct.chart" $ }}
+    {{- with .Values.deployment.labels }}
+    {{ toYaml . | nindent 4 | trim -}}
+    {{- end }}
+# @OPFPatch US1832627 Distroless image for OPF - to be removed once delivered, but before removing it
+# check if there is no "XCT Extension" in this file.
+# If there is "XCT Extension", we need to:
+# 1). Update helm-generator-maven-plugin to latest version which can merge templates.
+# 2). Include only XCT changes in this file. OPF changes should be merged with latest helm-generator-maven-plugin.
+# See https://wiki.clear2pay.com/display/TECHM/Helm-Generator+tool#HelmGeneratortool-ChangeLog
+# But we need to do it during/after OPF upgrade. Until it is done, we need to keep this file in sync with OPF
+spec:
+  replicas: {{ include "numericSafe" .Values.deployment.replicasCount | default 1 }}
+  strategy:
+    type: {{ .Values.deployment.strategy.type | default "RollingUpdate" }}
+    rollingUpdate:
+      maxUnavailable: {{ include "numericSafe" .Values.deployment.strategy.rollingUpdate.maxUnavailable | default 0 }}
+      maxSurge: {{ include "numericSafe" .Values.deployment.strategy.rollingUpdate.maxSurge | default 1 }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "xct.name" . }}
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "xct.name" . }}
+        app.kubernetes.io/instance: {{ $.Release.Name }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+        app.kubernetes.io/version: {{ .Chart.AppVersion }}
+        helm.sh/chart: {{ include "xct.chart" $ }}
+        {{- with .Values.deployment.labels }}
+        {{ toYaml . | nindent 8 | trim -}}
+        {{- end }}
+      annotations:
+        rollingUpgrade: {{ randAlphaNum 5 | quote }} # see https://helm.sh/docs/howto/charts_tips_and_tricks/#automatically-roll-deployments
+        {{- if .Values.monitoring.whitebox.scraping.enabled }}
+        {{- with (required ".Values.monitoring.whitebox.scraping.podAnnotations is required" .Values.monitoring.whitebox.scraping.podAnnotations) }}
+        {{ toYaml . | nindent 8  | trim -}}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.serverConfig.monitoring.scraping.enabled }}
+        {{- with (required ".Values.serverConfig.monitoring.scraping.podAnnotations is required" .Values.serverConfig.monitoring.scraping.podAnnotations) }}
+        {{ toYaml . | nindent 8  | trim -}}
+        {{- end }}
+        {{- end }}
+        {{- with .Values.deployment.podAnnotations }}
+        {{ toYaml . | nindent 8 | trim -}}
+        {{- end }}
+    spec:
+      containers:
+        - name: opf
+          image: {{ if .Values.deployment.image.repository }}{{ .Values.deployment.image.repository }}/{{ end }}{{ .Values.deployment.image.name }}:{{ .Values.deployment.image.tag }}
+          imagePullPolicy: {{ .Values.deployment.image.pullPolicy | default "Always" }}
+          command:
+            - "/bin/tini"
+            - "--"
+            - "/opt/java/openjdk/jre/bin/java"
+          args:
+            - "-javaagent:/opt/ol/wlp/bin/tools/ws-javaagent.jar"
+            - "-Djava.awt.headless=true"
+            - "-Djdk.attach.allowAttachSelf=true"
+            {{- with .Values.serverConfig.jvm.memory }}
+            {{- if .initMemorySize }}
+            - "-Xms{{ .initMemorySize }}"
+            {{- end }}
+            {{- if .maxMemorySize }}
+            - "-Xmx{{ .maxMemorySize }}"
+            {{- end }}
+            {{- if .initPermSize }}
+            - "-XX:PermSize={{ .initPermSize }}"
+            {{- end }}
+            {{- if .maxPermSize }}
+            - "-XX:MaxPermSize={{ .maxPermSize }}"
+            {{- end }}
+            {{- end }}
+            {{- if .Values.serverConfig.jvm.runtimeOptimization.enabled }}
+            - "-server"
+            {{- end }}
+            {{- with .Values.serverConfig.jvm.CMSCollector }}
+            {{- if .enabled }}
+            - "-XX:+UseConcMarkSweepGC"
+            {{- if .classUnloading.enabled }}
+            - "-XX:+CMSClassUnloadingEnabled"
+            {{- else }}
+            - "-XX:-CMSClassUnloadingEnabled"
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.messaging.mq.ndu }}
+            - "-Dcom.clear2pay.bph.opf.version.color={{ required `".Values.messaging.mq.ndu.color  is required."` .Values.messaging.mq.ndu.color }}"
+            {{- if .Values.messaging.mq.ndu.compatMode }}
+            - "-Dcom.clear2pay.bph.opf.compat.mode={{ required `".Values.messaging.mq.ndu.compatMode.enabled is required."` .Values.messaging.mq.ndu.compatMode.enabled }}"
+            {{- end }}
+            {{- end }}
+            # Cache configuration
+            {{- if eq .Values.cache.relayCacheManager.peerProvider "db" }}
+            - "-Dcom.clear2pay.opf.relay.node.max.inactive.minutes.default={{  include "numericSafe" .Values.cache.relayCacheManager.dbCacheManagerPeerProvider.nodeMaxInactiveMinutes | default 2880 }}"
+            - "-Dcom.clear2pay.opf.relay.node.active.millis.default={{ include "numericSafe" .Values.cache.relayCacheManager.dbCacheManagerPeerProvider.nodeActiveMillis | default 5000 }}"
+            - "-Dcom.clear2pay.opf.relay.peer.lookup.interval.millis.default={{ include "numericSafe" .Values.cache.relayCacheManager.dbCacheManagerPeerProvider.lookupIntervalMillis | default 1000 }}"
+            {{- end }}
+            {{- if eq .Values.cache.relayCacheManager.peerProvider "k8s" }}
+            - "-Dcom.clear2pay.opf.relay.pod.selectors.default={{ .Values.cache.relayCacheManager.k8sCacheManagerPeerProvider.podSelectors | default (printf "app.kubernetes.io/name=%s,app.kubernetes.io/instance=%s" (include "xct.name" . ) $.Release.Name ) }}"
+            - "-Dcom.clear2pay.opf.relay.peer.lookup.interval.millis.default={{ include "numericSafe" .Values.cache.relayCacheManager.k8sCacheManagerPeerProvider.lookupIntervalMillis | default 1000 }}"
+            {{- end }}
+            - "-Dcom.clear2pay.opf.relay.port.default={{ include "numericSafe" .Values.cache.relayCacheManager.cacheManagerPeerListener.port | default 40001 }}"
+            - "-Dcom.clear2pay.opf.relay.socket.timeout.millis.default={{ include "numericSafe" .Values.cache.relayCacheManager.cacheManagerPeerListener.socketTimeout | default 20000 }}"
+            {{- with .Values.externalSystems }}
+            {{- if .cbis }}
+            - "-Dcbis.rest.base.url={{ .cbis.baseUrl }}"
+            {{- end }}
+            {{- if .sanctionsCheck }}
+            - "-Dsanctions.check.rest.base.url={{ .sanctionsCheck.baseUrl }}"
+            {{- end }}
+            {{- if .paymentUploadPush }}
+            - "-Dpayment.upload.push.rest.base.url={{ .paymentUploadPush.baseUrl }}"
+            {{- end }}
+            {{- if .fsisRiskAssessment }}
+            - "-Dcom.clear2pay.opfpayment.fsis.riskassessment.rest.base.url={{ .fsisRiskAssessment.baseUrl }}"
+            - "-Dcom.clear2pay.opfpayment.fsis.riskassessment.rest.callback.url={{ .fsisRiskAssessment.callbackUrl }}"
+            {{- end }}
+            {{- if .universalExecutionCallback }}
+            - "-Duniversal.execution.callback.rest.base.url={{ .universalExecutionCallback.baseUrl }}"
+            {{- end }}
+            {{- if .universalExecution }}
+            - "-Duniversal.execution.rest.base.url={{ .universalExecution.baseUrl }}"
+            {{- end }}
+            {{- if .nacas }}
+            - "-Dcom.clear2pay.opfpayment.nacas.utilityservices.rest.base.url={{ .nacas.baseUrl }}"
+            {{- end }}
+            {{- if .pcs }}
+            - "-Dcom.clear2pay.opfpayment.charges.pcs.utilityservices.rest.base.url={{ .pcs.baseUrl }}"
+            {{- end }}
+            {{- if .universalExecutionInfraOps }}
+            - "-Dcom.clear2pay.opfpayment.universal.infraops.rest.base.url={{ .universalExecutionInfraOps.baseUrl }}"
+            {{- end }}
+            {{- end }}
+            {{- with .Values.monitoring.whitebox }}
+            - "-Dcom.clear2pay.opf.whitebox.allow.runtime.set={{ include "booleanSafe" .allowRuntimeSet | default false }}"
+            - "-Dcom.clear2pay.opf.whitebox.nft.listener.inmemory.enable= {{ include "booleanSafe" .inMemoryEvents.enabled | default false}}"
+            - "-Dcom.clear2pay.opf.whitebox.nft.listener.influxdb.enable={{ include "booleanSafe" .influxDb.enabled | default false }}"
+            {{- if .influxDb.enabled }}
+            - "-Dcom.clear2pay.opf.whitebox.nft.listener.categories={{ join ": " .influxDb.categories }}"
+            - "-Dcom.clear2pay.opf.whitebox.nft.listener.influxdb.host={{ required `"Values.monitoring.whitebox.nft.listener.influxDb.host is required."` .influxDb.host }}"
+            - "-Dcom.clear2pay.opf.whitebox.nft.listener.influxdb.port={{ include "numericSafe" .influxDb.port | default "8086" }}"
+            - "-Dcom.clear2pay.opf.whitebox.nft.listener.influxdb.database={{ required `"Values.monitoring.whitebox.nft.listener.influxDb.database is required."`  .influxDb.database }}"
+            - "-Dcom.clear2pay.opf.whitebox.nft.listener.influxdb.measurement={{ required `"Values.monitoring.whitebox.nft.listener.influxDb.measurement is required."`  .influxDb.measurement }}"
+            - "-Dcom.clear2pay.opf.whitebox.nft.listener.influxdb.batchmode={{ .influxDb.batchMode  | default false }}"
+            - "-Dcom.clear2pay.opf.whitebox.nft.listener.influxdb.batchpointsmaxsize={{ include "numericSafe" .influxDb.batchPointsMaxSize | default -1 }}"
+            - "-Dcom.clear2pay.opf.whitebox.nft.listener.influxdb.batchpointswriteconcurrency={{ include "numericSafe" .influxDb.batchPointsWriteConcurrency | default 1}}"
+            - "-Dcom.clear2pay.opf.whitebox.nft.listener.influxdb.log.level={{ .influxDb.logLevel | default "none" }}"
+            {{- if .influxDb.retentionPolicy }}
+            - "-Dcom.clear2pay.opf.whitebox.nft.listener.influxdb.retention.policy={{ .influxDb.retentionPolicy }}"
+            {{- end }}
+            {{- if .influxDb.initialDelayMillis }}
+            - "-Dcom.clear2pay.opf.whitebox.nft.listener.influxdb.initial.delay.millis={{ .influxDb.initialDelayMillis }}"
+            {{- end }}
+            {{- if .influxDb.intervalMillis }}
+            - "-Dcom.clear2pay.opf.whitebox.nft.listener.influxdb.intervalMillis={{ .influxDb.intervalMillis }}"
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            - "-Dcom.clear2pay.bph.opf.deepsea.enabled={{ include "booleanSafe" .Values.monitoring.deepsea.enabled | default false }}"
+            - "-Dcom.clear2pay.bph.warmupEnabled={{ include "booleanSafe" .Values.serverConfig.warmUp.enabled | default false }}"
+            - "-Dhttp.logging.strategy={{ .Values.logging.httpLoggingStrategy | default "opf" }}"
+            # XCT Extension START
+            - "-Dcom.clear2pay.xct.swiftsaa.decrypt=true"
+            - "-Dcom.clear2pay.xct.swiftsaa.encrypt=true"
+            # XCT Extension END
+            # OpenIdAccessTokenProvider configuration
+            {{- if .Values.security.openid.enabled }}
+            - "-Dcom.clear2pay.opf.authentication.openid.token.endpoint={{ required `".Values.security.openid.idpConfig.tokenEndpointUrl is required."` .Values.security.openid.idpConfig.tokenEndpointUrl }}"
+            - "-Dcom.clear2pay.opf.authentication.openid.access.token.minimum.validity.time={{ .Values.security.openid.idpConfig.accessTokenMinValidityTime | default 0 }}"
+            - "-Dcom.clear2pay.opf.authentication.openid.client.credentials.audience.param={{ .Values.security.openid.idpConfig.clientCredentialsAudiences | default nil }}"
+            {{- end }}
+            # XCT Extension START
+            {{- with .Values.externalSystems }}
+            {{- if .xctFxs }}
+            - "-Dxct.fxs.rest.base.url={{ .xctFxs.baseUrl }}"
+            - "-Dxct.fxs.rest.timeout={{ .xctFxs.timeout }}"
+            - "-Dxct.fxs.rest.always.trust={{ .xctFxs.alwaysTrust }}"
+            {{- end }}
+            {{- if .xctGpiCct }}
+            - "-Dxct.gpicct.rest.base.url={{ .xctGpiCct.baseUrl }}"
+            - "-Dxct.gpicct.rest.timeout={{ .xctGpiCct.timeout }}"
+            - "-Dxct.gpicct.rest.always.trust={{ .xctGpiCct.alwaysTrust }}"
+            {{- end }}
+            {{- if .xctGpiCov }}
+            - "-Dxct.gpicov.rest.base.url={{ .xctGpiCov.baseUrl }}"
+            - "-Dxct.gpicov.rest.timeout={{ .xctGpiCov.timeout }}"
+            - "-Dxct.gpicov.rest.always.trust={{ .xctGpiCov.alwaysTrust }}"
+            {{- end }}
+            {{- if .xctGpiFit }}
+            - "-Dxct.gpifit.rest.base.url={{ .xctGpiFit.baseUrl }}"
+            - "-Dxct.gpifit.rest.timeout={{ .xctGpiFit.timeout }}"
+            - "-Dxct.gpifit.rest.always.trust={{ .xctGpiFit.alwaysTrust }}"
+            {{- end }}
+            {{- if .xctGpiUcon }}
+            - "-Dxct.gpiucon.rest.base.url={{ .xctGpiUcon.baseUrl }}"
+            - "-Dxct.gpiucon.rest.timeout={{ .xctGpiUcon.timeout }}"
+            - "-Dxct.gpiucon.rest.always.trust={{ .xctGpiUcon.alwaysTrust }}"
+            {{- end }}
+            {{- if .xctGpiGct }}
+            - "-Dxct.gpigct.rest.base.url={{ .xctGpiGct.baseUrl }}"
+            - "-Dxct.gpigct.rest.timeout={{ .xctGpiGct.timeout }}"
+            - "-Dxct.gpigct.rest.always.trust={{ .xctGpiGct.alwaysTrust }}"
+            {{- end }}
+            {{- if .xctPcs }}
+            - "-Dxct.pcs.rest.base.url={{ .xctPcs.baseUrl }}"
+            - "-Dxct.pcs.rest.timeout={{ .xctPcs.timeout }}"
+            - "-Dxct.pcs.rest.always.trust={{ .xctPcs.alwaysTrust }}"
+            {{- end }}
+            {{- if .xctSwiftMicrogateway }}
+            - "-Dxct.swiftMicrogateway.busAppName={{ .xctSwiftMicrogateway.busAppName }}"
+            - "-Dxct.swiftMicrogateway.profileId={{ .xctSwiftMicrogateway.profileId }}"
+            - "-Dauth.swiftMicrogateway.sharedKey={{ .xctSwiftMicrogateway.sharedKey }}"
+            {{- end }}
+            {{- if .POM }}
+            - "-Dcom.clear2pay.opf.api.client.base.url.POM={{ .POM.baseUrl }}"
+            - "-Dxct.pom.rest.always.trust={{ .POM.alwaysTrust }}"
+            {{- end }}
+            {{- if .cbis }}
+            - "-Dxct.cbis.rest.always.trust={{ .cbis.alwaysTrust }}"
+            - "-Dxct.cbis.async.rest.always.trust={{ .cbis.alwaysTrustAsync }}"
+            {{- end }}
+            {{- if .fsisRiskAssessment }}
+            - "-Dxct.fsis.risk.assessment.rest.always.trust={{ .fsisRiskAssessment.alwaysTrust }}"
+            {{- end }}
+            {{- if .universalExecutionCallback }}
+            - "-Dxct.universal.execution.callback.rest.base.url={{ .universalExecutionCallback.baseUrl }}"
+            {{- end }}
+            {{- if .universalExecution }}
+            - "-Dxct.universal.execution.rest.base.url={{ .universalExecution.baseUrl }}"
+            {{- end }}
+            {{- if .channels }}
+            - "-Dcom.clear2pay.xct.api.client.base.url.CHANNELS={{ .channels.baseUrl }}"
+            {{- end }}
+            {{- if .nacas }}
+            - "-Dxct.nacas.rest.base.url={{ .nacas.baseUrl }}"
+            - "-Dxct.nacas.rest.timeout={{ .nacas.timeout }}"
+            - "-Dxct.nacas.rest.always.trust={{ .nacas.alwaysTrust }}"
+            - "-Dxct.nacas.rest.enabled={{ .nacas.enabled }}"
+            {{- end }}
+            {{- if .xctFsis }}
+            - "-Dcom.clear2pay.bph.opfpayment.ofac.interfacing.sanctionscheck.connector.id={{ .xctFsis.sanctionsCheckConnectorId }}"
+            - "-Dcom.clear2pay.bph.opfpayment.ofac.interfacing.fraudcheck.connector.id={{ .xctFsis.fraudCheckConnectorId }}"
+            - "-Dcom.clear2pay.bph.opfpayment.ofac.interfacing.fsis.callback_max_repeat={{ .xctFsis.callback_max_repeat }}"
+            - "-Dcom.clear2pay.bph.opfpayment.ofac.interfacing.fsis.callback_break_time={{ .xctFsis.callback_break_time }}"
+            {{- end }}
+            {{- end }}
+            # XCT Extension END
+            {{- if .Values.jvm }}
+            {{- range $k, $v := .Values.jvm.options }}
+            {{- if $v }}
+            - "{{ $v }}"
+            {{- end }}
+            {{- end }}
+            {{- range $k, $v := .Values.jvm.systemProperties }}
+            {{- if $v | quote }}
+            - "-D{{ $k }}={{ $v }}"
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            {{- if eq (.Values.db.type | default "oracle") "postgres" }}
+            - "-Dcom.clear2pay.opf.db=postgres"
+            {{- end }}
+            {{- if .Values.serverConfig.remoteDebug.enabled }}
+            - "-Dwas.debug.mode=true"
+            - "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=7777"
+            {{- end }}
+            - "-jar"
+            - "/opt/ol/wlp/bin/tools/ws-server.jar"
+            - "defaultServer"
+          securityContext:
+            runAsNonRoot: true
+          ports:
+            - name: https
+              containerPort: {{ include "numericSafe" .Values.deployment.containerHttpsPort | default 9443 }}
+            {{- if .Values.serverConfig.remoteDebug.enabled }}
+            - name: debug
+              containerPort: 7777
+            {{- end }}
+          env:
+          # namespace used by kubernetes java-client api in opf-cache ehcache k8s peer provider
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          # env variable used for JTA transaction logs directory
+          - name: HOSTNAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          {{- range $k, $v := .Values.environmentVariables }}
+          {{- if $v }}
+          - name: {{ $k }}
+            value: {{ quote $v }}
+          {{- end }}
+          {{- end }}
+          volumeMounts:
+            {{- if .Values.security.k8sSecrets.enabled }}
+            - mountPath: {{ required ".Values.security.tls.mountPath is required." .Values.security.tls.mountPath }}
+              name: opf-tls-secrets
+              readOnly: true
+            {{- end }}
+            - mountPath: /config/bootstrap.extension.properties
+              name: opf-config-server-bootstrap-volume
+              subPath: bootstrap.extension.properties
+            {{- with .Values.extension }}
+            {{- range $k, $v := .additionalBootstrapConfigMaps }}
+            - mountPath: /config/{{ $v }}.properties
+              name: {{ $v  }}
+              subPath: bootstrap.extension.properties
+            {{- end }}
+            {{- end }}
+            {{- if .Values.security.k8sSecrets.enabled }}
+            - mountPath: /config/secrets/bootstrap.secret.extension.properties
+              name: opf-secrets
+              subPath: opf-secrets
+              readOnly: true
+            {{- with .Values.extension }}
+            {{- range $k, $v := .additionalSecrets }}
+            - mountPath: /config/secrets/bootstrap.{{ $v }}.extension.properties
+              name: {{ $v }}
+              subPath: opf-secrets
+              readOnly: true
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.deployment.volumes.transactionsLog.enabled }}
+            - mountPath: /opt/ol/wlp/usr/shared/
+              name: transactions-log
+            {{- end }}
+            {{- if .Values.deployment.volumes.interchanges.enabled  }}
+            - mountPath: {{ required ".Values.deployment.volumes.interchanges.mountPath is required." .Values.deployment.volumes.interchanges.mountPath }}
+              name: interchanges
+            {{- end }}
+          {{- if .Values.deployment.extraVolumeMounts }}
+          {{- toYaml .Values.deployment.extraVolumeMounts | nindent 12 }}
+          {{- end }}
+          {{- if .Values.deployment.resources.enabled }}
+          resources:
+            requests:
+              memory: {{ required ".Values.deployment.resources.memory.request is required." .Values.deployment.resources.memory.request | quote }}
+              cpu: {{ required ".Values.deployment.resources.cpu.request is required." .Values.deployment.resources.cpu.request | quote }}
+            limits:
+              memory: {{ required ".Values.deployment.resources.memory.limit is required." .Values.deployment.resources.memory.limit | quote }}
+              cpu: {{ required ".Values.deployment.resources.cpu.limit is required." .Values.deployment.resources.cpu.limit | quote }}
+          {{- end }}
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - "sleep"
+                  - "{{ include "numericSafe" .Values.deployment.lifecycle.preTerminationPeriodSeconds | default 5 }}"
+          {{- if .Values.deployment.probes.liveness.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ required ".Values.deployment.probes.liveness.httpGet.path is required." .Values.deployment.probes.liveness.httpGet.path | quote }}
+              port: {{ required ".Values.deployment.probes.liveness.httpGet.port is required." .Values.deployment.probes.liveness.httpGet.port }}
+              scheme: {{ .Values.deployment.probes.liveness.httpGet.scheme | default "HTTPS" | quote }}
+            initialDelaySeconds: {{ include "numericSafe" .Values.deployment.probes.liveness.initialDelaySeconds | default 0 }}
+            periodSeconds: {{ include "numericSafe" .Values.deployment.probes.liveness.periodSeconds | default 10 }}
+            timeoutSeconds: {{ include "numericSafe" .Values.deployment.probes.liveness.timeoutSeconds | default 1 }}
+            successThreshold: {{ include "numericSafe" .Values.deployment.probes.liveness.successThreshold | default 1 }}
+            failureThreshold: {{ include "numericSafe" .Values.deployment.probes.liveness.failureThreshold | default 3 }}
+          {{- end }}
+          {{- if .Values.deployment.probes.readiness.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ required ".Values.deployment.probes.readiness.httpGet.path is required." .Values.deployment.probes.readiness.httpGet.path | quote }}
+              port: {{ required ".Values.deployment.probes.readiness.httpGet.port is required." .Values.deployment.probes.readiness.httpGet.port }}
+              scheme: {{ .Values.deployment.probes.readiness.httpGet.scheme | default "HTTPS" | quote }}
+            initialDelaySeconds: {{ include "numericSafe" .Values.deployment.probes.readiness.initialDelaySeconds | default 0 }}
+            periodSeconds: {{ include "numericSafe" .Values.deployment.probes.readiness.periodSeconds | default 10 }}
+            timeoutSeconds: {{ include "numericSafe" .Values.deployment.probes.readiness.timeoutSeconds | default 1 }}
+            successThreshold: {{ include "numericSafe" .Values.deployment.probes.readiness.successThreshold | default 1 }}
+            failureThreshold: {{ include "numericSafe" .Values.deployment.probes.readiness.failureThreshold | default 3 }}
+          {{- end }}
+          {{- if .Values.deployment.probes.startup.enabled }}
+          startupProbe:
+            httpGet:
+              path: {{ required ".Values.deployment.probes.startup.httpGet.path is required." .Values.deployment.probes.startup.httpGet.path | quote }}
+              port: {{ required ".Values.deployment.probes.startup.httpGet.port is required." .Values.deployment.probes.startup.httpGet.port }}
+              scheme: {{ .Values.deployment.probes.startup.httpGet.scheme | default "HTTPS" | quote }}
+            initialDelaySeconds: {{ include "numericSafe" .Values.deployment.probes.startup.initialDelaySeconds | default 0 }}
+            periodSeconds: {{ include "numericSafe" .Values.deployment.probes.startup.periodSeconds | default 10 }}
+            timeoutSeconds: {{ include "numericSafe" .Values.deployment.probes.startup.timeoutSeconds | default 1 }}
+            successThreshold: {{ include "numericSafe" .Values.deployment.probes.startup.successThreshold | default 1 }}
+            failureThreshold: {{ include "numericSafe" .Values.deployment.probes.startup.failureThreshold | default 3 }}
+          {{- end }}
+      terminationGracePeriodSeconds: {{ include "numericSafe" .Values.deployment.lifecycle.terminationGracePeriodSeconds | default 60 }}
+      serviceAccountName: {{ .Values.deployment.serviceAccountName | default "default" }}
+      volumes:
+        {{- if .Values.security.k8sSecrets.enabled }}
+        - name: opf-tls-secrets
+          secret:
+            secretName: {{ required ".Values.security.tls.secretName is required." .Values.security.tls.secretName }}
+            {{- with .Values.security.tls.itemsProjection }}
+            items:
+            {{- toYaml  . | nindent 12 }}
+            {{- end }}
+        {{- end }}
+        - name: opf-config-server-bootstrap-volume
+          configMap:
+            name: {{ include "xct.fullname" . }}-bootstrap-config
+        {{- with .Values.extension }}
+        {{- range $k, $v := .additionalBootstrapConfigMaps }}
+        - name: {{ $v }}
+          configMap:
+            name: {{ $v }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.security.k8sSecrets.enabled }}
+        - name: opf-secrets
+          secret:
+            secretName: {{ required ".Values.security.k8sSecrets.opfSecretName is required." .Values.security.k8sSecrets.opfSecretName }}
+        {{- with .Values.extension }}
+        {{- range $k, $v := .additionalSecrets }}
+        - name: {{ $v }}
+          secret:
+            secretName: {{ $v }}
+        {{- end }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.deployment.volumes.transactionsLog.enabled }}
+        - name: transactions-log
+          persistentVolumeClaim:
+            claimName: {{ include "xct.fullname" . }}-transactions-log
+        {{- end }}
+        {{- if .Values.deployment.volumes.interchanges.enabled  }}
+        - name: interchanges
+          persistentVolumeClaim:
+            claimName: {{ include "xct.fullname" . }}-interchanges-pvc
+        {{- end }}
+        {{- if .Values.deployment.extraVolumes }}
+        {{- toYaml .Values.deployment.extraVolumes | nindent 8 }}
+        {{- end }}
+      {{- if .Values.deployment.image.pullSecrets }}
+      imagePullSecrets:
+        - name: {{ .Values.deployment.image.pullSecrets }}
+      {{- end }}
+      {{- with .Values.deployment.nodeSelector }}
+      nodeSelector:
+        {{ toYaml . | nindent 8 | trim }}
+      {{- end }}
