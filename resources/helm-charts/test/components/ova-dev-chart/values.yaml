@@ -1,0 +1,8 @@
+# Default values for ova-dev-chart.
+service-account:
+  enabled: false
+secrets:
+  enabled: false
+keystores:
+  ova-server-keystore.jks: jks/ova-server/ova-server-keystore.jks
+  ova-server-truststore.jks: jks/ova-server/ova-server-truststore.jks

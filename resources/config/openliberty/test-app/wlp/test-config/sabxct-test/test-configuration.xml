@@ -1,0 +1,4 @@
+<server>
+    <!--##########CORAL SERVICE TEST EAR##########-->
+    <include location="sabxctservicetestear_main.xml" onConflict="Merge" optional="false"/>
+</server>

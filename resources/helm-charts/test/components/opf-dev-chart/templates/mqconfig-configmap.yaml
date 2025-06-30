@@ -1,0 +1,32 @@
+{{/* # @formatter:off */}}
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: opf-mqconfig
+  labels:
+    app.kubernetes.io/name: {{ include "opf-dev-chart.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "opf-dev-chart.chart" $ }}
+data:
+  mqconfig.yaml: |-
+{{- $currentScope := . }}
+{{- range $v := .Values.mqConfigs.mqConfigFiles }}
+{{- with $currentScope }}
+{{ $fileContent := .Files.Get $v }}
+{{- if $fileContent }}
+{{ $fileContent | indent 6 }}
+{{- end }}
+{{- end }}
+{{- end }}
+  mqconfigscript.mqsc: |-
+{{- $currentScope := . }}
+{{- range $v := .Values.mqConfigs.mqAdditionalFiles }}
+{{- with $currentScope }}
+{{ $fileContent := .Files.Get $v }}
+{{- if $fileContent }}
+{{ $fileContent | indent 6 }}
+{{- end }}
+{{- end }}
+{{- end }}

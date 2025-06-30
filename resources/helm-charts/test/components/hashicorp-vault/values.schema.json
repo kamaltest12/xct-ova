@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "http://clear2pay.com/keycloak/values.schema.json",
+  "title": "Testing Hashicorp Vault deployment schema for values.yaml",
+  "description": "Schema describes values.yaml for testing keycloak kubernetes deployment.",
+  "type": "object",
+  "properties": {
+    "global": {
+      "description": "Placeholder for global values when the chart is used as a sub-chart. If not there it fails to install.",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "enabled": {
+      "description": "Should hashicorp-vault chart be enabled as a sub-chart.",
+      "type": "boolean"
+    },
+    "provisioning": {
+      "description": "Shell script to be executed to load the required credentials in the vault."
+    },
+    "vault": {
+      "description" : "Hashicorp vault sub-chart."
+    }
+  },
+  "required": [
+    "enabled"
+  ],
+  "additionalProperties": false
+}

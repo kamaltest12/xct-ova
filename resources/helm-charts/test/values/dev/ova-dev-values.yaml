@@ -1,0 +1,68 @@
+# Specific values for running sabxct-ova in dev
+deployment:
+  image:
+    name: nexus3.systems.uk.hsbc:18080/hsbc-12692733-sabbit-paymenthub/com/hsbc/sabb/paymenthub/sabxct-ova-cloud
+    tag: 1.1.0-44-b536e9b9
+    pullPolicy: IfNotPresent
+    pullSecrets: nexus-registry-secret
+  labels:
+    env : dev
+  resources:
+    enabled: true
+    #memory: 
+    # request: 5Gi
+    # limit: 5Gi
+    #cpu:
+    # request: 750m
+    # limit: "1"
+  ingress:
+    enabled: false
+  service: 
+    httpEnabled: true  
+resourceServer:
+  apiUrl: "https://sabxct-pex-service:9443/ovarest/webapi"
+serverConfig:
+  remoteDebug:
+    enabled: false
+security:
+  k8sSecrets:
+    ovaSecretName: ova-dev-chart-secrets
+  openid:
+    enabled: false      
+    ova:
+      clientId: "ova"
+      clientSecret: "b1048aae-f242-4ed8-bec2-2c6b12053c75"
+    idpConfig:
+      tokenEndpointUrl: "https://keycloak:8543/auth/realms/ovasso/protocol/openid-connect/token"
+      authorizationEndpointRedirectUrl: "https://paymenthub-dev.systems.sa.hsbc/keycloak/auth/realms/ovasso/protocol/openid-connect/auth"
+      logoutEndpointUrl: "https://paymenthub-dev.systems.sa.hsbc/keycloak/auth/realms/ovasso/protocol/openid-connect/logout?redirect_uri%3Dhttps://paymenthub-dev.systems.sa.hsbc/ova/secure/"
+      revocationUrl: "https://keycloak:8543/auth/realms/ovasso/protocol/openid-connect/revoke"
+      revokeEnabled: true
+      revokeTokens: "refresh_token,access_token"
+      invalidateCookiesOnLogoutPattern: "WASOidcClient.*|/,WASReqURL.*|/"
+      jwkEndpointUrl: "https://keycloak:8543/auth/realms/ovasso/protocol/openid-connect/certs"
+      signatureAlgorithm: RS256
+      realmIdentifier: iss
+      issuerIdentifier: "https://keycloak:8543/auth/realms/ovasso,https://localhost:8543/auth/realms/ovasso,https://paymenthub-dev.systems.sa.hsbc/keycloak/auth/realms/ovasso"
+      userIdentifier: preferred_username
+      discoveryEndpointUrl: "https://keycloak:8543/auth/realms/ovasso/.well-known/openid-configuration"
+      accessTokenMinValidityTime: 0
+      targetRelyingParty: opfrest
+      exchangeToken: true
+  tls:
+    secretName: ova-dev-chart-tls-secrets
+    mountPath: "/tmp/jks"
+    itemsProjection:
+      - key: ova-server-keystore.jks
+        path: ova-server/ova-server-keystore.jks
+      - key: ova-server-truststore.jks
+        path: ova-server/ova-server-truststore.jks
+    serverKeystore:
+      type: jks
+      location: "/tmp/jks/ova-server/ova-server-keystore.jks"
+    serverTruststore:
+      type: jks
+      location: "/tmp/jks/ova-server/ova-server-truststore.jks"
+logging:
+  consoleFormat: "dev"
+  httpLoggingStrategy: "full"

@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hashicorp-vault-init
+  labels:
+    app.kubernetes.io/name: {{ include "vault.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "vault.chart" $ }}
+data:
+  vault-init.sh: |-
+    while ! [ -f /init/token ];
+    do
+        echo 'waiting for token'
+        sleep 1
+    done
+
+    vault login root
+    echo "Login succeeded"
+
+    vault auth enable kubernetes
+
+    vault write auth/kubernetes/config \
+            issuer="https://kubernetes.default.svc.cluster.local" \
+            token_reviewer_jwt=@/init/token \
+            kubernetes_host=https://kubernetes.default.svc:443 \
+            kubernetes_ca_cert=@/init/ca.crt
+
+    echo "Starting provisioning..."
+    {{ .Values.provisioning | nindent 4 }}
+    echo "Done provisioning"

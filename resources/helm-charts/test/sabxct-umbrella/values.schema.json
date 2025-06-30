@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "http://clear2pay.com/opf/values.schema.json",
+  "title": "Umbrella OPF kubernetes deployment schema for values.yaml",
+  "description": "Main umbrella schema which describes values.yaml for XCT kubernetes deployment",
+  "type": "object",
+  "properties": {
+    "global": {
+      "description": "Placeholder for global values when the chart is used as a sub-chart. If not there it fails to install.",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "enabled": {
+      "description": "Should XCT dev umbrella chart be enabled as a sub-chart.",
+      "type": "boolean"
+    },
+    "nameOverride" : {
+      "description": "Name of the application. By default, it uses the name of the chart.",
+      "type": "string"
+    },
+    "fullnameOverride" : {
+      "description": "Fully qualified app name used for naming the kubernetes objects. By default, it uses the release name followed by te app name except if the release name already contains the app name.",
+      "type": "string"
+    },
+    "base-mq": {
+      "description": "IBM WebSphere MQ related configuration.",
+      "type": "object"
+    },
+    "base-mq-myqcf": {
+      "description": "IBM WebSphere MQ related configuration.",
+      "type": "object"
+    },
+    "base-mq-otherqcf": {
+      "description": "IBM WebSphere MQ related configuration.",
+      "type": "object"
+    },
+    "external-db": {
+      "description": "External database related configuration.",
+      "type": "object"
+    },
+    "base-oracle": {
+      "description": "Oracle database related configuration.",
+      "type": "object"
+    },
+    "postgresql-ha": {
+      "description": "Postgres database related configuration.",
+      "type": "object"
+    },
+    "base-keycloak": {
+      "description": "Keycloak (SSO OpenId provider) related configuration.",
+      "type": "object"
+    },
+    "kafka": {
+      "description": "Kafka related configuration.",
+      "type": "object"
+    },
+    "nfs-server": {
+      "description": "Shared nfs sever related configuration.",
+      "type": "object"
+    },
+    "hashicorp-vault": {
+      "description": "Hashicorp vault related configuration.",
+      "type": "object"
+    },
+    "opf-dev-chart": {
+      "description": "",
+      "type": "object"
+    },
+    "ova-dev-chart": {
+      "description": "",
+      "type": "object"
+    },
+    "influxdb": {
+      "description": "InfluxDb related configuration.",
+      "type": "object"
+    },
+    "prometheus": {
+      "description": "Prometheus related configuration.",
+      "type": "object"
+    },
+    "grafana": {
+      "description": "Grafana related configuration.",
+      "type": "object"
+    },
+    "test-app": {
+      "description": "OPF test app related configuration.",
+      "type": "object"
+    }
+  },
+  "anyOf" : [
+    {
+      "properties": {
+        "external-db": {
+          "enabled": {
+            "const": true
+          }
+        },
+        "base-oracle": {
+          "enabled": {
+            "const": false
+          }
+        },
+        "postgresql-ha": {
+          "enabled": {
+            "const": false
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "external-db": {
+          "enabled": {
+            "const": false
+          }
+        },
+        "base-oracle": {
+          "enabled": {
+            "const": true
+          }
+        },
+        "postgresql-ha": {
+          "enabled": {
+            "const": false
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "external-db": {
+          "enabled": {
+            "const": false
+          }
+        },
+        "base-oracle": {
+          "enabled": {
+            "const": false
+          }
+        },
+        "postgresql-ha": {
+          "enabled": {
+            "const": true
+          }
+        }
+      }
+    }
+  ],
+  "required": ["base-mq", "kafka", "base-keycloak", "nfs-server", "hashicorp-vault" ,"opf-dev-chart", "ova-dev-chart", "influxdb", "prometheus", "grafana"],
+  "additionalProperties": false
+}

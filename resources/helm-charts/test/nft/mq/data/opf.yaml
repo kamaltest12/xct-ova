@@ -1,0 +1,803 @@
+---
+version: 0.0.1
+environment:
+  common:
+    common-topology:
+      messaging:
+        queues:
+          enabled:
+            AccountingQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            BPELInvokerQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            ChannelQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            CISBPELInvokerQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            CISDewarehousingQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            CISNotificationQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            CISParserQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            CISTransportReceiptQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            TestPlatformIntegration1Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            TestPlatformIntegration2Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            CoralBOEQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SanctionsCheckQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            FraudCheckQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            CoralDummyTechExceptionTesterQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            DataImportQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            DewarehousingQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            FromSWIFTAckQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            InterchangeLoaderQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            InterfacingHeraldQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            InterfacingReplyQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            InterfacingNotifyQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            InterfacingRequestQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            NotificationQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            OPFNotificationQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            OPFOnlineParserQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            OutgoingInitiationQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            ParserQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            ReplyToRestResponseQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SenderFallbackQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SenderQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SOInitiationQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            TechExceptionRetryQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            TestNotificationQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            TransportReceiptQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            Urgency1BPELInvokerQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            Urgency8BPELInvokerQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            Urgency8InterchangeLoaderQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            Urgency1ParserQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            Urgency8ParserQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            RestSubmissionQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            InterchangeLoaderReplyToQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SenderReplyToQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            TimeoutReceiptQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSender1Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSender2Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSender3Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSender4Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSenderAck1Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSenderAck2Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSenderAck3Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSenderAck4Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoader1Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoader2Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoader3Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoader4Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoaderAck1Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoaderAck2Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoaderAck3Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoaderAck4Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSWIFTAGISender1Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSWIFTAGISender2Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSWIFTAGIInboundAck1Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSWIFTAGIInboundAck2Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSWIFTAGIInterchangeLoader1Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSWIFTAGIInterchangeLoader2Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoaderReplyTo1Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoaderReplyTo2Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoaderReplyTo3Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoaderReplyTo4Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            BillingQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            EventInitiationQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            EventSenderQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            KafkaIntermediateEventSenderQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            KafkaEventSenderQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SWIFTSAAInterchangeLoaderQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SAFRestPaymentUploadQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SAFPriority0Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SAFPriority1Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SAFPriority2Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SAFPriority3Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SAFPriority4Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SAFPriority5Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SAFPriority6Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SAFPriority7Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SAFPriority8Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SAFPriority9Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SWIFTSAASenderQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+        backout_queue:
+          enabled: true
+        provider:
+          mq:
+            - 'wmq.jmsra.rar':
+                - default_rar: 'true'
+                - jndi-name: 'QCF'
+                - class-name: 'com.ibm.mq.connector.outbound.ManagedQueueConnectionFactoryImpl'
+                - use-java-context: 'true'
+                - use-ccm: 'true'
+                - config-properties:
+                    - port: 1414
+                    - hostname: 'mq'
+                    - username: 'mqm'
+                    - password: 'password'
+                    - channel: 'channel1'
+                    - transporttype: 'CLIENT'
+                    - queuemanager: 'MQ.QUEUE.MANAGER'
+      jdbc:
+        oracle:
+          - 'BPH Oracle JDBC Driver':
+              - driver_module: 'com.oracle.jdbc'
+              - driver_xa_class: 'oracle.jdbc.xa.client.OracleXADataSource'
+              - datasources:
+                  - 'BPH Oracle non-XA DataSource':
+                      - xa_enabled: false
+                      - jdbc_url: 'jdbc:oracle:thin:@'
+                      - db_hostname: 'db'
+                      - db_port: '1521'
+                      - db_sid: 'bph'
+                      - db_user: 'bph'
+                      - db_password: 'password'
+                      - max_pool_size: '10'
+                      - jndi_name: 'bphNonXA'
+                  - 'BPH Oracle XA DataSource':
+                      - xa_enabled: true
+                      - jdbc_url: 'jdbc:oracle:thin:@'
+                      - db_hostname: 'db'
+                      - db_port: '1521'
+                      - db_sid: 'bph'
+                      - db_user: 'bph'
+                      - db_password: 'password'
+                      - max_pool_size: '50'
+                      - jndi_name: 'bph'
+                  - 'BPH Oracle compat DataSource':
+                      - xa_enabled: true
+                      - jdbc_url: 'jdbc:oracle:thin:@'
+                      - db_hostname: 'db'
+                      - db_port: '1521'
+                      - db_sid: 'bph'
+                      - db_user: 'bphCompat'
+                      - db_password: 'password'
+                      - max_pool_size: '50'
+                      - jndi_name: 'bphCompatXA'
+
+      properties:
+        jboss:
+          - com.clear2pay.opf.jndi.ejb31: 'true'
+          - com.clear2pay.bph.opfcommon.bpel.workflow.BPEL: 'false'
+          - com.clear2pay.opf.security.domain: 'opf-domain'
+          - com.clear2pay.opf.security.qcfuser.name: 'qcfuser'
+          - com.clear2pay.opf.security.qcfuser.password: 'qcfuser'
+          - jms.queue.connection.factory: 'java:jboss/jms/qcf'
+          - jmx.mxbean.multiname: 'true'
+          - com.clear2pay.opf.rest.stream.buffer.size: '10240'
+          # Until a time we have a separate EAR (as discussed, and/or we are able to deploy that in separate servlet container
+          # or upgrade java and deploy it in same container), we are using TVA as our fallback.
+          # Downstream projects can easily override the value to null/<different one>
+          - cbis.rest.base.url: 'http://localhost:8080/opfresttest/cbis/success'
+          - jms.simulator.base.url: 'http://localhost:8080/opfresttest/jms/success'
+          - sanctions.check.rest.base.url: 'http://localhost:8080/opfresttest/gfm/success'
+          - com.clear2pay.opfpayment.fsis.riskassessment.rest.base.url: 'http://localhost:8080/opfresttest/fsis/success'
+          - payment.upload.push.rest.base.url: 'http://localhost:8080/opfresttest/rest/push'
+          - universal.execution.callback.rest.base.url: 'http://localhost:8080/opfresttest/rest/uecr'
+          - universal.execution.rest.base.url: 'http://localhost:8080/opfresttest/rest/uecr'
+          - com.clear2pay.opfpayment.charges.pcs.utilityservices.rest.base.url: 'http://localhost:8080/opfresttest/pcs/success'
+          - com.clear2pay.opfpayment.nacas.utilityservices.rest.base.url: 'http://localhost:8080/opfresttest/simulator/nacas'
+          # there is no separate block for qa at this time, and also in this common block we have added config for CIS and CORAL.
+          # So adding it here for now. Downstream projects can easily override the value to null/false
+          - client.api.support.mode: 'true'
+          # output directory for bpmn coverage report
+          - bpmn.test.outputDirectory: '/tmp/bpmn'
+          # to indicate that whether diagnostic mode can be auto turned on in runtime
+          - com.clear2pay.opf.whitebox.allow.runtime.set: 'true'
+          # OVA System properties
+          - com.clear2pay.ova.opf.client.api.basic.authentication: 'false'
+          - com.clear2pay.ova.security.profile: 'JBOSS_SECURITY'
+          - com.clear2pay.ova.ui.slave.mode: 'false'
+          - com.clear2pay.ova.opf.client.api.url: 'http://localhost:8080/opfrest/webapi'
+          - com.clear2pay.ova.opf.client.webtarget.read.timout: '60000'
+          - com.clear2pay.ova.opf.client.webtarget.connect.timout: '30000'
+          - com.clear2pay.ova.opf.authentication.enricher.cookie.name: 'JSESSIONIDSSO'
+          - com.clear2pay.ova.bankingEntities.contextmode: 'ALLOW_ALL'
+          - com.clear2pay.ova.banks.contextmode: 'FORCE_ALL'
+          - com.clear2pay.ova.session.timeout: '1800'
+          - com.clear2pay.ova.session.timeout.warning: '120'
+          # SSO
+          - sso.valve.class: 'org.apache.catalina.authenticator.SingleSignOn'
+          # SHARPy System properties
+          - spring.profiles.active: jboss
+          # Cache Relay
+          - com.clear2pay.opf.relay.cache.data.change.notification.batch.mode.sync: true
+          # Payment Abort
+          - com.clear2pay.bph.messageContextPersistenceEnabled: 'on'
+          # base properties
+          - com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name: 'qcfuser'
+          - com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password: 'qcfuser'
+          - com.clear2pay.opf.mdb.activationSpec.qcf.hostName: 'mq'
+          - com.clear2pay.opf.mdb.activationSpec.qcf.port: '1414'
+          - com.clear2pay.opf.mdb.activationSpec.qcf.channel: 'channel1'
+          - com.clear2pay.opf.mdb.activationSpec.qcf.transportType: 'CLIENT'
+          - com.clear2pay.opf.mdb.activationSpec.qcf.queueManager: 'MQ.QUEUE.MANAGER'
+
+          - com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.name: 'qcfuser'
+          - com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.password: 'qcfuser'
+          - com.clear2pay.opf.mdb.activationSpec.myqcf.hostName: 'mq'
+          - com.clear2pay.opf.mdb.activationSpec.myqcf.port: '1414'
+          - com.clear2pay.opf.mdb.activationSpec.myqcf.channel: 'channel1'
+          - com.clear2pay.opf.mdb.activationSpec.myqcf.transportType: 'CLIENT'
+          - com.clear2pay.opf.mdb.activationSpec.myqcf.queueManager: 'MQ.QUEUE.MANAGER'
+
+          - com.clear2pay.opf.mdb.activationSpec.otherqcf.qcfuser.name: 'qcfuser'
+          - com.clear2pay.opf.mdb.activationSpec.otherqcf.qcfuser.password: 'qcfuser'
+          - com.clear2pay.opf.mdb.activationSpec.otherqcf.hostName: 'mq'
+          - com.clear2pay.opf.mdb.activationSpec.otherqcf.port: '1414'
+          - com.clear2pay.opf.mdb.activationSpec.otherqcf.channel: 'channel1'
+          - com.clear2pay.opf.mdb.activationSpec.otherqcf.transportType: 'CLIENT'
+          - com.clear2pay.opf.mdb.activationSpec.otherqcf.queueManager: 'MQ.QUEUE.MANAGER'
+
+          - com.clear2pay.opf.mdb.activationSpec.swiftsaaqcf.qcfuser.name: 'qcfuser'
+          - com.clear2pay.opf.mdb.activationSpec.swiftsaaqcf.qcfuser.password: 'qcfuser'
+          - com.clear2pay.opf.mdb.activationSpec.swiftsaaqcf.hostName: 'mq'
+          - com.clear2pay.opf.mdb.activationSpec.swiftsaaqcf.port: '1414'
+          - com.clear2pay.opf.mdb.activationSpec.swiftsaaqcf.channel: 'channel1'
+          - com.clear2pay.opf.mdb.activationSpec.swiftsaaqcf.transportType: 'CLIENT'
+          - com.clear2pay.opf.mdb.activationSpec.swiftsaaqcf.queueManager: 'MQ.QUEUE.MANAGER'
+
+          # OPFCommon MDBS
+          - com.clear2pay.opf.mdb.activationSpec.DataImportServiceMDBBean.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.DataImportServiceMDBBean.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.DataImportServiceMDBBean.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.DataImportServiceMDBBean.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.DataImportServiceMDBBean.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.DataImportServiceMDBBean.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.DataImportServiceMDBBean.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.DataImportServiceMDBBean.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.TechExceptionRetryMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.TechExceptionRetryMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.TechExceptionRetryMDB.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.TechExceptionRetryMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.myqcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.TechExceptionRetryMDB.port: '${com.clear2pay.opf.mdb.activationSpec.myqcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.TechExceptionRetryMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.myqcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.TechExceptionRetryMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.myqcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.TechExceptionRetryMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.myqcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.EventInitiationMDBBean.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.EventInitiationMDBBean.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.EventInitiationMDBBean.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.EventInitiationMDBBean.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.EventInitiationMDBBean.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.EventInitiationMDBBean.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.EventInitiationMDBBean.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.EventInitiationMDBBean.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.KafkaIntermediateEventSenderMDBBean.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.KafkaIntermediateEventSenderMDBBean.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.KafkaIntermediateEventSenderMDBBean.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.KafkaIntermediateEventSenderMDBBean.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.KafkaIntermediateEventSenderMDBBean.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.KafkaIntermediateEventSenderMDBBean.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.KafkaIntermediateEventSenderMDBBean.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.KafkaIntermediateEventSenderMDBBean.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+          #OPFPayment MDBs
+          - com.clear2pay.opf.mdb.activationSpec.AccountPostingServiceMDBBean.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.AccountPostingServiceMDBBean.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.AccountPostingServiceMDBBean.maxPoolDepth: '20'
+          - com.clear2pay.opf.mdb.activationSpec.AccountPostingServiceMDBBean.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.AccountPostingServiceMDBBean.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.AccountPostingServiceMDBBean.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.AccountPostingServiceMDBBean.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.AccountPostingServiceMDBBean.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.AsyncBPELInvoker.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.AsyncBPELInvoker.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.AsyncBPELInvoker.maxPoolDepth: '20'
+          - com.clear2pay.opf.mdb.activationSpec.AsyncBPELInvoker.hostName: '${com.clear2pay.opf.mdb.activationSpec.myqcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.AsyncBPELInvoker.port: '${com.clear2pay.opf.mdb.activationSpec.myqcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.AsyncBPELInvoker.channel: '${com.clear2pay.opf.mdb.activationSpec.myqcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.AsyncBPELInvoker.transportType: '${com.clear2pay.opf.mdb.activationSpec.myqcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.AsyncBPELInvoker.queueManager: '${com.clear2pay.opf.mdb.activationSpec.myqcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.BillingServiceMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.BillingServiceMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.BillingServiceMDB.maxPoolDepth: '20'
+          - com.clear2pay.opf.mdb.activationSpec.BillingServiceMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.BillingServiceMDB.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.BillingServiceMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.BillingServiceMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.BillingServiceMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency1AsyncBPELInvoker.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency1AsyncBPELInvoker.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency1AsyncBPELInvoker.maxPoolDepth: '20'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency1AsyncBPELInvoker.hostName: '${com.clear2pay.opf.mdb.activationSpec.myqcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency1AsyncBPELInvoker.port: '${com.clear2pay.opf.mdb.activationSpec.myqcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency1AsyncBPELInvoker.channel: '${com.clear2pay.opf.mdb.activationSpec.myqcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency1AsyncBPELInvoker.transportType: '${com.clear2pay.opf.mdb.activationSpec.myqcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency1AsyncBPELInvoker.queueManager: '${com.clear2pay.opf.mdb.activationSpec.myqcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.NotificationServiceMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.NotificationServiceMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.NotificationServiceMDB.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.NotificationServiceMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.myqcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.NotificationServiceMDB.port: '${com.clear2pay.opf.mdb.activationSpec.myqcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.NotificationServiceMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.myqcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.NotificationServiceMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.myqcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.NotificationServiceMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.myqcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.SubmissionServiceMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.SubmissionServiceMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.SubmissionServiceMDB.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.SubmissionServiceMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.SubmissionServiceMDB.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.SubmissionServiceMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.SubmissionServiceMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.SubmissionServiceMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.TimeoutReceiptHandlingMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.TimeoutReceiptHandlingMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.TimeoutReceiptHandlingMDB.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.TimeoutReceiptHandlingMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.myqcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.TimeoutReceiptHandlingMDB.port: '${com.clear2pay.opf.mdb.activationSpec.myqcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.TimeoutReceiptHandlingMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.myqcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.TimeoutReceiptHandlingMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.myqcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.TimeoutReceiptHandlingMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.myqcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.WarehousingServiceMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.WarehousingServiceMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.WarehousingServiceMDB.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.WarehousingServiceMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.WarehousingServiceMDB.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.WarehousingServiceMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.WarehousingServiceMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.WarehousingServiceMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.SAFRestPaymentUploadMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.SAFRestPaymentUploadMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.SAFRestPaymentUploadMDB.maxPoolDepth: '20'
+          - com.clear2pay.opf.mdb.activationSpec.SAFRestPaymentUploadMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.SAFRestPaymentUploadMDB.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.SAFRestPaymentUploadMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.SAFRestPaymentUploadMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.SAFRestPaymentUploadMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.InterchangeLoaderMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.InterchangeLoaderMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.InterchangeLoaderMDB.maxPoolDepth: '20'
+          - com.clear2pay.opf.mdb.activationSpec.InterchangeLoaderMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.InterchangeLoaderMDB.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.InterchangeLoaderMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.InterchangeLoaderMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.InterchangeLoaderMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverInterchangeLoaderMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverInterchangeLoaderMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverInterchangeLoaderMDB.maxPoolDepth: '20'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverInterchangeLoaderMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.myqcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverInterchangeLoaderMDB.port: '${com.clear2pay.opf.mdb.activationSpec.myqcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverInterchangeLoaderMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.myqcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverInterchangeLoaderMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.myqcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverInterchangeLoaderMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.myqcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.StagingServiceMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.StagingServiceMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.StagingServiceMDB.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.StagingServiceMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.myqcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.StagingServiceMDB.port: '${com.clear2pay.opf.mdb.activationSpec.myqcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.StagingServiceMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.myqcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.StagingServiceMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.myqcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.StagingServiceMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.myqcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.StagingServiceUrgency1MDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.StagingServiceUrgency1MDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.StagingServiceUrgency1MDB.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.StagingServiceUrgency1MDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.myqcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.StagingServiceUrgency1MDB.port: '${com.clear2pay.opf.mdb.activationSpec.myqcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.StagingServiceUrgency1MDB.channel: '${com.clear2pay.opf.mdb.activationSpec.myqcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.StagingServiceUrgency1MDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.myqcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.StagingServiceUrgency1MDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.myqcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingReplyMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingReplyMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingReplyMDB.maxPoolDepth: '20'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingReplyMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingReplyMDB.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingReplyMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingReplyMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingReplyMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverInterfacingReplyMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverInterfacingReplyMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverInterfacingReplyMDB.maxPoolDepth: '20'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverInterfacingReplyMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.myqcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverInterfacingReplyMDB.port: '${com.clear2pay.opf.mdb.activationSpec.myqcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverInterfacingReplyMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.myqcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverInterfacingReplyMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.myqcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverInterfacingReplyMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.myqcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingHeraldMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingHeraldMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingHeraldMDB.maxPoolDepth: '20'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingHeraldMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.myqcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingHeraldMDB.port: '${com.clear2pay.opf.mdb.activationSpec.myqcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingHeraldMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.myqcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingHeraldMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.myqcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingHeraldMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.myqcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingRequestMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingRequestMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingRequestMDB.maxPoolDepth: '20'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingRequestMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.myqcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingRequestMDB.port: '${com.clear2pay.opf.mdb.activationSpec.myqcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingRequestMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.myqcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingRequestMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.myqcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.InterfacingRequestMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.myqcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.RestSubmissionMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.RestSubmissionMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.RestSubmissionMDB.maxPoolDepth: '20'
+          - com.clear2pay.opf.mdb.activationSpec.RestSubmissionMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.myqcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.RestSubmissionMDB.port: '${com.clear2pay.opf.mdb.activationSpec.myqcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.RestSubmissionMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.myqcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.RestSubmissionMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.myqcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.RestSubmissionMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.myqcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTSAAInterchangeLoaderMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.swiftsaaqcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTSAAInterchangeLoaderMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.swiftsaaqcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTSAAInterchangeLoaderMDB.maxPoolDepth: '20'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTSAAInterchangeLoaderMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.swiftsaaqcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTSAAInterchangeLoaderMDB.port: '${com.clear2pay.opf.mdb.activationSpec.swiftsaaqcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTSAAInterchangeLoaderMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.swiftsaaqcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTSAAInterchangeLoaderMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.swiftsaaqcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTSAAInterchangeLoaderMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.swiftsaaqcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverSWIFTSAAInterchangeLoaderMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverSWIFTSAAInterchangeLoaderMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.myqcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverSWIFTSAAInterchangeLoaderMDB.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverSWIFTSAAInterchangeLoaderMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.myqcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverSWIFTSAAInterchangeLoaderMDB.port: '${com.clear2pay.opf.mdb.activationSpec.myqcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverSWIFTSAAInterchangeLoaderMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.myqcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverSWIFTSAAInterchangeLoaderMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.myqcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.HandoverSWIFTSAAInterchangeLoaderMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.myqcf.queueManager}'
+          #StandingOrder MDBs
+          - com.clear2pay.opf.mdb.activationSpec.SOInitiationMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.SOInitiationMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.SOInitiationMDB.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.SOInitiationMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.SOInitiationMDB.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.SOInitiationMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.SOInitiationMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.SOInitiationMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+          #CORAL MDBs
+          - com.clear2pay.opf.mdb.activationSpec.BOEBackOfficeMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.BOEBackOfficeMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.BOEBackOfficeMDB.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.BOEBackOfficeMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.BOEBackOfficeMDB.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.BOEBackOfficeMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.BOEBackOfficeMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.BOEBackOfficeMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8InterchangeLoaderMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8InterchangeLoaderMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8InterchangeLoaderMDB.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8InterchangeLoaderMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8InterchangeLoaderMDB.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8InterchangeLoaderMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8InterchangeLoaderMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8InterchangeLoaderMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8ParsingServiceMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8ParsingServiceMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8ParsingServiceMDB.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8ParsingServiceMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8ParsingServiceMDB.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8ParsingServiceMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8ParsingServiceMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8ParsingServiceMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8AsyncBPELInvoker.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8AsyncBPELInvoker.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8AsyncBPELInvoker.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8AsyncBPELInvoker.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8AsyncBPELInvoker.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8AsyncBPELInvoker.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8AsyncBPELInvoker.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.Urgency8AsyncBPELInvoker.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.TransportReceiptMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.TransportReceiptMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.TransportReceiptMDB.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.TransportReceiptMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.TransportReceiptMDB.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.TransportReceiptMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.TransportReceiptMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.TransportReceiptMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.DummyTechExceptionTesterMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.DummyTechExceptionTesterMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.DummyTechExceptionTesterMDB.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.DummyTechExceptionTesterMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.DummyTechExceptionTesterMDB.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.DummyTechExceptionTesterMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.DummyTechExceptionTesterMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.DummyTechExceptionTesterMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.STETMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.STETMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.STETMDB.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.STETMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.STETMDB.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.STETMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.STETMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.STETMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.LBInterchangeLoaderMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.LBInterchangeLoaderMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.LBInterchangeLoaderMDB.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.LBInterchangeLoaderMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.LBInterchangeLoaderMDB.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.LBInterchangeLoaderMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.LBInterchangeLoaderMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.LBInterchangeLoaderMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTAGIInterchangeLoaderMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTAGIInterchangeLoaderMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTAGIInterchangeLoaderMDB.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTAGIInterchangeLoaderMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTAGIInterchangeLoaderMDB.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTAGIInterchangeLoaderMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTAGIInterchangeLoaderMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTAGIInterchangeLoaderMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTAGIAckInterchangeLoaderMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTAGIAckInterchangeLoaderMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTAGIAckInterchangeLoaderMDB.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTAGIAckInterchangeLoaderMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTAGIAckInterchangeLoaderMDB.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTAGIAckInterchangeLoaderMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTAGIAckInterchangeLoaderMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.SWIFTAGIAckInterchangeLoaderMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+          #PlatformTest Services MDBs
+          - com.clear2pay.opf.mdb.activationSpec.MessagingMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.MessagingMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.MessagingMDB.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.MessagingMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.MessagingMDB.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.MessagingMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.MessagingMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.MessagingMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+          - com.clear2pay.opf.mdb.activationSpec.Ejb2MessagingMDB.qcfuser.name: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.name}'
+          - com.clear2pay.opf.mdb.activationSpec.Ejb2MessagingMDB.qcfuser.password: '${com.clear2pay.opf.mdb.activationSpec.qcf.qcfuser.password}'
+          - com.clear2pay.opf.mdb.activationSpec.Ejb2MessagingMDB.maxPoolDepth: '5'
+          - com.clear2pay.opf.mdb.activationSpec.Ejb2MessagingMDB.hostName: '${com.clear2pay.opf.mdb.activationSpec.qcf.hostName}'
+          - com.clear2pay.opf.mdb.activationSpec.Ejb2MessagingMDB.port: '${com.clear2pay.opf.mdb.activationSpec.qcf.port}'
+          - com.clear2pay.opf.mdb.activationSpec.Ejb2MessagingMDB.channel: '${com.clear2pay.opf.mdb.activationSpec.qcf.channel}'
+          - com.clear2pay.opf.mdb.activationSpec.Ejb2MessagingMDB.transportType: '${com.clear2pay.opf.mdb.activationSpec.qcf.transportType}'
+          - com.clear2pay.opf.mdb.activationSpec.Ejb2MessagingMDB.queueManager: '${com.clear2pay.opf.mdb.activationSpec.qcf.queueManager}'
+
+      web:
+        jboss:
+          - configuration:
+              - jsp-configuration:
+                  - tag-pooling: 'false'
+          - virtual-server:
+              - default-host:
+                  - attributes:
+                      - alias: localhost
+                    # example with multiple domains
+                    #- alias: localhost domain1 domain2
+                  - configuration:
+                      - sso:
+                          - reauthenticate: 'false'
+                          - domain: 'dockerhost'
+
+      jaas:
+        jboss:
+          - 'opf-domain':
+              - OPFInternalLoginModule:
+                  - code: com.clear2pay.bph.security.identification.login.OPFInternalLoginModule
+              - PersonRegistryLoginModule:
+                  - code: com.clear2pay.bph.security.registry.login.PersonRegistryLoginModule
+                  - module_options:
+                      - 'bvaRegEx': '/BankVisibility/.*|/opfrest/.*|/ova/.*'
+              - OPFIdentityTrustLoginModule:
+                  - code: com.clear2pay.bph.security.identification.login.OPFIdentityTrustLoginModule
+              - SubjectCredentialsPropagationLoginModule:
+                  - code: com.clear2pay.bph.security.identification.login.SubjectCredentialsPropagationLoginModule
+              - PostAuthenticationLoginModule:
+                  - code: com.clear2pay.bph.security.session.PostAuthenticationLoginModule
+      jca:
+        jboss:
+          vault:
+            - keystore-file: 'vault.keystore'
+            - keystore-alias: 'OPF'
+            - keystore-password: 'password'
+            - keystore-salt: '12345678'
+            - keystore-iteration: 25
+            - keystore-dir: '/opt/jboss/vault/'
+          vault-cred:
+            'cbis':
+              - credential: 'password'
+            'sanctions_check':
+              - credential: 'password'
+            'payment_upload_push':
+              - credential: 'password'
+            'universal_execution_callback':
+              - credential: 'password'
+            'universal_execution':
+              - credential: 'password'
+            'nacas':
+              - credential: 'password'
+            'pcs':
+              - credential: 'password'
+    #end-common-topology
+    #non-clustered:
+    #end-non-clustered
+    #clustered:
+    #end-clustered
+  #common
+  # DEV env specific properties
+  dev:
+    common-topology:
+      messaging:
+        provider:
+          mq:
+            - 'wmq.jmsra.rar':
+                - default_rar: 'true'
+                - jndi-name: 'QCF'
+                - class-name: 'com.ibm.mq.connector.outbound.ManagedQueueConnectionFactoryImpl'
+                - use-java-context: 'true'
+                - use-ccm: 'true'
+                - config-properties:
+                    - queuemanager: 'MQ.QUEUE.MANAGER'
+      jdbc:
+        oracle:
+          - 'BPH Oracle JDBC Driver':
+              - driver_module: 'com.oracle.jdbc'
+              - driver_xa_class: 'oracle.jdbc.xa.client.OracleXADataSource'
+              - datasources:
+                  - 'BPH Oracle non-XA DataSource':
+                      - db_hostname: 'dbserver'
+                      - db_user: 'OPF_16_4'
+                  - 'BPH Oracle XA DataSource':
+                      - db_hostname: 'dbserver'
+                      - db_user: 'OPF_16_4'
+                  - 'BPH Oracle compat DataSource':
+                      - db_hostname: 'dbserver'
+                      - db_user: 'OPF_16_4Compat'
+      properties:
+        jboss:
+          - com.clear2pay.opf.security.qcfuser.name: 'qcfuser'
+          - com.clear2pay.opf.security.qcfuser.password: 'qcfuser'
+          - jms.queue.connection.factory: 'java:jboss/jms/QCF'

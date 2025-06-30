@@ -1,0 +1,6 @@
+apiVersion: v2
+type: application
+name: opf-dev-chart
+description: Chart for deploying opf secrets and pesistent volumes for dev purpose
+version: 1.1.0-SNAPSHOT
+appVersion: "1.1.0-SNAPSHOT"

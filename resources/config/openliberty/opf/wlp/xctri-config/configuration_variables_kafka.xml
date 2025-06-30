@@ -1,0 +1,21 @@
+<server>
+
+
+    <variable name="ssl.keystore.type" defaultValue="jks" />
+    <variable name="ssl.keystore.password" defaultValue="password" />
+
+    <variable name="ssl.truststore.type" defaultValue="jks" />
+    <variable name="ssl.truststore.password" defaultValue="password" />
+
+    <!--kafka-jms-rar -->
+<!--  move from -  <variable name="rar.kafka.jms.clientId" defaultValue="stet" />-->
+    <variable name="kafka.cf.clientId" defaultValue="stet" />
+
+    <!-- STET jms activation spec -->
+    <variable name="stet.kafka.jms.as.groupId" defaultValue="stet" />
+    <variable name="stet.kafka.jms.as.topics" defaultValue="stet" />
+    <variable name="stet.kafka.jms.as.retryBackoff" defaultValue="1000" />
+    <variable name="stet.kafka.jms.as.pollInterval" defaultValue="2000" />
+    <variable name="stet.kafka.jms.as.maxRetryCount" defaultValue="3" />
+
+</server>

@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "http://clear2pay.com/nfs/values.schema.json",
+  "title": "Testing NFS server kubernetes deployment schema for values.yaml",
+  "description": "Schema describes values.yaml for testing NFS server (transactions log) kubernetes deployment",
+  "type": "object",
+  "properties": {
+    "global": {
+      "description": "Placeholder for global values when the chart is used as a sub-chart. If not there it fails to install.",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "enabled": {
+      "description": "Should nfs-server chart be enabled as a sub-chart.",
+      "type": "boolean"
+    },
+    "nameOverride" : {
+      "description": "Name of the application. By default, it uses the name of the chart.",
+      "type": "string"
+    },
+    "fullnameOverride" : {
+      "description": "Fully qualified app name used for naming the kubernetes objects. By default, it uses the release name followed by te app name except if the release name already contains the app name.",
+      "type": "string"
+    },
+    "deployment": {
+      "description": "NFS server related configuration.",
+      "type": "object",
+      "properties" : {
+        "replicasCount" : {
+          "description": "Number for replicas",
+          "type": "integer",
+          "exclusiveMinimum" : 0
+        },
+        "image" : {
+          "description": "Container image settings.",
+          "type": "object",
+          "properties": {
+            "repository" : {
+              "description": "Repository to get the image from.",
+              "type": "string"
+            },
+            "name" : {
+              "description": "Name of container image.",
+              "type": "string",
+              "minLength": 3
+            },
+            "tag" : {
+              "description": "Tag name of container image.",
+              "minLength": 1
+            },
+            "pullPolicy" : {
+              "description": "When to pull the image.",
+              "type": "string",
+              "enum": ["IfNotPresent", "Always", "Never"]
+            }
+          },
+          "additionalProperties": false,
+          "required": [ "name", "tag" ]
+        },
+        "volumeMountPath" : {
+          "description": "Mount path",
+          "type": "string",
+          "minLength" : 1
+        },
+        "service": {
+          "description": "NFS service related configuration.",
+          "type": "object",
+          "properties" : {
+            "clusterIP" : {
+              "description": "Cluster IP address",
+              "type": "string",
+              "pattern": "^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$"
+            },
+            "ports" : {
+              "description": "Ports settings",
+              "type": "object",
+              "properties": {
+                "nfs" : {
+                  "description": "NFS port number",
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 65535
+                },
+                "mountd" : {
+                  "description": "Mountd port number",
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 65535
+                },
+                "rpcbind" : {
+                  "description": "Rpcbind port number",
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 65535
+                }
+              },
+              "required": [ "nfs", "mountd", "rpcbind" ],
+              "additionalProperties": false
+            }
+          },
+          "required": [ "clusterIP", "ports" ],
+          "additionalProperties": false
+        },
+        "persistentVolume": {
+          "description": "Persistent volume related configuration",
+          "type": "object",
+          "properties" : {
+            "localPath" : {
+              "description": "Local path",
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [ "localPath" ],
+          "additionalProperties": false
+        }
+      },
+      "required": [ "replicasCount", "image", "volumeMountPath", "service","persistentVolume"],
+      "additionalProperties": false
+    }
+  },
+  "required": [ "deployment"],
+  "additionalProperties": false
+}

@@ -1,0 +1,5 @@
+<server>
+    <!-- overridden value from OPF - note that this has an impact for all the deployed apps in the server -->
+    <variable name="authentication.cache.initSize" defaultValue="100" />
+    <variable name="authentication.cache.maxSize" defaultValue="50000" />
+</server>

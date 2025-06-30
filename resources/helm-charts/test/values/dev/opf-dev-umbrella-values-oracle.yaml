@@ -1,0 +1,16 @@
+# Specific values for starting the dev-environment using a postgres database.
+external-db:
+  deployment:
+    service:
+      port: 1521
+    endpoint:
+      port: 1521
+opf-dev-chart:
+  secrets:
+    opf:
+      db:
+        username: SABXCTBPH
+        password: Welcome123
+        compat:
+          username: SABXCTBPHCompat
+          password: Welcome123

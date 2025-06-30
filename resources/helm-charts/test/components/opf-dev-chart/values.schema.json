@@ -1,0 +1,434 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "http://clear2pay.com/opf/values.schema.json",
+  "title": "Umbrella OPF kubernetes deployment schema for values.yaml",
+  "description": "Main umbrella schema which describes values.yaml for OPF kubernetes deployment",
+  "type": "object",
+  "properties": {
+    "global": {
+      "description": "Placeholder for global values when the chart is used as a sub-chart. If not there it fails to install.",
+      "type": "object",
+      "additionalProperties": false
+    },
+    "enabled": {
+      "description": "Should OPF dev umbrella chart be enabled as a sub-chart.",
+      "type": "boolean"
+    },
+    "nameOverride" : {
+      "description": "Name of the application. By default, it uses the name of the chart.",
+      "type": "string"
+    },
+    "fullnameOverride" : {
+      "description": "Fully qualified app name used for naming the kubernetes objects. By default, it uses the release name followed by te app name except if the release name already contains the app name.",
+      "type": "string"
+    },
+    "secrets": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "opf": {
+          "type": "object",
+          "properties": {
+            "db": {
+              "type": "object",
+              "properties": {
+                "username": {
+                  "description": "User name to be used to connect to the database.",
+                  "type": "string"
+                },
+                "password": {
+                  "description": "Password to be used to connect to the database.",
+                  "type": "string"
+                },
+                "compat": {
+                  "type": "object",
+                  "description": "Compatibility database (NDU) related configuration.",
+                  "properties": {
+                    "username": {
+                      "description": "User name to be used to connect to the compat database.",
+                      "type": "string"
+                    },
+                    "password": {
+                      "description": "Password to be used to connect to the compat database.",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "username",
+                "password",
+                "compat"
+              ],
+              "additionalProperties": false
+            },
+            "messaging": {
+              "type": "object",
+              "properties": {
+                "mq": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "description": "User name to be used to connect to the messaging server.",
+                      "type": "string"
+                    },
+                    "password": {
+                      "description": "Password to be used to connect to the messaging server.",
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password"
+                  ]
+                },
+                "kafka": {
+                  "type": "object",
+                  "properties": {
+                    "sslKeystorePassword": {
+                      "type": "string"
+                    },
+                    "sslTruststorePassword": {
+                      "type": "string"
+                    },
+                    "sslKeyPassword": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "sslKeystorePassword",
+                    "sslTruststorePassword",
+                    "sslKeyPassword"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "mq"
+              ],
+              "additionalProperties": false
+            },
+            "serverConfig": {
+              "type": "object",
+              "properties": {
+                "admin": {
+                  "description": "Server administrator credentials.",
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password"
+                  ],
+                  "additionalProperties": false
+                },
+                "jmx": {
+                  "description": "JMX user credentials.",
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "externalSystems": {
+              "type": "object",
+              "properties": {
+                "cbis": {
+                  "description": "Core banking integration service credentials",
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password"
+                  ],
+                  "additionalProperties": false
+                },
+                "fsis": {
+                  "description": "Fraud and Sanction Integration Service credentials",
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password"
+                  ],
+                  "additionalProperties": false
+                },
+                "sanctionsCheck": {
+                  "description": "Sanctions check service credentials",
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password"
+                  ],
+                  "additionalProperties": false
+                },
+                "paymentUploadPush": {
+                  "description": "Payment upload push service credentials",
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password"
+                  ],
+                  "additionalProperties": false
+                },
+                "universalExecutionCallback": {
+                  "description": "Universal execution callback service credentials",
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "openid": {
+
+              "type": "object",
+              "properties": {
+                "opf": {
+                  "type": "object",
+                  "properties": {
+                    "clientId": {
+                      "type": "string"
+                    },
+                    "clientSecret": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "clientId",
+                    "clientSecret"
+                  ]
+                },
+                "bva": {
+                  "type": "object",
+                  "properties": {
+                    "clientId": {
+                      "type": "string"
+                    },
+                    "clientSecret": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "clientId",
+                    "clientSecret"
+                  ]
+                }
+              },
+              "required": [
+                "opf",
+                "bva"
+              ]
+            },
+            "tls": {
+              "type": "object",
+              "properties": {
+                "keystore": {
+                  "type": "object",
+                  "properties": {
+                    "password": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "password"
+                  ]
+                },
+                "truststore": {
+                  "type": "object",
+                  "properties": {
+                    "password": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "password"
+                  ]
+                }
+              },
+              "required": [
+                "keystore",
+                "truststore"
+              ]
+            }
+          },
+          "required": [
+            "db",
+            "messaging",
+            "serverConfig",
+            "externalSystems",
+            "tls"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "anyOf": [
+        {
+          "properties": {
+            "enabled": { "const": true }
+          },
+          "required": [
+            "opf"
+          ]
+        },
+        {
+          "properties": {
+            "enabled": { "const": false }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "keystores": {
+      "type": "object"
+    },
+    "mqConfigs": {
+	    "type": "object",
+	    "properties": {
+	        "mqAdditionalFiles": {
+	            "type": "array",
+	            "items": {
+	                "type": "string"
+	            }
+	        },
+	        "mqConfigFiles": {
+	            "type": "array",
+	            "items": {
+	                "type": "string"
+	            }
+	        }
+	    },
+      "required": [
+        "mqConfigFiles"
+      ],
+      "additionalProperties": false
+    },
+    "volumes": {
+      "type": "object",
+      "properties": {
+        "transactionsLog": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "nfsServer": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "interchanges": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "localPath": {
+              "type": "string"
+            }
+          },
+          "anyOf": [
+            {
+              "properties": {
+                "enabled": { "const": true }
+              },
+              "required": [
+                "localPath"
+              ]
+            },
+            {
+              "properties": {
+                "enabled": { "const": false }
+              }
+            }
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "interchanges"
+      ],
+      "additionalProperties": false
+    },
+    "service-account": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "required": [
+    "mqConfigs",
+    "volumes",
+    "secrets",
+    "service-account"
+  ],
+  "additionalProperties": false
+}

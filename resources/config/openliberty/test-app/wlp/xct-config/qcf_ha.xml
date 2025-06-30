@@ -1,0 +1,22 @@
+<server>
+
+    <jmsQueueConnectionFactory jndiName="jms/MQHAQCF" containerAuthDataRef="bphmqm">
+        <properties.wmqjmsra
+                transportType="CLIENT"
+                hostName="${mq.haqcf.hostName}"
+                port="${mq.haqcf.port}"
+                channel="${mq.haqcf.channel}"
+                queueManager="${mq.haqcf.queueManager}"
+                username="${mq.haqcf.username}"
+                password="${mq.haqcf.password}"/>
+        <connectionManager id="ConMgrMQHAQCF"
+               connectionTimeout="${mq.haqcf.cm.connectionTimeout}"
+               maxIdleTime="${mq.haqcf.cm.maxIdleTime}"
+               minPoolSize="${mq.haqcf.cm.minPoolSize}"
+               maxPoolSize="${mq.haqcf.cm.maxPoolSize}"
+               purgePolicy="${mq.haqcf.cm.purgePolicy}"
+               agedTimeout="${mq.haqcf.cm.agedTimeout}"
+               reapTime="${mq.haqcf.cm.reapTime}"/>
+    </jmsQueueConnectionFactory>
+
+</server>

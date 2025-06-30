@@ -1,0 +1,7 @@
+<server>
+    <!-- Test configuration -->
+    <!--##########OPF TEST VISIBILITY##########-->
+    <include location="../test-config/xct-test-visibility/xcttestvisibilityear_main.xml" onConflict="Merge" optional="false"/>
+    <include location="../test-config/xct-test-visibility/xcttestvisibilityear_app_bnd.xml" onConflict="Merge" optional="false"/>
+
+</server>

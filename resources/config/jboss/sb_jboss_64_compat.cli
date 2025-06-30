@@ -1,0 +1,84 @@
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/config-properties=maxConnections:add(value=100)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=qcf:write-attribute(name=min-pool-size,value=10)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=qcf:write-attribute(name=max-pool-size,value=100)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=qcf:write-attribute(name=pool-prefill,value=true)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=qcf:write-attribute(name=pool-use-strict-min,value=true)
+
+/subsystem=ejb3/thread-pool=default:write-attribute(name=max-threads,value=100)
+/subsystem=ejb3/strict-max-bean-instance-pool=slsb-strict-max-pool:write-attribute(name=max-pool-size,value=1000)
+/subsystem=ejb3/strict-max-bean-instance-pool=mdb-strict-max-pool:write-attribute(name=max-pool-size,value=200)
+
+/subsystem=datasources/xa-data-source="BPH Oracle XA DataSource"/:write-attribute(name=min-pool-size,value=50)
+/subsystem=datasources/xa-data-source="BPH Oracle XA DataSource"/:write-attribute(name=max-pool-size,value=200)
+/subsystem=datasources/xa-data-source="BPH Oracle XA DataSource"/:write-attribute(name=pool-prefill,value=true)
+
+/subsystem=jca/workmanager=default/short-running-threads=default:write-attribute(name=max-threads,value=150)
+/subsystem=jca/workmanager=default/long-running-threads=default:write-attribute(name=max-threads,value=150)
+
+echo "configuring MQ BLUEQCF"
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=BLUEQCF:add(class-name=com.ibm.mq.connector.outbound.ManagedQueueConnectionFactoryImpl, jndi-name=java\:jboss\/jms\/BLUEQCF, use-java-context="true", use-ccm="true")
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=BLUEQCF/config-properties=port:add(value=1414)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=BLUEQCF/config-properties=hostName:add(value=mq)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=BLUEQCF/config-properties=channel:add(value=channel1)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=BLUEQCF/config-properties=username:add(value=mqm)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=BLUEQCF/config-properties=password:add(value=password)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=BLUEQCF/config-properties=transportType:add(value=CLIENT)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=BLUEQCF/config-properties=queueManager:add(value=MQ.QUEUE.MANAGER)
+
+echo "configuring MQ BLUEQCF queues"
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=BlueInterchangeLoaderQ:add(class-name=com.ibm.mq.connector.outbound.MQQueueProxy,jndi-name=java\:\/jms\/BlueInterchangeLoaderQ)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=BlueInterchangeLoaderQ/config-properties=baseQueueName:add(value=BlueInterchangeLoaderQ)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=BlueInterchangeLoaderQ/config-properties=baseQueueManagerName:add(value=MQ.QUEUE.MANAGER)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=BlueInterfacingReplyQ:add(jndi-name=java:\/jms\/BlueInterfacingReplyQ,class-name=com.ibm.mq.connector.outbound.MQQueueProxy)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=BlueInterfacingReplyQ/config-properties=baseQueueName:add(value=BlueInterfacingReplyQ)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=BlueInterfacingReplyQ/config-properties=baseQueueManagerName:add(value=MQ.QUEUE.MANAGER)
+
+echo "configuring JNDI for BLUEQCF"
+/subsystem=naming/binding=java\:jboss\/exported\/jms\/BLUEQCF:add(binding-type=lookup,lookup=java:jboss/jms/BLUEQCF)
+/subsystem=naming/binding=java\:\/jms\/BLUEQCF:add(binding-type=lookup,lookup=java:jboss/jms/BLUEQCF)
+/subsystem=naming/binding=java\:jboss\/exported\/jms\/blueqcf:add(binding-type=lookup,lookup=java:jboss/jms/BLUEQCF)
+/subsystem=naming/binding=java\:\/jms\/blueqcf:add(binding-type=lookup,lookup=java:jboss/jms/BLUEQCF)
+/subsystem=naming/binding=java\:jboss\/exported\/jms\/BlueInterchangeLoaderQ:add(binding-type=lookup,lookup=java:/jms/BlueInterchangeLoaderQ)
+/subsystem=naming/binding=java\:jboss\/exported\/jms\/BlueInterfacingReplyQ:add(binding-type=lookup,lookup=java:/jms/BlueInterfacingReplyQ)
+
+echo "configuring MQ GREENQCF"
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=GREENQCF:add(jndi-name=java:jboss/jms/GREENQCF,class-name=com.ibm.mq.connector.outbound.ManagedQueueConnectionFactoryImpl)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=GREENQCF/config-properties=port:add(value=1414)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=GREENQCF/config-properties=hostName:add(value=mq)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=GREENQCF/config-properties=channel:add(value=channel1)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=GREENQCF/config-properties=username:add(value=mqm)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=GREENQCF/config-properties=password:add(value=password)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=GREENQCF/config-properties=transportType:add(value=CLIENT)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=GREENQCF/config-properties=queueManager:add(value=MQ.QUEUE.MANAGER)
+
+echo "configuring MQ GREENQCF queues"
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=GreenInterchangeLoaderQ:add(jndi-name=java:/jms/GreenInterchangeLoaderQ,class-name=com.ibm.mq.connector.outbound.MQQueueProxy)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=GreenInterchangeLoaderQ/config-properties=baseQueueName:add(value=GreenInterchangeLoaderQ)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=GreenInterchangeLoaderQ/config-properties=baseQueueManagerName:add(value=MQ.QUEUE.MANAGER)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=GreenInterfacingReplyQ:add(jndi-name=java:/jms/GreenInterfacingReplyQ,class-name=com.ibm.mq.connector.outbound.MQQueueProxy)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=GreenInterfacingReplyQ/config-properties=baseQueueName:add(value=GreenInterfacingReplyQ)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=GreenInterfacingReplyQ/config-properties=baseQueueManagerName:add(value=MQ.QUEUE.MANAGER)
+
+echo "configuring JNDI for GREENQCF"
+/subsystem=naming/binding=java\:jboss\/exported\/jms\/GREENQCF:add(binding-type=lookup,lookup=java:jboss/jms/GREENQCF)
+/subsystem=naming/binding=java\:\/jms\/GREENQCF:add(binding-type=lookup,lookup=java:jboss/jms/GREENQCF)
+/subsystem=naming/binding=java\:jboss\/exported\/jms\/greenqcf:add(binding-type=lookup,lookup=java:jboss/jms/GREENQCF)
+/subsystem=naming/binding=java\:\/jms\/greenqcf:add(binding-type=lookup,lookup=java:jboss/jms/GREENQCF)
+/subsystem=naming/binding=java\:jboss\/exported\/jms\/GreenInterchangeLoaderQ:add(binding-type=lookup,lookup=java:/jms/GreenInterchangeLoaderQ)
+/subsystem=naming/binding=java\:jboss\/exported\/jms\/GreenInterfacingReplyQ:add(binding-type=lookup,lookup=java:/jms/GreenInterfacingReplyQ)
+
+echo "configuring JNDI for QCF1,QCF2,QCF3,QCF4"
+/subsystem=naming/binding=java\:\/jms\/QCF1:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+/subsystem=naming/binding=java\:\/jms\/qcf1:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+/subsystem=naming/binding=java\:\/jms\/QCF2:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+/subsystem=naming/binding=java\:\/jms\/qcf2:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+/subsystem=naming/binding=java\:\/jms\/QCF3:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+/subsystem=naming/binding=java\:\/jms\/qcf3:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+/subsystem=naming/binding=java\:\/jms\/QCF4:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+/subsystem=naming/binding=java\:\/jms\/qcf4:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+
+echo "configuring JNDI for QCFSWIFTAGI1,QCFSWIFTAGI2"
+/subsystem=naming/binding=java\:\/jms\/QCFSWIFTAGI1:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+/subsystem=naming/binding=java\:\/jms\/qcfswiftagi1:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+/subsystem=naming/binding=java\:\/jms\/QCFSWIFTAGI2:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+/subsystem=naming/binding=java\:\/jms\/qcfswiftagi2:add(binding-type=lookup,lookup=java:jboss/jms/QCF)

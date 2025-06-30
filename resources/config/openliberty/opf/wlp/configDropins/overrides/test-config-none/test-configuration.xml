@@ -1,0 +1,3 @@
+<server>
+    <!-- Nothing need to be deployed with respect test configuration, the application is deployed in test-app container -->
+</server>

@@ -1,0 +1,6 @@
+<server>
+    <enterpriseApplication id="SABXCTServicesTestEAR" location="/ears/SABXCTServicesTestEAR-1.1.0-SNAPSHOT.ear" name="SABXCTServicesTestEAR">
+         <classloader commonLibraryRef="libext"/>
+    </enterpriseApplication>
+</server>
+

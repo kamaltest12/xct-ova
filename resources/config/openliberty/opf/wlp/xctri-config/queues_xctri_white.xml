@@ -1,0 +1,12 @@
+<server>
+    <jmsQueue id="jms/SenderReplyToQ" jndiName="jms/SenderReplyToQ">
+        <properties.wmqjmsra
+                baseQueueName="SenderReplyToQ"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+    <jmsQueue id="jms/TransportReceiptQ" jndiName="jms/TransportReceiptQ">
+        <properties.wmqjmsra
+                baseQueueName="TransportReceiptQ"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+</server>

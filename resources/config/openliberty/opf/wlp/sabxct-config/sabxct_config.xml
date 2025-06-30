@@ -1,0 +1,6 @@
+<server>
+    <!-- ########## XCT Services ########## -->
+    <include location="sabxctear_main.xml" onConflict="Merge" optional="false" />
+    <include location="security_modules_openidsso.xml" onConflict="Merge" optional="false"/>
+    <include location="security_sabxct.xml" onConflict="Merge" optional="false"/>
+</server>

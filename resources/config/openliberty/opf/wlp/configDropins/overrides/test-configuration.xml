@@ -1,0 +1,7 @@
+<server>
+    <!-- TODO: By default configuration.option.name = common, though there is not configuration other than common but it is
+               done to avoid deploying XCTServiceTestEAR when testapp server is available, may be don't need this later -->
+
+    <include location="test-config-${configuration.option.name}/test-configuration.xml" onConflict="Merge" optional="false"/>
+
+</server>

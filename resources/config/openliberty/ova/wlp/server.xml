@@ -1,0 +1,6 @@
+<server description="XCT OVA Liberty server">
+    <include location="app-config/app_config.xml" onConflict="Merge" optional="false"/>
+    <include location="xct-config/xct_config.xml" onConflict="Merge" optional="false"/>
+    <include location="sabxct-config/sabxct_config.xml" onConflict="Merge" optional="false"/>
+
+</server>

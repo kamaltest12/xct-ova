@@ -1,0 +1,14 @@
+---
+volumes:
+  interchanges:
+    enabled: false
+    localPath: "/data/shared/interchanges"
+    storageCapacity: "10Gi"
+    storageClassName: "opf-fs-interchanges"
+  transactionsLog:
+    enabled: false
+    nfsServer: "10.43.180.1"
+service-account:
+  enabled: false
+secrets:
+  enabled: false

@@ -1,0 +1,11 @@
+apiVersion: v2
+type: application
+name: hashicorp-vault
+description: Chart for deploying a Hashicorp vault server in dev mode
+version: 1.1.0-SNAPSHOT
+appVersion: "1.1.0-SNAPSHOT"
+
+dependencies:
+  - name: vault
+    version: "0.10.0"
+    repository: "https://helm.releases.hashicorp.com"

@@ -1,0 +1,32 @@
+<server>
+    <jmsQueue id="jms/CoralBOEQ" jndiName="jms/CoralBOEQ">
+        <properties.wmqjmsra
+                baseQueueName="CoralBOEQ"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+    <jmsQueue id="jms/Urgency8BPELInvokerQ" jndiName="jms/Urgency8BPELInvokerQ">
+        <properties.wmqjmsra
+                baseQueueName="Urgency8BPELInvokerQ"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+    <jmsQueue id="jms/Urgency8ParserQ" jndiName="jms/Urgency8ParserQ">
+        <properties.wmqjmsra
+                baseQueueName="Urgency8ParserQ"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+    <jmsQueue id="jms/Urgency8InterchangeLoaderQ" jndiName="jms/Urgency8InterchangeLoaderQ">
+        <properties.wmqjmsra
+                baseQueueName="Urgency8InterchangeLoaderQ"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+    <jmsQueue id="jms/CoralDummyTechExceptionTesterQ" jndiName="jms/CoralDummyTechExceptionTesterQ">
+        <properties.wmqjmsra
+                baseQueueName="CoralDummyTechExceptionTesterQ"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+    <jmsQueue id="jms/SenderFallbackQ" jndiName="jms/SenderFallbackQ">
+        <properties.wmqjmsra
+                baseQueueName="SenderFallbackQ"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+</server>

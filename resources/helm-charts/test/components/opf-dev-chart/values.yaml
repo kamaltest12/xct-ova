@@ -1,0 +1,17 @@
+# Default values for opf-dev-chart.
+volumes:
+  interchanges:
+    enabled: true
+    localPath: "/data/shared/interchanges"
+  transactionsLog:
+    enabled: false
+    # see discussion here to why fixed IP address is used instead of service name
+    # https://github.com/kubernetes/kubernetes/issues/44528
+    # The problem is that volume mounts are done by kubelet, so the nfs server network needs to be accessible
+    # to kubelet's network. So if the nfs server is being provided by a Pod, then the node/host network needs to be able
+    # to access the pod's network which could be tricky depending on how the network is configured.
+    nfsServer: "10.43.180.1"
+service-account:
+  enabled: false
+secrets:
+  enabled: false

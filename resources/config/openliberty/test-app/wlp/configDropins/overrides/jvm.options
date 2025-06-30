@@ -1,0 +1,28 @@
+# options for test configurations
+
+# for disabling remote EJB call automatic configuration
+-Djava.naming.provider.url=corbaloc:iiop:127.0.0.1:2809
+# deep sea
+-Dcom.clear2pay.bph.opf.deepsea.enabled=true
+-Ddeepsea.coral.enabled=true
+
+# whitebox
+-Dcom.clear2pay.opf.whitebox.nft.listener.inmemory.enable=true
+
+-Dclient.api.support.mode=true
+
+# URL to call Jolokia http jmx to opf
+-Dopf.jmx.http.bridge.url=https://xct:9443/xctrest/jmx
+
+# user/password to authenticate Jolokia call
+-Dopf.jmx.http.bridge.user=bva1
+-Dopf.jmx.http.bridge.password=password
+
+-Djms.simulator.base.url=https://localhost:9443/opfresttest/jms/success
+
+# advertise host name to outside docker (for opf)
+-Dkafka.advertised.host.name=testapp
+
+# keystore for KafkaBrokerSever
+-Dkafka.ssl.keystore.location=/tmp/jks/kafka/broker/kafka.server.keystore.jks
+-Dkafka.ssl.truststore.location=/tmp/jks/kafka/broker/kafka.server.truststore.jks

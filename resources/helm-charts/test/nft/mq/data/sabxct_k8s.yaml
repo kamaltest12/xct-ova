@@ -1,0 +1,352 @@
+---
+version: 0.0.1
+environment:
+  common:
+    common-topology:
+      messaging:
+        queues:
+          enabled:
+            AccountingQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            ChannelQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            CISBPELInvokerQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            CISDewarehousingQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            CISNotificationQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            CISParserQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            CISTransportReceiptQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            TestPlatformIntegration1Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            TestPlatformIntegration2Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            CoralBOEQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SanctionsCheckQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            FraudCheckQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            CoralDummyTechExceptionTesterQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            DataImportQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            DewarehousingQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            FromSWIFTAckQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            InterchangeLoaderQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            InterfacingReplyQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            InterfacingNotifyQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            OPFNotificationQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            OPFOnlineParserQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            OutgoingInitiationQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SenderFallbackQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SenderQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SOInitiationQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            TestNotificationQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            TransportReceiptQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            Urgency8BPELInvokerQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            Urgency8InterchangeLoaderQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            Urgency8ParserQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            InterchangeLoaderReplyToQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SenderReplyToQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSender1Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSender2Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSender3Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSender4Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSenderAck1Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSenderAck2Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSenderAck3Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSenderAck4Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoader1Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoader2Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoader3Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoader4Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoaderAck1Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoaderAck2Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoaderAck3Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoaderAck4Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSWIFTAGISender1Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSWIFTAGISender2Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSWIFTAGIInboundAck1Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSWIFTAGIInboundAck2Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSWIFTAGIInterchangeLoader1Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBSWIFTAGIInterchangeLoader2Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoaderReplyTo1Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoaderReplyTo2Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoaderReplyTo3Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            LBInterchangeLoaderReplyTo4Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            BillingQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            EventSenderQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            KafkaEventSenderQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SWIFTSAAInterchangeLoaderQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SAFPriority0Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SAFPriority1Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SAFPriority2Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SAFPriority3Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SAFPriority4Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SAFPriority5Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SAFPriority6Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SAFPriority7Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SAFPriority8Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            SAFPriority9Q:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            FromSWIFTQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            ManualReconciliationQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            PublishRateQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            GPIEndOfDayConfirmationQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            GPIEndOfDayConfirmationCandidateQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            AMHSenderMTQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            AMHReceiverAckMTQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            AMHReceiverMTQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            AMHSenderAckMTQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            AMHSenderMXQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            AMHReceiverAckMXQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            AMHReceiverMXQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+            AMHSenderAckMXQ:
+              backout_queue: BOQueue1
+              backout_threshold: 5
+        backout_queue:
+          enabled: true
+        provider:
+          mq:
+            - 'wmq.jmsra.rar':
+              - default_rar: 'true'
+              - jndi-name: 'QCF'
+              - class-name: 'com.ibm.mq.connector.outbound.ManagedQueueConnectionFactoryImpl'
+              - use-java-context: 'true'
+              - use-ccm: 'true'
+              - config-properties:
+                - port: 1414
+                - hostname: 'mq'
+                - username: 'mqm'
+                - password: 'password'
+                - channel: 'channel1'
+                - transporttype: 'CLIENT'
+                - queuemanager: 'MQ.QUEUE.MANAGER'
+      jdbc:
+        oracle:
+          - 'BPH Oracle JDBC Driver':
+            - driver_module: 'com.oracle.jdbc'
+            - driver_xa_class: 'oracle.jdbc.xa.client.OracleXADataSource'
+            - datasources:
+              - 'BPH Oracle non-XA DataSource':
+                - xa_enabled: false
+                - jdbc_url: 'jdbc:oracle:thin:@'
+                - db_hostname: 'db'
+                - db_port: '1521'
+                - db_sid: 'bph'
+                - db_user: 'bph'
+                - db_password: 'password'
+                - max_pool_size: '10'
+                - jndi_name: 'bphNonXA'
+              - 'BPH Oracle XA DataSource':
+                - xa_enabled: true
+                - jdbc_url: 'jdbc:oracle:thin:@'
+                - db_hostname: 'db'
+                - db_port: '1521'
+                - db_sid: 'bph'
+                - db_user: 'bph'
+                - db_password: 'password'
+                - max_pool_size: '50'
+                - jndi_name: 'bph'
+              - 'BPH Oracle compat DataSource':
+                - xa_enabled: true
+                - jdbc_url: 'jdbc:oracle:thin:@'
+                - db_hostname: 'db'
+                - db_port: '1521'
+                - db_sid: 'bph'
+                - db_user: 'bphCompat'
+                - db_password: 'password'
+                - max_pool_size: '50'
+                - jndi_name: 'bphCompatXA'
+    #end-common-topology
+    #non-clustered:
+    #end-non-clustered
+    #clustered:
+    #end-clustered
+  #common
+  # DEV env specific properties
+  dev:
+    common-topology:
+      messaging:
+        provider:
+          mq:
+            - 'wmq.jmsra.rar':
+              - default_rar: 'true'
+              - jndi-name: 'QCF'
+              - class-name: 'com.ibm.mq.connector.outbound.ManagedQueueConnectionFactoryImpl'
+              - use-java-context: 'true'
+              - use-ccm: 'true'
+              - config-properties:
+                - queuemanager: 'MQ.QUEUE.MANAGER'
+      jdbc:
+        oracle:
+          - 'BPH Oracle JDBC Driver':
+            - driver_module: 'com.oracle.jdbc'
+            - driver_xa_class: 'oracle.jdbc.xa.client.OracleXADataSource'
+            - datasources:
+              - 'BPH Oracle non-XA DataSource':
+                - db_hostname: 'dbserver'
+                - db_user: 'SABXCTDB_16_6'
+              - 'BPH Oracle XA DataSource':
+                - db_hostname: 'dbserver'
+                - db_user: 'SABXCTDB_16_6'
+              - 'BPH Oracle compat DataSource':
+                - db_hostname: 'dbserver'
+                - db_user: 'SABXCTDB_16_6Compat'

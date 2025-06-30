@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: something
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: download-jacoco-jar
+          image: sabxct-docker.coastguard.clear2pay.com/c2p-base/busybox
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh"]
+          args: ['-c', 'mkdir -p /tmp/jacoco && cd /tmp/jacoco && wget http://be-bld-web-01.clear2pay.com/coastguard/tools/jacoco/org.jacoco.agent-0.7.9-runtime.jar  -O jacoco.jar']
+          volumeMounts:
+            - mountPath: /tmp/jacoco
+              name: tmp-jacoco
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "100Mi"
+            limits:
+              cpu: "500m"
+              memory: "100Mi"
+      containers:
+        - name: opf
+          ports:
+            - name: tcp
+              containerPort: 6300
+            - name: tcp-bpmn
+              containerPort: 6301
+          volumeMounts:
+            - mountPath: /tmp/jacoco
+              name: tmp-jacoco
+      volumes:
+        - name: tmp-jacoco
+          emptyDir: {}

@@ -1,0 +1,2 @@
+# deploy opf-port rar
+deploy --force /tmp/deploy/workmanager-exporter.rar

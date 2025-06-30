@@ -1,0 +1,18 @@
+<server>
+    <!-- enable remote calls to EJBs -->
+    <orb id="defaultOrb" iiopEndpointRef="defaultIiopEndpoint">
+        <serverPolicy.csiv2>
+            <layers>
+                <authenticationLayer establishTrustInClient="Supported"></authenticationLayer>
+                <transportLayer sslEnabled="false"/>
+            </layers>
+        </serverPolicy.csiv2>
+        <clientPolicy.csiv2>
+            <layers>
+                <authenticationLayer establishTrustInClient="Supported"></authenticationLayer>
+                <transportLayer sslEnabled="false"></transportLayer>
+            </layers>
+        </clientPolicy.csiv2>
+    </orb>
+    <iiopEndpoint host="0.0.0.0" id="defaultIiopEndpoint" iiopPort="2809"/>
+</server>

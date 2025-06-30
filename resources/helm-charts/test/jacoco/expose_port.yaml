@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: something
+spec:
+  ports:
+    - name: tcp-jacoco
+      protocol: TCP
+      port: 6300 
+      targetPort: 6300
+    - name: tcp-bpmn
+      protocol: TCP
+      port: 6301
+      targetPort: 6301
+

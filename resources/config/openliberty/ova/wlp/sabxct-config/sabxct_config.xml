@@ -1,0 +1,3 @@
+<server>
+    <include location="sabxctovaear_main.xml" onConflict="Merge" optional="false"/>
+</server>

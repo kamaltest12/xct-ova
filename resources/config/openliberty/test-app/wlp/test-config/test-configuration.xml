@@ -1,0 +1,6 @@
+<server>
+    <!--##########CORAL SERVICE TEST EAR##########-->
+    <include location="xct-test/xctservicetestear_main.xml" onConflict="Merge" optional="false"/>
+    <include location="xct-test/queue_xctservicetestear.xml" onConflict="Merge" optional="false"/>
+    <include location="xct-test/test_configuration.xml" onConflict="Merge" optional="false"/>
+</server>

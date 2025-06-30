@@ -1,0 +1,11 @@
+<server description="SCTINST Liberty server">
+    <!--########## OPF Config ##########-->
+    <include location="app-config/app_config.xml" onConflict="Merge" optional="false"/>
+    <!--##########SCTINST Config ##########-->
+    <include location="xct-config/xct_config.xml" onConflict="Merge" optional="false"/>
+    <include location="xctri-config/xctri_config.xml" onConflict="Merge" optional="false"/>
+    <!--########## Test Config ##########-->
+    <include location="test-config/testapp-config.xml" onConflict="Merge" optional="false"/>
+    <include location="test-config/test-configuration.xml" onConflict="Merge" optional="false"/>
+    <include location="test-config/sabxct-test/test-configuration.xml" onConflict="Merge" optional="false"/>
+</server>

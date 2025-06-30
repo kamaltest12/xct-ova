@@ -1,0 +1,6 @@
+<server>
+    <enterpriseApplication id="XCTServiceTestEAR" location="/ears/XCTServicesTestEAR-16.6.5-61808-00da7a5a.ear" name="XCTServiceTestEAR">
+         <classloader commonLibraryRef="libext"/>
+    </enterpriseApplication>
+</server>
+

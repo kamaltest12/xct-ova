@@ -1,0 +1,76 @@
+<server>
+    <jaasLoginModule id="openIdLoginModule"
+                     className="com.clear2pay.bph.security.openid.OpenIdLoginModule"
+                     controlFlag="OPTIONAL" libraryRef="libext">
+        <options
+                identityClaim="${openid.identity.claim}"
+                bvaRegEx="${jaas.openId.regex}"
+        />
+    </jaasLoginModule>
+
+    <jaasLoginModule id="openIdLoginModule1"
+                     className="com.clear2pay.bph.security.openid.OpenIdLoginModule"
+                     controlFlag="REQUIRED" libraryRef="libext">
+        <options
+                identityClaim="${openid.identity.claim}"
+        />
+    </jaasLoginModule>
+
+    <jaasLoginModule id="opfIdentityTrustLoginModule"
+                     className="com.clear2pay.bph.security.identification.login.OPFIdentityTrustLoginModule"
+                     controlFlag="OPTIONAL" libraryRef="libext">
+        <options
+                bvaRegEx="${jaas.openId.regex}"
+                groupPath="${openid.identity.bankGroupPath}"
+                userGroupPath="${openid.identity.userGroupPath}"
+                bankPath="${openid.identity.bankPath}"
+                bankingEntityPath="${openid.identity.bankingEntityPath}"
+                bankUserNamePath="${openid.identity.bankUserNamePath}"
+                bankUserIdPath="${openid.identity.bankUserIdPath}"
+                rolesPath="${openid.identity.rolesPath}"
+                bankRolesPath="${openid.identity.bankRolesPath}"
+                bankingEntityRolesPath="${openid.identity.bankingEntityRolesPath}"
+        />
+    </jaasLoginModule>
+    <!-- bvaRegEx is hard-coded to .* since it is expected to execute doLogin logic for any-->
+    <jaasLoginModule id="opfIdentityTrustLoginModule1"
+                     className="com.clear2pay.bph.security.identification.login.OPFIdentityTrustLoginModule"
+                     controlFlag="REQUIRED" libraryRef="libext">
+        <options
+                bvaRegEx=".*"
+                groupPath="${openid.identity.bankGroupPath}"
+                userGroupPath="${openid.identity.userGroupPath}"
+                bankPath="${openid.identity.bankPath}"
+                bankingEntityPath="${openid.identity.bankingEntityPath}"
+                bankUserNamePath="${openid.identity.bankUserNamePath}"
+                bankUserIdPath="${openid.identity.bankUserIdPath}"
+                rolesPath="${openid.identity.rolesPath}"
+                bankRolesPath="${openid.identity.bankRolesPath}"
+                bankingEntityRolesPath="${openid.identity.bankingEntityRolesPath}"
+        />
+    </jaasLoginModule>
+
+    <jaasLoginModule id="personRegistryLoginModule" className="com.clear2pay.bph.security.registry.login.PersonRegistryLoginModule"
+                     controlFlag="OPTIONAL" libraryRef="libext">
+        <options bvaRegEx="${jaas.personRegistry.regex}"/>
+    </jaasLoginModule>
+
+    <jaasLoginModule id="subjectCredentialsPropagationLoginModule"
+                     className="com.clear2pay.bph.security.identification.login.SubjectCredentialsPropagationLoginModule"
+                     controlFlag="REQUIRED" libraryRef="libext"/>
+
+    <jaasLoginModule id="postAuthenticationLoginModule"
+                     className="com.clear2pay.bph.security.session.PostAuthenticationLoginModule"
+                     controlFlag="REQUIRED" libraryRef="libext"/>
+
+    <jaasLoginModule id="opfInternalUserLoginModule"
+                     className="com.clear2pay.bph.security.identification.login.OPFInternalLoginModule"
+                     controlFlag="REQUIRED" libraryRef="libext"/>
+    <jaasLoginContextEntry id="system.DEFAULT" name="system.DEFAULT"
+                           loginModuleRef="openIdLoginModule1,opfIdentityTrustLoginModule1,hashtable, token, subjectCredentialsPropagationLoginModule, postAuthenticationLoginModule" />
+
+    <library id="libext">
+        <fileset id="libext-openidsso" dir="/libext/" includes="OPFOpenIdRealm.jar OPFRealm.jar json-path.jar json-smart.jar accessors-smart.jar"/>
+    </library>
+    <include location="security_modules_openidsso_IdP2.xml" onConflict="Merge" optional="false"/>
+</server>

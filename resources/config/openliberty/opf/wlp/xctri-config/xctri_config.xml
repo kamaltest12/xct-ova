@@ -1,0 +1,12 @@
+<server description="Sample Liberty server">
+    <!-- RAR Configuration -->
+    <include location="configuration_variables_kafka.xml" onConflict="Merge" optional="false" />
+    <include location="../optional/adapter_kafka.xml" onConflict="Merge" optional="false" />
+    <include location="../optional/qcf_kafka.xml" onConflict="Merge" optional="false"/>
+    <include location="topics_xctri_${internal.queue.option.name}.xml" onConflict="Merge" optional="false"/>
+    <include location="jms_activespec_kafka.xml" onConflict="Merge" optional="false"/>
+    <include location="queues_xctri_white.xml" onConflict="Merge" optional="false"/>
+    <include location="queues_xctri_${internal.queue.option.name}.xml" onConflict="Merge" optional="false"/>
+    <include location="jms_activespec_xctri_${internal.queue.option.name}.xml" onConflict="Merge" optional="false"/>
+    <include location="jms_activespec_xctri_white.xml" onConflict="Merge" optional="false"/>
+</server>

@@ -1,0 +1,74 @@
+# Memory
+-Xms7g
+-Xmx9g
+
+# JVM
+-XX:+UseConcMarkSweepGC
+-server
+
+-Dxct.rest.base.url=https://127.0.0.1:9443/xctrest/webapi
+-Dclient.api.support.mode=true
+
+# Warm up
+-Dcom.clear2pay.bph.warmupEnabled=true
+-Dcom.clear2pay.bph.warmupEnabled.businessEventCatalogsLifecycle=true
+
+# Garbage Collector options
+-XX:ParallelGCThreads=3
+-XX:ConcGCThreads=3
+-Djava.util.concurrent.ForkJoinPool.common.parallelism=3
+-verbose:gc
+-XX:+PrintGCDetails
+-XX:+PrintGCTimeStamps
+-XX:+PrintGCDateStamps
+-XX:+PrintGCCause
+-Xloggc:/logs/gc.verbose.log
+# for disabling remote EJB call automatic configuration
+-Djava.naming.provider.url=corbaloc:iiop:127.0.0.1:2809
+# deep sea
+-Dcom.clear2pay.bph.opf.deepsea.idle=true
+-Ddeepsea.coral.enabled=true
+
+# whitebox
+-Dcom.clear2pay.opf.whitebox.nft.listener.inmemory.enable=true
+
+-Dclient.api.support.mode=true
+
+# external systems
+-Djms.simulator.base.url=https://localhost:9443/opfresttest/jms/success
+
+-Dcbis.rest.base.url=https://localhost:9443/opfresttest/cbis/success
+-Dcom.clear2pay.opf.cbis.password=password
+
+-Dcom.clear2pay.opfpayment.fsis.riskassessment.rest.base.url=https://localhost:9443/opfresttest/fsis/success
+-Dcom.clear2pay.opfpayment.fsis.riskassessment.rest.callback.url=https://localhost:9443/xctrest/webapi/fsis
+-Dcom.clear2pay.opf.fsis.password=password
+
+-Dsanctions.check.rest.base.url=https://localhost:9443/opfresttest/gfm
+-Dcom.clear2pay.opf.sanctions_check.password=password
+
+-Dpayment.upload.push.rest.base.url=https://localhost:9443/opfresttest/rest/push
+-Dcom.clear2pay.opf.payment_upload_push.password=password
+
+-Dxct.fxs.rest.base.url=https://localhost:9443/opfresttest/fxs/success
+-Dxct.fxs.rest.timeout=120000
+-Dxct.fxs.rest.always.trust=true
+-Dcom.clear2pay.opf.fxs.password=password
+
+-Dxct.pcs.rest.base.url=https://localhost:9443/opfresttest/pcs/success
+-Dxct.pcs.rest.timeout=120000
+-Dxct.pcs.rest.always.trust=true
+-Dcom.clear2pay.opf.pcs.password=password
+
+-Dxct.pom.rest.always.trust=true
+-Dxct.cbis.async.rest.always.trust=true
+-Dxct.cbis.rest.always.trust=true
+-Dxct.fsis.risk.assessment.rest.always.trust=true
+-Dxct.nacas.rest.base.url=https://localhost:9443/opfresttest/simulator/nacas
+-Dcom.clear2pay.opf.nacas.password=password
+-Dxct.nacas.rest.timeout=120000
+-Dxct.nacas.rest.always.trust=true
+
+-Dxct.universal.execution.callback.rest.base.url=http://localhost:9443/rest/api
+-Dxct.universal.execution.rest.base.url=http://localhost:9443/rest/api
+-Dcom.clear2pay.xct.api.client.base.url.CHANNELS=http://localhost:9443/rest/api

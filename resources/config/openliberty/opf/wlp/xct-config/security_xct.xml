@@ -1,0 +1,5 @@
+<server>
+
+    <authData id="fxs" user="${auth.fxs.username}" password="${auth.fxs.password}"/>
+
+</server>

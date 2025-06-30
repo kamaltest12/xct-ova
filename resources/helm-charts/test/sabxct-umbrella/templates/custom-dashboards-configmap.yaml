@@ -1,0 +1,15 @@
+{{- if .Values.grafana.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "opf-dev-chart.name" . }}-grafana-dashboards
+  labels:
+    grafana_dashboard: "1"
+data:
+  opf-dashboard.json: |-
+  {{ .Files.Get "grafana-dashboards/opf-dashboard.json" | nindent  4 }}
+  kafka-dashboard.json: |-
+  {{ .Files.Get "grafana-dashboards/kafka-dashboard.json" | nindent  4 }}
+  zookeeper-dashboard.json: |-
+  {{ .Files.Get "grafana-dashboards/zookeeper-dashboard.json" | nindent  4 -}}
+{{- end }}

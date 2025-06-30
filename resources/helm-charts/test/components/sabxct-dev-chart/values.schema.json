@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "$id": "http://clear2pay.com/cbis-opf/values.schema.json",
+  "title": "CBIS OPF kubernetes deployment schema for values.yaml",
+  "description": "Schema describes values.yaml for an CBIS OPF kubernetes deployment.",
+  "type": "object",
+  "definitions": {
+  },
+  "properties": {
+    "nameOverride": {
+      "description": "Name of the application. By default, it uses the name of the chart.",
+      "type": "string"
+    },
+    "fullnameOverride": {
+      "description": "Fully qualified app name used for naming the kubernetes objects. By default, it uses the release name followed by te app name except if the release name already contains the app name.",
+      "type": "string"
+    },
+    "secrets": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "opf" : {
+          "type" : "object",
+          "properties" : {
+            "externalSystems": {
+              "type": "object",
+              "properties": {
+                "xctFxs": {
+                  "description": "xct fxs credentials",
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password"
+                  ],
+                  "additionalProperties": false
+                },
+                "xctPcs": {
+                  "description": "xct pcs credentials",
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password"
+                  ],
+                  "additionalProperties": false
+                },
+                "POM": {
+                  "description": "POM credentials",
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password"
+                  ],
+                  "additionalProperties": false
+                },
+                "CHANNELS": {
+                  "description": "CHANNELS credentials",
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password"
+                  ],
+                  "additionalProperties": false
+                },
+                "nacas": {
+                  "description": "nacas service credentials",
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "username",
+                    "password"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "openid" : {
+              "type" : "object",
+              "properties" : {
+                "opf" : {
+                  "type" : "object",
+                  "properties" : {
+                    "clientId" : {
+                      "type" : "string"
+                    },
+                    "clientSecret" : {
+                      "type" : "string"
+                    }
+                  },
+                  "required" : [ "clientId", "clientSecret" ]
+                },
+                "bva" : {
+                  "type" : "object",
+                  "properties" : {
+                    "clientId" : {
+                      "type" : "string"
+                    },
+                    "clientSecret" : {
+                      "type" : "string"
+                    }
+                  },
+                  "required" : [ "clientId", "clientSecret" ]
+                }
+              },
+              "required" : [ "opf", "bva" ]
+            },
+            "tls" : {
+              "type" : "object",
+              "properties" : {
+                "keystore" : {
+                  "type" : "object",
+                  "properties" : {
+                    "password" : {
+                      "type" : "string"
+                    }
+                  },
+                  "required" : [ "password" ]
+                },
+                "truststore" : {
+                  "type" : "object",
+                  "properties" : {
+                    "password" : {
+                      "type" : "string"
+                    }
+                  },
+                  "required" : [ "password" ]
+                }
+              },
+              "required" : [ "keystore", "truststore" ]
+            }
+          },
+          "required" : [ "db", "messaging", "serverConfig", "externalSystems", "tls" ],
+          "additionalProperties" : false
+        }
+      }
+    }
+  }
+}

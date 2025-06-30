@@ -1,0 +1,31 @@
+vault:
+  global:
+    # Enable hashicorp vault
+    enabled: true
+  server:
+    dev:
+      enabled: true
+    postStart:
+      - /bin/sh
+      - -c
+      - sleep 5; /init/vault-init.sh > /tmp/postStart.log
+    volumeMounts:
+      - mountPath: /init/vault-init.sh
+        name: userconfig-hashicorp-vault-init
+        subPath: vault-init.sh
+      - mountPath: /init/ca.crt
+        name: userconfig-hashicorp-vault-sa-token
+        subPath: ca.crt
+      - mountPath: /init/token
+        name: userconfig-hashicorp-vault-sa-token
+        subPath: token
+      - mountPath: /init/tls/
+        name: tls-secrets
+    # using extraVolumes even if deprecated to give the opportunity to add the tls additional volume in "volumes"
+    # in parent chart without having to repeat the other volumes as well (otherwise overridden)
+    extraVolumes:
+      - type: secret
+        name: hashicorp-vault-sa-token
+      - type: configMap
+        name: hashicorp-vault-init
+        defaultMode: 0777

@@ -1,0 +1,14 @@
+<server>
+    <!-- ########## COMMON CONFIGURATION ########## -->
+    <include location="configuration_variables_xct.xml" onConflict="Merge" optional="false"/>
+    <include location="security_xct.xml" onConflict="Merge" optional="false"/>
+    <applicationManager startTimeout="${appMgr.startTimeout}" autoExpand="true" />
+
+    <!-- ########## XCT Services ########## -->
+    <include location="xctear_main.xml" onConflict="Merge" optional="false" />
+    <include location="queues_xct_white.xml" onConflict="Merge" optional="false"/>
+    <include location="qcf_ha.xml" onConflict="Merge" optional="false"/>
+    <include location="jms_activespec_xct_white.xml" onConflict="Merge" optional="false"/>
+
+
+</server>

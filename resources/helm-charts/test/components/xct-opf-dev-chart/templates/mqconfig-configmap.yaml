@@ -1,0 +1,38 @@
+{{/* # @formatter:off */}}
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ include "opf-dev-chart.name" . }}-mqconfig
+  labels:
+    app.kubernetes.io/name: {{ include "opf-dev-chart.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "opf-dev-chart.chart" $ }}
+data:
+  mqconfig.yaml: |-
+{{- $currentScope := . }}
+{{- range $v := .Values.mqConfigs.mqConfigFiles }}
+{{- with $currentScope }}
+{{- $fileContent := .Files.Get $v }}
+{{- if $fileContent }}
+{{ $fileContent | indent 6 }}
+{{- end }}
+{{- end }}
+{{- end }}
+  mqconfigscript.mqsc: |-
+{{- $currentScope := . }}
+{{- range $v := .Values.mqConfigs.mqConfigScripts }}
+{{- with $currentScope }}
+{{- $fileContent := .Files.Get $v }}
+{{- if $fileContent }}
+{{ $fileContent | indent 6 }}
+{{- end }}
+{{- end }}
+{{- end }}
+  qm.ini : |-
+{{- .Files.Get "mqconfig/qm.ini" | nindent 4 }}
+  exporter_config.yaml: |-
+{{- .Files.Get "mqconfig/exporter_config.yaml" | nindent 4 }}
+  log4j2.properties : |-
+{{- .Files.Get "mqconfig/log4j2.properties" | nindent 4 }}

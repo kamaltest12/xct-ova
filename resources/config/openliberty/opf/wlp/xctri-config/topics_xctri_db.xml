@@ -1,0 +1,19 @@
+<server>
+    <!-- KAFKA -->
+    <jmsTopic id="jms/KafkaDeadLetterQueue" jndiName="jms/KafkaDeadLetterQueue">
+        <properties.kafka-jms-rar connectionFactoryJndiName="jms/KafkaCF"
+                                  topic="stetdeadletter"
+                                  enableTransactionSupport="false"
+                                  keySerializer="org.apache.kafka.common.serialization.StringSerializer"
+                                  valueSerializer="org.apache.kafka.common.serialization.StringSerializer"
+        />
+    </jmsTopic>
+    <jmsTopic id="jms/businessevent" jndiName="jms/businessevent">
+        <properties.kafka-jms-rar connectionFactoryJndiName="jms/KafkaCF"
+                                  topic="analytics.execution_opf.business_event"
+                                  enableTransactionSupport="false"
+                                  keySerializer="org.apache.kafka.common.serialization.StringSerializer"
+                                  valueSerializer="org.apache.kafka.common.serialization.StringSerializer"
+        />
+    </jmsTopic>
+</server>

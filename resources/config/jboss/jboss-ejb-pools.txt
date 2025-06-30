@@ -1,0 +1,5 @@
+
+echo "adding ejb pools"
+# increase the maximum size of the ejb pools in order to avoid because of a lack of ejb when processing many payments (i.e. "JBAS014516: Failed to acquire a permit WITHIN 5 MINUTES")
+/subsystem=ejb3/strict-max-bean-instance-pool=mdb-strict-max-pool:write-attribute(name=max-pool-size,value=40)
+/subsystem=ejb3/strict-max-bean-instance-pool=slsb-strict-max-pool:write-attribute(name=max-pool-size,value=40)

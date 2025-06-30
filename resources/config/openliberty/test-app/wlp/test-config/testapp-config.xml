@@ -1,0 +1,5 @@
+<server description="Sample Liberty server">
+    <!--########## Test App Configuration##########-->
+    <include location="configuration_variables.xml" onConflict="Merge" optional="false"/>
+
+</server>

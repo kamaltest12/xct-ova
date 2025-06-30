@@ -1,0 +1,14 @@
+<server>
+    <jmsActivationSpec id="eis/TransportReceiptQPort">
+        <properties.wmqjmsra
+                destinationType="javax.jms.Queue"
+                destination="TransportReceiptQ"
+                transportType="CLIENT"
+                hostName="${mq.qcf.hostName}"
+                port="${mq.qcf.port}"
+                channel="${mq.qcf.channel}"
+                queueManager="${mq.qcf.queueManager}"
+                username="${mq.qcf.username}"
+                password="${mq.qcf.password}"/>
+    </jmsActivationSpec>
+</server>

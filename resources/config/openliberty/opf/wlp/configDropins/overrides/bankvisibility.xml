@@ -1,0 +1,5 @@
+<server>
+    <!--##########XCT BANK VISIBILITY EAR##########-->
+    <include location="bankvisibility/xctbankvisibilityear_main.xml" onConflict="Merge" optional="false"/>
+    <include location="bankvisibility/bankvisibilityear_configuration_variables.xml" onConflict="Merge" optional="false"/>
+</server>

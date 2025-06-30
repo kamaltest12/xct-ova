@@ -1,0 +1,67 @@
+<!-- jms_activespec_coral_mq is equivalant of jms_activespec_coral which is in use up to 16.0
+  except for eis/TransportReceiptQPort -> moved into jms_activespec_coral_white
+  -->
+<server>
+    <jmsActivationSpec id="eis/Urgency8ParserQPort">
+        <properties.wmqjmsra
+                destinationType="javax.jms.Queue"
+                destination="Urgency8ParserQ"
+                transportType="CLIENT"
+                hostName="${mq.qcf.hostName}"
+                port="${mq.qcf.port}"
+                channel="${mq.qcf.channel}"
+                queueManager="${mq.qcf.queueManager}"
+                username="${mq.qcf.username}"
+                password="${mq.qcf.password}"/>
+    </jmsActivationSpec>
+    <!-- eis/TransportReceiptQPort moved to jms_activespec_coral_white -->
+    <jmsActivationSpec id="eis/Urgency8InterchangeLoaderQPort">
+        <properties.wmqjmsra
+                destinationType="javax.jms.Queue"
+                destination="Urgency8InterchangeLoaderQ"
+                transportType="CLIENT"
+                hostName="${mq.qcf.hostName}"
+                port="${mq.qcf.port}"
+                channel="${mq.qcf.channel}"
+                queueManager="${mq.qcf.queueManager}"
+                username="${mq.qcf.username}"
+                password="${mq.qcf.password}"/>
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/Urgency8BPELInvokerQPort">
+        <properties.wmqjmsra
+                destinationType="javax.jms.Queue"
+                destination="Urgency8BPELInvokerQ"
+                transportType="CLIENT"
+                hostName="${mq.qcf.hostName}"
+                port="${mq.qcf.port}"
+                channel="${mq.qcf.channel}"
+                queueManager="${mq.qcf.queueManager}"
+                username="${mq.qcf.username}"
+                password="${mq.qcf.password}"/>
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/CoralBOEQPort">
+        <properties.wmqjmsra
+                destinationType="javax.jms.Queue"
+                destination="CoralBOEQ"
+                transportType="CLIENT"
+                hostName="${mq.qcf.hostName}"
+                port="${mq.qcf.port}"
+                channel="${mq.qcf.channel}"
+                queueManager="${mq.qcf.queueManager}"
+                username="${mq.qcf.username}"
+                password="${mq.qcf.password}"/>
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/CoralDummyTechExceptionTesterQPort">
+        <properties.wmqjmsra
+                destinationType="javax.jms.Queue"
+                destination="CoralDummyTechExceptionTesterQ"
+                transportType="CLIENT"
+                hostName="${mq.qcf.hostName}"
+                port="${mq.qcf.port}"
+                channel="${mq.qcf.channel}"
+                queueManager="${mq.qcf.queueManager}"
+                username="${mq.qcf.username}"
+                password="${mq.qcf.password}"/>
+    </jmsActivationSpec>
+
+</server>

@@ -1,0 +1,4 @@
+# ssl enabling
+echo "enable ssl"
+/subsystem=web/connector=HTTPS/:add(socket-binding=https,scheme=https,protocol=HTTP/1.1,secure=true,enable-lookups=false)
+/subsystem=web/connector=HTTPS/ssl=configuration:add(name=https,protocol=TLSv1,certificate-key-file="/opt/jboss/standalone/configuration/dockerhost.keystore",password="secret",key-alias="dockerhost")

@@ -1,0 +1,1 @@
+define topic('CBISEVENTT') TOPICSTR('CBISEVENTT') defpsist(yes) type(LOCAL)

@@ -1,0 +1,11 @@
+<server>
+
+    <!-- Datasource config -->
+    <variable name="db.xa.maxPoolSize" defaultValue="20" />
+    <variable name="db.nonxa.maxPoolSize" defaultValue="10" />
+
+
+    <!-- Logging -->
+    <variable name="logging.traceSpecification" defaultValue="*=info" />
+
+</server>

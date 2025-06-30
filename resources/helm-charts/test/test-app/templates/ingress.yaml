@@ -1,0 +1,46 @@
+{{ if .Values.deployment.ingress.enabled }}
+  {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+apiVersion: networking.k8s.io/v1
+  {{- else }}
+apiVersion: networking.k8s.io/v1beta1
+  {{- end }}
+kind: Ingress
+metadata:
+  name: {{ include "test-app.fullname" . }}-ingress
+  labels:
+    app.kubernetes.io/name: {{ include "test-app.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "test-app.chart" $ }}
+    {{- with .Values.deployment.labels }}
+    {{ toYaml . | nindent 4 | trim -}}
+    {{- end }}
+  annotations:
+    {{- with .Values.deployment.ingress.annotations }}
+    {{ toYaml . | nindent 4 | trim -}}
+    {{- end }}
+spec:
+  rules:
+  - host: {{ required ".Values.deployment.ingress.host is required." .Values.deployment.ingress.host }}
+    http:
+      paths:
+      {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
+      - backend:
+          service:
+            name: {{ include "test-app.fullname" . }}-service
+            port:
+              number: {{ .Values.deployment.service.httpsPort | default 9443 }}
+        path: {{ .Values.deployment.ingress.path }}
+        pathType: {{ .Values.deployment.ingress.pathType |  default "Prefix" }}
+      {{- else }}
+      - backend:
+          serviceName: {{ include "test-app.fullname" . }}-service
+          servicePort: {{ .Values.deployment.service.httpsPort | default 9443 }}
+        path: {{ .Values.deployment.ingress.path }}
+      {{ end }}
+  tls:
+  - hosts:
+    - {{ .Values.deployment.ingress.host }}
+    secretName: {{ .Values.deployment.ingress.tls.secret }}
+{{ end }}

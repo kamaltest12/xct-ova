@@ -1,0 +1,43 @@
+<server>
+
+    <!-- overridden value from OPF -->
+    <variable name="restApiUrl.pathFilter" defaultValue="xctrest"/>
+    <variable name="bvaUrl.pathFilter" defaultValue="BankVisibility"/>
+    <variable name="jmx.pathFilter" defaultValue="xctrest/jmx"/>
+    <variable name="metrics.pathFilter" defaultValue="xctrest/whitebox-metrics"/>
+
+    <!-- ********** XCT variables ********** -->
+
+    <!-- MQ HA queue connection factory configuration-->
+    <variable name="mq.haqcf.hostName" defaultValue="mq" />
+    <variable name="mq.haqcf.port" defaultValue="1414" />
+    <variable name="mq.haqcf.channel" defaultValue="channel1" />
+    <variable name="mq.haqcf.queueManager" defaultValue="MQ.QUEUE.MANAGER" />
+
+    <!-- MQ HA queue connection manager configuration -->
+    <variable name="mq.haqcf.cm.minPoolSize" defaultValue="0" />
+    <variable name="mq.haqcf.cm.maxPoolSize" defaultValue="20" />
+    <variable name="mq.haqcf.cm.connectionTimeout" defaultValue="30s" />
+    <variable name="mq.haqcf.cm.maxIdleTime" defaultValue="5m" />
+    <variable name="mq.haqcf.cm.maxPoolSize" defaultValue="20"/>
+    <variable name="mq.haqcf.cm.purgePolicy" defaultValue="EntirePool"/>
+    <variable name="mq.haqcf.cm.agedTimeout" defaultValue="-1"/>
+    <variable name="mq.haqcf.cm.reapTime" defaultValue="3m"/>
+
+    <!-- Queues -->
+    <variable name="mq.FromSWIFTQ.baseQueueName" defaultValue="FromSWIFTQ"/>
+    <variable name="mq.FromSWIFTAckQ.baseQueueName" defaultValue="FromSWIFTAckQ"/>
+    <variable name="mq.PublishRateQ.baseQueueName" defaultValue="PublishRateQ"/>
+    <variable name="mq.ManualReconciliationQ.baseQueueName" defaultValue="ManualReconciliationQ"/>
+    <variable name="mq.GPIEndOfDayConfirmationQ.baseQueueName" defaultValue="GPIEndOfDayConfirmationQ"/>
+    <variable name="mq.GPIEndOfDayConfirmationCandidateQ.baseQueueName" defaultValue="GPIEndOfDayConfirmationCandidateQ"/>
+
+    <variable name="mq.AMHReceiverMTQ.baseQueueName" defaultValue="AMHReceiverMTQ"/>
+    <variable name="mq.AMHReceiverMXQ.baseQueueName" defaultValue="AMHReceiverMXQ"/>
+    <variable name="mq.AMHSenderAckMXQ.baseQueueName" defaultValue="AMHSenderAckMXQ"/>
+    <variable name="mq.AMHSenderAckMTQ.baseQueueName" defaultValue="AMHSenderAckMTQ"/>
+    <variable name="mq.AMHReceiverAckMTQ.baseQueueName" defaultValue="AMHReceiverAckMTQ"/>
+    <variable name="mq.AMHReceiverAckMXQ.baseQueueName" defaultValue="AMHReceiverAckMXQ"/>
+    <variable name="mq.AMHSenderMTQ.baseQueueName" defaultValue="AMHSenderMTQ"/>
+    <variable name="mq.AMHSenderMXQ.baseQueueName" defaultValue="AMHSenderMXQ"/>
+</server>

@@ -1,0 +1,58 @@
+<server>
+    <variable name="mq.Urgency8ParserQPort.maxEndpoints" value="500" />
+    <variable name="mq.Urgency8InterchangeLoaderQPort.maxEndpoints" value="500" />
+    <variable name="mq.Urgency8BPELInvokerQPort.maxEndpoints" value="500" />
+    <variable name="mq.CoralBOEQPort.maxEndpoints" value="500" />
+    <variable name="mq.CoralDummyTechExceptionTesterQPort.maxEndpoints" value="500" />
+
+    <jmsActivationSpec id="eis/Urgency8ParserQPort" maxEndpoints="${mq.Urgency8ParserQPort.maxEndpoints}">
+        <properties.dbra
+                connectionFactoryJndiName="jms/MYQCF"
+                queueJndiName="jms/Urgency8ParserQ"
+                maxRetryCount="3"
+                deadLetterQueueJndiName="jms/JmsDbDeadLetterQ"
+                pollInterval="${db.jms.pollInterval}"
+                controlStateCheckPeriod="${db.jms.controlState.checkPeriod}"
+        />
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/Urgency8InterchangeLoaderQPort" maxEndpoints="${mq.Urgency8InterchangeLoaderQPort.maxEndpoints}">
+        <properties.dbra
+                connectionFactoryJndiName="jms/MYQCF"
+                queueJndiName="jms/Urgency8InterchangeLoaderQ"
+                maxRetryCount="3"
+                deadLetterQueueJndiName="jms/JmsDbDeadLetterQ"
+                pollInterval="${db.jms.pollInterval}"
+                controlStateCheckPeriod="${db.jms.controlState.checkPeriod}"
+        />
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/Urgency8BPELInvokerQPort" maxEndpoints="${mq.Urgency8BPELInvokerQPort.maxEndpoints}">
+        <properties.dbra
+                connectionFactoryJndiName="jms/MYQCF"
+                queueJndiName="jms/Urgency8BPELInvokerQ"
+                maxRetryCount="3"
+                deadLetterQueueJndiName="jms/JmsDbDeadLetterQ"
+                pollInterval="${db.jms.pollInterval}"
+                controlStateCheckPeriod="${db.jms.controlState.checkPeriod}"
+        />
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/CoralBOEQPort" maxEndpoints="${mq.CoralBOEQPort.maxEndpoints}">
+        <properties.dbra
+                connectionFactoryJndiName="jms/MYQCF"
+                queueJndiName="jms/CoralBOEQ"
+                maxRetryCount="3"
+                deadLetterQueueJndiName="jms/JmsDbDeadLetterQ"
+                pollInterval="${db.jms.pollInterval}"
+                controlStateCheckPeriod="${db.jms.controlState.checkPeriod}"
+        />
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/CoralDummyTechExceptionTesterQPort" maxEndpoints="${mq.CoralDummyTechExceptionTesterQPort.maxEndpoints}">
+        <properties.dbra
+                connectionFactoryJndiName="jms/MYQCF"
+                queueJndiName="jms/CoralDummyTechExceptionTesterQ"
+                maxRetryCount="3"
+                deadLetterQueueJndiName="jms/JmsDbDeadLetterQ"
+                pollInterval="${db.jms.pollInterval}"
+                controlStateCheckPeriod="${db.jms.controlState.checkPeriod}"
+        />
+    </jmsActivationSpec>
+</server>

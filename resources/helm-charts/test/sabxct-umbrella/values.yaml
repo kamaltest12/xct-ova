@@ -1,0 +1,35 @@
+# Default values for umbrella.
+external-db:
+  enabled: false
+base-oracle:
+  enabled: false
+postgresql-ha:
+  enabled: false
+  # force to deploy postgres 13 - bitnami helm chart version 8.1.3 still deploy postgres 11
+  postgresqlImage:
+    tag: 13.5.0-debian-10-r35
+    debug: true
+base-mq:
+  enabled: true
+base-mq-myqcf:
+  enabled: false
+base-mq-otherqcf:
+  enabled: false
+kafka:
+  enabled: false
+base-keycloak:
+  enabled: true
+nfs-server:
+  enabled: false
+hashicorp-vault:
+  enabled: false
+opf-dev-chart:
+  enabled: true
+ova-dev-chart:
+  enabled: true
+influxdb:
+  enabled: false
+prometheus:
+  enabled: false
+grafana:
+  enabled: false

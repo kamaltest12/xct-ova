@@ -1,0 +1,148 @@
+<server>
+    <!-- PaymentServices -->
+    <jmsActivationSpec id="eis/BPELInvokerQPort" maxEndpoints="${mq.BPELInvokerQPort.maxEndpoints}">
+        <properties.dbra
+                connectionFactoryJndiName="jms/MYQCF"
+                queueJndiName="jms/BPELInvokerQ"
+                maxRetryCount="3"
+                deadLetterQueueJndiName="jms/JmsDbDeadLetterQ"
+                pollInterval="${db.jms.pollInterval}"
+                controlStateCheckPeriod="${db.jms.controlState.checkPeriod}"
+                controlInactiveTimeout="${db.jms.controlState.inactiveTimeout}"
+        />
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/InterfacingHeraldQPort" maxEndpoints="${mq.InterfacingHeraldQPort.maxEndpoints}">
+        <properties.dbra
+                connectionFactoryJndiName="jms/MYQCF"
+                queueJndiName="jms/InterfacingHeraldQ"
+                maxRetryCount="3"
+                deadLetterQueueJndiName="jms/JmsDbDeadLetterQ"
+                pollInterval="${db.jms.pollInterval}"
+                controlStateCheckPeriod="${db.jms.controlState.checkPeriod}"
+                controlInactiveTimeout="${db.jms.controlState.inactiveTimeout}"
+        />
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/InterfacingRequestQPort" maxEndpoints="${mq.InterfacingRequestQPort.maxEndpoints}">
+        <properties.dbra
+                connectionFactoryJndiName="jms/MYQCF"
+                queueJndiName="jms/InterfacingRequestQ"
+                maxRetryCount="3"
+                deadLetterQueueJndiName="jms/JmsDbDeadLetterQ"
+                pollInterval="${db.jms.pollInterval}"
+                controlStateCheckPeriod="${db.jms.controlState.checkPeriod}"
+                controlInactiveTimeout="${db.jms.controlState.inactiveTimeout}"
+        />
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/NotificationQPort" maxEndpoints="${mq.NotificationQPort.maxEndpoints}">
+        <properties.dbra
+                connectionFactoryJndiName="jms/MYQCF"
+                queueJndiName="jms/NotificationQ"
+                maxRetryCount="3"
+                deadLetterQueueJndiName="jms/JmsDbDeadLetterQ"
+                pollInterval="${db.jms.pollInterval}"
+                controlStateCheckPeriod="${db.jms.controlState.checkPeriod}"
+                controlInactiveTimeout="${db.jms.controlState.inactiveTimeout}"
+        />
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/ParserQPort" maxEndpoints="${mq.ParserQPort.maxEndpoints}">
+        <properties.dbra
+                connectionFactoryJndiName="jms/MYQCF"
+                queueJndiName="jms/ParserQ"
+                maxRetryCount="3"
+                deadLetterQueueJndiName="jms/JmsDbDeadLetterQ"
+                pollInterval="${db.jms.pollInterval}"
+                controlStateCheckPeriod="${db.jms.controlState.checkPeriod}"
+                controlInactiveTimeout="${db.jms.controlState.inactiveTimeout}"
+        />
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/TimeoutReceiptQPort" maxEndpoints="${mq.TimeoutReceiptQPort.maxEndpoints}">
+        <properties.dbra
+                connectionFactoryJndiName="jms/MYQCF"
+                queueJndiName="jms/TimeoutReceiptQ"
+                maxRetryCount="3"
+                deadLetterQueueJndiName="jms/JmsDbDeadLetterQ"
+                pollInterval="${db.jms.pollInterval}"
+                controlStateCheckPeriod="${db.jms.controlState.checkPeriod}"
+                controlInactiveTimeout="${db.jms.controlState.inactiveTimeout}"
+        />
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/Urgency1BPELInvokerQPort" maxEndpoints="${mq.Urgency1BPELInvokerQPort.maxEndpoints}">
+        <properties.dbra
+                connectionFactoryJndiName="jms/MYQCF"
+                queueJndiName="jms/Urgency1BPELInvokerQ"
+                maxRetryCount="3"
+                deadLetterQueueJndiName="jms/JmsDbDeadLetterQ"
+                pollInterval="${db.jms.pollInterval}"
+                controlStateCheckPeriod="${db.jms.controlState.checkPeriod}"
+                controlInactiveTimeout="${db.jms.controlState.inactiveTimeout}"
+        />
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/Urgency1ParserQPort" maxEndpoints="${mq.Urgency1ParserQPort.maxEndpoints}">
+        <properties.dbra
+                connectionFactoryJndiName="jms/MYQCF"
+                queueJndiName="jms/Urgency1ParserQ"
+                maxRetryCount="3"
+                deadLetterQueueJndiName="jms/JmsDbDeadLetterQ"
+                pollInterval="${db.jms.pollInterval}"
+                controlStateCheckPeriod="${db.jms.controlState.checkPeriod}"
+                controlInactiveTimeout="${db.jms.controlState.inactiveTimeout}"
+        />
+    </jmsActivationSpec>
+
+    <!-- CommonServices -->
+    <jmsActivationSpec id="eis/EventInitiationQPort" maxEndpoints="${mq.EventInitiationQPort.maxEndpoints}">
+        <properties.dbra
+                connectionFactoryJndiName="jms/MYQCF"
+                queueJndiName="jms/EventInitiationQ"
+                maxRetryCount="3"
+                deadLetterQueueJndiName="jms/JmsDbDeadLetterQ"
+                pollInterval="${db.jms.pollInterval}"
+                controlStateCheckPeriod="${db.jms.controlState.checkPeriod}"
+                controlInactiveTimeout="${db.jms.controlState.inactiveTimeout}"
+        />
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/TechExceptionRetryQPort" maxEndpoints="${mq.TechExceptionRetryQPort.maxEndpoints}">
+        <properties.dbra
+                connectionFactoryJndiName="jms/MYQCF"
+                queueJndiName="jms/TechExceptionRetryQ"
+                maxRetryCount="3"
+                deadLetterQueueJndiName="jms/JmsDbDeadLetterQ"
+                pollInterval="${db.jms.pollInterval}"
+                controlStateCheckPeriod="${db.jms.controlState.checkPeriod}"
+                controlInactiveTimeout="${db.jms.controlState.inactiveTimeout}"
+        />
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/SAFRestPaymentUploadQPort" maxEndpoints="${mq.SAFRestPaymentUploadQPort.maxEndpoints}">
+        <properties.dbra
+                connectionFactoryJndiName="jms/MYQCF"
+                queueJndiName="jms/SAFRestPaymentUploadQ"
+                maxRetryCount="3"
+                deadLetterQueueJndiName="jms/JmsDbDeadLetterQ"
+                pollInterval="${db.jms.pollInterval}"
+                controlStateCheckPeriod="${db.jms.controlState.checkPeriod}"
+                controlInactiveTimeout="${db.jms.controlState.inactiveTimeout}"
+        />
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/KafkaIntermediateEventSenderQPort" maxEndpoints="${mq.KafkaIntermediateEventSenderQPort.maxEndpoints}">
+        <properties.dbra
+                connectionFactoryJndiName="jms/MYQCF"
+                queueJndiName="jms/KafkaIntermediateEventSenderQ"
+                maxRetryCount="3"
+                deadLetterQueueJndiName="jms/JmsDbDeadLetterQ"
+                pollInterval="${db.jms.pollInterval}"
+                controlStateCheckPeriod="${db.jms.controlState.checkPeriod}"
+                controlInactiveTimeout="${db.jms.controlState.inactiveTimeout}"
+        />
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/RestSubmissionQPort" maxEndpoints="${mq.RestSubmissionQPort.maxEndpoints}">
+        <properties.dbra
+                connectionFactoryJndiName="jms/MYQCF"
+                queueJndiName="jms/RestSubmissionQ"
+                maxRetryCount="3"
+                deadLetterQueueJndiName="jms/JmsDbDeadLetterQ"
+                pollInterval="${db.jms.pollInterval}"
+                controlStateCheckPeriod="${db.jms.controlState.checkPeriod}"
+                controlInactiveTimeout="${db.jms.controlState.inactiveTimeout}"
+        />
+    </jmsActivationSpec>
+</server>

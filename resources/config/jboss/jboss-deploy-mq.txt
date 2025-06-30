@@ -1,0 +1,2 @@
+# deploy rar specific to MQ
+deploy --force /tmp/deploy/wmq.jmsra.rar

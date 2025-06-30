@@ -1,0 +1,7 @@
+<server>
+    <variable name="xct.ova.ear" defaultValue="xctri-ova-ear"/>
+    <enterpriseApplication id="ova-ear" location="/ears/${xct.ova.ear}-16.6.5-61808-00da7a5a.ear" name="${xct.ova.ear}">
+        <classloader commonLibraryRef="libext"/>
+    </enterpriseApplication>
+</server>
+

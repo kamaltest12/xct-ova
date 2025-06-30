@@ -1,0 +1,107 @@
+# Configuration map for custom java system properties, jvm memory limits
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "test-app.fullname" . }}-jvm-config
+  labels:
+    app.kubernetes.io/name: {{ include "test-app.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "test-app.chart" $ }}
+    {{- with .Values.deployment.labels }}
+    {{ toYaml . | nindent 4 | trim -}}
+    {{- end }}
+data:
+  jvm.options: |-
+    {{- with .Values.serverConfig.jvm.memory }}
+    {{- if .initMemorySize }}
+    -Xms{{ .initMemorySize }}
+    {{- end }}
+    {{- if .maxMemorySize }}
+    -Xmx{{ .maxMemorySize }}
+    {{- end}}
+    {{- if .initPermSize }}
+    -XX:PermSize={{ .initPermSize }}
+    {{- end }}
+    {{- if .maxPermSize }}
+    -XX:MaxPermSize={{ .maxPermSize }}
+    {{- end }}
+    {{- end }}
+    {{- if .Values.serverConfig.jvm.runtimeOptimization.enabled }}
+    -server
+    {{- end }}
+    {{- with .Values.serverConfig.jvm.CMSCollector }}
+    {{- if .enabled }}
+    -XX:+UseConcMarkSweepGC
+    {{- if .classUnloading.enabled }}
+    -XX:+CMSClassUnloadingEnabled
+    {{- else }}
+    -XX:-CMSClassUnloadingEnabled
+    {{- end }}
+    {{- else }}
+    -XX:-UseConcMarkSweepGC
+    -XX:-CMSClassUnloadingEnabled
+    {{- end }}
+    {{- end }}
+    {{- with .Values.httpBridge }}
+    -Dopf.jmx.http.bridge.url={{ required "Values.httpBridge.url is required." .url }}
+    -Dopf.jmx.http.bridge.user={{ required "Values.httpBridge.user is required." .user }}
+    -Dopf.jmx.http.bridge.password={{ required "Values.httpBridge.password is required." .password }}
+    -Dopf.jmx.http.bridge.authmode={{ .authmode | default "basic" }}
+    {{- if eq (.authmode | default "basic") "openid" }}
+    -Dopenid.token.endpoint.url={{ required "Values.httpBridge.openidTokenEndpointUrl is required." .openidTokenEndpointUrl }}
+    -Dopenid.test.client.id={{ required "Values.httpBridge.clientId is required." .clientId }}
+    -Dopenid.test.client.secret={{ required "Values.httpBridge.secret is required." .secret }}
+    {{- end}}
+    {{- end}}
+    -Dcom.clear2pay.opf.config.ear-app.hierarchy.SABXCTServicesTestEAR=opf,opfcommon,opfpayment,standingorder,xct,xctvariables,xct-resttest,openid,externalkafka,externalkafkassl,genericsimulator,sabxct
+    {{- if .Values.simulationQueueListener }}
+    {{- if .Values.simulationQueueListener.jmsMessageListener }}
+    {{- with .Values.simulationQueueListener.jmsMessageListener  }}
+    {{- if .continuouslyPoll }}
+    -Djms.message.listener.continuously.poll={{ .continuouslyPoll }}
+    {{- end }}
+    {{- if .countPerQueue }}
+    -Djms.message.listener.count.per.queue={{ .countPerQueue }}
+    {{- end }}
+    {{- if .maxProcessingThreadPerQueue }}
+    -Djms.message.listener.continuous.mode.max.processing.thread.per.queue={{ .maxProcessingThreadPerQueue }}
+    {{- end }}
+    {{- if .partialSleepInMillis }}
+    -Djms.message.listener.partial.sleep.in.millis={{ .partialSleepInMillis }}
+    {{- end }}
+    {{- if .pollingIntervalInMillis }}
+    -Djms.message.listener.polling.interval.in.millis={{ .pollingIntervalInMillis }}
+    {{- end }}
+    -Djms.simulator.base.url={{ .jmsSimulatorBaseUrl | default "https://localhost:9443/opfresttest/jms/success" }}
+    {{- end}}
+    {{- end}}
+    {{- end}}
+    {{- if .Values.jvm }}
+    {{- range $k, $v := .Values.jvm.options }}
+    {{- if $v }}
+    {{ $v }}
+    {{- end }}
+    {{- end }}
+    {{- range $k, $v := .Values.jvm.systemProperties }}
+    {{- if $v | quote }}
+    -D{{ $k }}={{ $v }}
+    {{- end}}
+    {{- end}}
+    {{- end}}
+    {{- if eq (.Values.db.type | default "oracle") "postgres" }}
+    -Dcom.clear2pay.opf.db=postgres
+    {{- end }}
+    {{- if .Values.jvm }}
+    {{- range $k, $v := .Values.jvm.options }}
+    {{- if $v }}
+    {{ $v }}
+    {{- end }}
+    {{- end }}
+    {{- range $k, $v := .Values.jvm.systemProperties }}
+    {{- if $v }}
+    -D{{ $k }}={{ $v }}
+    {{- end }}
+    {{- end }}
+    {{- end }}

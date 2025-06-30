@@ -1,0 +1,78 @@
+<server>
+    <jmsQueue id="jms/SwiftPartner_OutputQ" jndiName="jms/SwiftPartner_OutputQ">
+        <properties.wmqjmsra
+                baseQueueName="SwiftPartner_OutputQ"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+    <jmsQueue id="jms/FromSWIFTQ" jndiName="jms/FromSWIFTQ">
+        <properties.wmqjmsra
+                baseQueueName="${mq.FromSWIFTQ.baseQueueName}"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+    <jmsQueue id="jms/FromSWIFTAckQ" jndiName="jms/FromSWIFTAckQ">
+        <properties.wmqjmsra
+                baseQueueName="${mq.FromSWIFTAckQ.baseQueueName}"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+    <jmsQueue id="jms/PublishRateQ" jndiName="jms/PublishRateQ">
+        <properties.wmqjmsra
+                baseQueueName="${mq.PublishRateQ.baseQueueName}"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+    <jmsQueue id="jms/ManualReconciliationQ" jndiName="jms/ManualReconciliationQ">
+        <properties.wmqjmsra
+                baseQueueName="${mq.ManualReconciliationQ.baseQueueName}"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+    <jmsQueue id="jms/GPIEndOfDayConfirmationQ" jndiName="jms/GPIEndOfDayConfirmationQ">
+        <properties.wmqjmsra
+                baseQueueName="${mq.GPIEndOfDayConfirmationQ.baseQueueName}"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+    <jmsQueue id="jms/GPIEndOfDayConfirmationCandidateQ" jndiName="jms/GPIEndOfDayConfirmationCandidateQ">
+        <properties.wmqjmsra
+                baseQueueName="${mq.GPIEndOfDayConfirmationCandidateQ.baseQueueName}"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+
+    <jmsQueue id="jms/AMHSenderMTQ" jndiName="jms/AMHSenderMTQ">
+        <properties.wmqjmsra
+                baseQueueName="${mq.AMHSenderMTQ.baseQueueName}"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+    <jmsQueue id="jms/AMHSenderMXQ" jndiName="jms/AMHSenderMXQ">
+        <properties.wmqjmsra
+                baseQueueName="${mq.AMHSenderMXQ.baseQueueName}"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+    <jmsQueue id="jms/AMHReceiverAckMTQ" jndiName="jms/AMHReceiverAckMTQ">
+        <properties.wmqjmsra
+                baseQueueName="${mq.AMHReceiverAckMTQ.baseQueueName}"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+    <jmsQueue id="jms/AMHReceiverAckMXQ" jndiName="jms/AMHReceiverAckMXQ">
+        <properties.wmqjmsra
+                baseQueueName="${mq.AMHReceiverAckMXQ.baseQueueName}"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+    <jmsQueue id="jms/AMHReceiverMTQ" jndiName="jms/AMHReceiverMTQ">
+        <properties.wmqjmsra
+                baseQueueName="${mq.AMHReceiverMTQ.baseQueueName}"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+    <jmsQueue id="jms/AMHReceiverMXQ" jndiName="jms/AMHReceiverMXQ">
+        <properties.wmqjmsra
+                baseQueueName="${mq.AMHReceiverMXQ.baseQueueName}"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+    <jmsQueue id="jms/AMHSenderAckMTQ" jndiName="jms/AMHSenderAckMTQ">
+        <properties.wmqjmsra
+                baseQueueName="${mq.AMHSenderAckMTQ.baseQueueName}"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+    <jmsQueue id="jms/AMHSenderAckMXQ" jndiName="jms/AMHSenderAckMXQ">
+        <properties.wmqjmsra
+                baseQueueName="${mq.AMHSenderAckMXQ.baseQueueName}"
+                baseQueueManagerName="${mq.qcf.queueManager}"/>
+    </jmsQueue>
+</server>

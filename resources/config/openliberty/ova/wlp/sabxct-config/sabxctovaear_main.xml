@@ -1,0 +1,7 @@
+<server>
+    <variable name="xct.ova.ear" defaultValue="sabxct-ova-ear"/>
+    <enterpriseApplication id="ova-ear" location="/ears/sabxct-ova-ear-1.1.0-SNAPSHOT.ear" name="sabxct-ova-ear">
+        <classloader commonLibraryRef="libext"/>
+    </enterpriseApplication>
+</server>
+

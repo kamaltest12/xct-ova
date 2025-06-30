@@ -1,0 +1,70 @@
+apiVersion: v2
+type: application
+name: xct-umbrella
+description: Chart for deploying all xct dev environment in Kubernetes
+version: 1.1.0-SNAPSHOT
+appVersion: "1.1.0-SNAPSHOT"
+
+dependencies:
+  - name: external-db
+    version: 1.1.0-SNAPSHOT
+    repository: "file://../components/external-db"
+    condition: external-db.enabled
+  - name: base-oracle
+    version: 19.18.0-ee.230117-2
+    repository: https://artifactory.clear2pay.com/artifactory/sabxct-helm-virtual
+    condition: base-oracle.enabled
+  - name: postgresql-ha
+    version: 8.6.2
+    repository: https://artifactory.clear2pay.com/artifactory/sabxct-helm-virtual
+    condition: postgresql-ha.enabled
+  - name: base-mq
+    version: 9.3.0-fp.2-1
+    repository: https://artifactory.clear2pay.com/artifactory/sabxct-helm-virtual
+    condition: base-mq.enabled
+  - name: base-mq
+    version: 9.1.0-helm.8-4
+    repository: https://artifactory.clear2pay.com/artifactory/sabxct-helm-virtual
+    alias: base-mq-myqcf
+    condition: base-mq-myqcf.enabled
+  - name: base-mq
+    version: 9.1.0-helm.8-4
+    repository: https://artifactory.clear2pay.com/artifactory/sabxct-helm-virtual
+    alias: base-mq-otherqcf
+    condition: base-mq-otherqcf.enabled
+  - name: kafka
+    version: 17.2.6
+    repository: https://artifactory.clear2pay.com/artifactory/sabxct-helm-virtual
+    condition: kafka.enabled
+  - name: nfs-server
+    version: 1.1.0-SNAPSHOT
+    repository: "file://../components/nfs-server"
+    condition: nfs-server.enabled
+  - name: base-keycloak
+    version: 12.0.2-25
+    repository: https://artifactory.clear2pay.com/artifactory/sabxct-helm-virtual
+    condition: keycloak.enabled
+  - name: hashicorp-vault
+    version: 1.1.0-SNAPSHOT
+    repository: "file://../components/hashicorp-vault"
+    condition: hashicorp-vault.enabled
+  - name: opf-dev-chart
+    version: 1.1.0-SNAPSHOT
+    repository: "file://../components/xct-opf-dev-chart"
+    condition: opf-dev-chart.enabled
+  - name: ova-dev-chart
+    version: 1.1.0-SNAPSHOT
+    repository: "file://../components/ova-dev-chart"
+    condition: ova-dev-chart.enabled
+  - name: influxdb
+    version: 5.3.12
+    repository: https://artifactory.clear2pay.com/artifactory/sabxct-helm-virtual
+    condition: influxdb.enabled
+  - name: prometheus
+    version: 14.11.1
+    repository: https://artifactory.clear2pay.com/artifactory/sabxct-helm-virtual
+    condition: prometheus.enabled
+  - name: grafana
+    version: 7.9.11
+    repository: https://artifactory.clear2pay.com/artifactory/sabxct-helm-virtual
+    condition: grafana.enabled

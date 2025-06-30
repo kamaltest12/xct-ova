@@ -1,0 +1,5 @@
+<server description="Sample Liberty server">
+    <!-- RAR Configuration -->
+    <include location="queues_xctri_white.xml" onConflict="Merge" optional="false"/>
+    <include location="queues_xctri_${internal.queue.option.name}.xml" onConflict="Merge" optional="false"/>
+</server>

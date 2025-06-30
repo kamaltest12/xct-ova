@@ -1,0 +1,15 @@
+<server>
+
+    <jmsActivationSpec id="eis/stet">
+        <properties.kafka-jms-rar
+                connectionFactoryJndiName="jms/KafkaCF"
+                groupId="${stet.kafka.jms.as.groupId}"
+                topics="${stet.kafka.jms.as.topics}"
+                retryBackoff="${stet.kafka.jms.as.retryBackoff}"
+                pollInterval="${stet.kafka.jms.as.pollInterval}"
+                maxRetryCount="${stet.kafka.jms.as.maxRetryCount}"
+                deadLetterTopicJndiName="jms/KafkaDeadLetterQueue"
+        />
+    </jmsActivationSpec>
+
+</server>

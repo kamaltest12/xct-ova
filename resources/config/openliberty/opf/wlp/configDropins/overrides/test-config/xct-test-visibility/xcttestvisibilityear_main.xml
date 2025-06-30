@@ -1,0 +1,7 @@
+<server>
+    <enterpriseApplication id="XCTTestVisibilityEAR" location="/ears/XCTTestVisibilityEAR-16.6.5-61808-00da7a5a.ear"
+                           name="XCTTestVisibilityEAR">
+        <classloader commonLibraryRef="libext"/>
+    </enterpriseApplication>
+</server>
+

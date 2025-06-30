@@ -1,0 +1,46 @@
+# Application server deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nfs-server.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "nfs-server.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "nfs-server.chart" $ }}
+spec:
+  replicas: {{ default 1 .Values.deployment.replicasCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "nfs-server.name" . }}
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "nfs-server.name" . }}
+        app.kubernetes.io/instance: {{ $.Release.Name }}
+        app.kubernetes.io/managed-by: {{ .Release.Service }}
+        app.kubernetes.io/version: {{ .Chart.AppVersion }}
+        helm.sh/chart: {{ include "nfs-server.chart" $ }}
+    spec:
+      containers:
+        - name: nfs-server
+          image: {{ if .Values.deployment.image.repository }}{{ .Values.deployment.image.repository  }}/{{ end }}{{ .Values.deployment.image.name }}:{{ .Values.deployment.image.tag }}
+          imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
+          ports:
+            - name: nfs
+              containerPort: {{ .Values.deployment.service.ports.nfs }}
+            - name: mountd
+              containerPort: {{ .Values.deployment.service.ports.mountd }}
+            - name: rpcbind
+              containerPort: {{ .Values.deployment.service.ports.rpcbind }}
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: {{ .Values.deployment.volumeMountPath }}
+              name: mypvc
+      volumes:
+        - name: mypvc
+          persistentVolumeClaim:
+            claimName: {{ include "nfs-server.fullname" . }}

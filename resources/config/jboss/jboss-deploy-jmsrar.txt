@@ -1,0 +1,2 @@
+# deploy rar specific to MQ or Active MQ
+deploy --force /tmp/deploy/${jms.rar.name}

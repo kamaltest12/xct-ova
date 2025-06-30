@@ -1,0 +1,128 @@
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/config-properties=maxConnections:add(value=100)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=qcf:write-attribute(name=min-pool-size,value=10)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=qcf:write-attribute(name=max-pool-size,value=100)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=qcf:write-attribute(name=pool-prefill,value=true)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=qcf:write-attribute(name=pool-use-strict-min,value=true)
+
+/subsystem=ejb3/thread-pool=default:write-attribute(name=max-threads,value=100)
+/subsystem=ejb3/strict-max-bean-instance-pool=slsb-strict-max-pool:write-attribute(name=max-pool-size,value=1000)
+/subsystem=ejb3/strict-max-bean-instance-pool=mdb-strict-max-pool:write-attribute(name=max-pool-size,value=500)
+
+/subsystem=datasources/xa-data-source="BPH Oracle XA DataSource"/:write-attribute(name=min-pool-size,value=50)
+/subsystem=datasources/xa-data-source="BPH Oracle XA DataSource"/:write-attribute(name=max-pool-size,value=200)
+/subsystem=datasources/xa-data-source="BPH Oracle XA DataSource"/:write-attribute(name=pool-prefill,value=true)
+
+/subsystem=jca/workmanager=default/short-running-threads=default:write-attribute(name=max-threads,value=150)
+/subsystem=jca/workmanager=default/long-running-threads=default:write-attribute(name=max-threads,value=150)
+
+echo "configuring MQ MYQCF"
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=MYQCF:add(class-name=com.ibm.mq.connector.outbound.ManagedQueueConnectionFactoryImpl, jndi-name=java\:jboss\/jms\/MYQCF, use-java-context="true", use-ccm="true")
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=MYQCF/config-properties=port:add(value=1415)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=MYQCF/config-properties=hostName:add(value=mq)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=MYQCF/config-properties=channel:add(value=channel1)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=MYQCF/config-properties=username:add(value=mqm)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=MYQCF/config-properties=password:add(value=password)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=MYQCF/config-properties=transportType:add(value=CLIENT)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=MYQCF/config-properties=queueManager:add(value=MQ.BLUE.QUEUE.MANAGER)
+
+echo "configuring MQ MYQCF queues"
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=HandoverInterchangeLoaderQ:add(class-name=com.ibm.mq.connector.outbound.MQQueueProxy,jndi-name=java\:\/jms\/HandoverInterchangeLoaderQ)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=HandoverInterchangeLoaderQ/config-properties=baseQueueName:add(value=HandoverInterchangeLoaderQ)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=HandoverInterchangeLoaderQ/config-properties=baseQueueManagerName:add(value=MQ.BLUE.QUEUE.MANAGER)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=HandoverInterfacingReplyQ:add(jndi-name=java:\/jms\/HandoverInterfacingReplyQ,class-name=com.ibm.mq.connector.outbound.MQQueueProxy)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=HandoverInterfacingReplyQ/config-properties=baseQueueName:add(value=HandoverInterfacingReplyQ)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=HandoverInterfacingReplyQ/config-properties=baseQueueManagerName:add(value=MQ.BLUE.QUEUE.MANAGER)
+
+echo "configuring JNDI for MYQCF"
+/subsystem=naming/binding=java\:jboss\/exported\/jms\/MYQCF:add(binding-type=lookup,lookup=java:jboss/jms/MYQCF)
+/subsystem=naming/binding=java\:\/jms\/MYQCF:add(binding-type=lookup,lookup=java:jboss/jms/MYQCF)
+/subsystem=naming/binding=java\:jboss\/exported\/jms\/myqcf:add(binding-type=lookup,lookup=java:jboss/jms/MYQCF)
+/subsystem=naming/binding=java\:\/jms\/myqcf:add(binding-type=lookup,lookup=java:jboss/jms/MYQCF)
+/subsystem=naming/binding=java\:jboss\/exported\/jms\/HandoverInterchangeLoaderQ:add(binding-type=lookup,lookup=java:/jms/HandoverInterchangeLoaderQ)
+/subsystem=naming/binding=java\:jboss\/exported\/jms\/HandoverInterfacingReplyQ:add(binding-type=lookup,lookup=java:/jms/HandoverInterfacingReplyQ)
+
+echo "configuring MQ OTHERQCF"
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=OTHERQCF:add(jndi-name=java:jboss/jms/OTHERQCF,class-name=com.ibm.mq.connector.outbound.ManagedQueueConnectionFactoryImpl)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=OTHERQCF/config-properties=port:add(value=1416)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=OTHERQCF/config-properties=hostName:add(value=mq)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=OTHERQCF/config-properties=channel:add(value=channel1)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=OTHERQCF/config-properties=username:add(value=mqm)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=OTHERQCF/config-properties=password:add(value=password)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=OTHERQCF/config-properties=transportType:add(value=CLIENT)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/connection-definitions=OTHERQCF/config-properties=queueManager:add(value=MQ.GREEN.QUEUE.MANAGER)
+
+echo "configuring MQ OTHERQCF queues"
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=HandoverInterchangeLoaderQ:add(jndi-name=java:/jms/Other/HandoverInterchangeLoaderQ,class-name=com.ibm.mq.connector.outbound.MQQueueProxy)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=HandoverInterchangeLoaderQ/config-properties=baseQueueName:add(value=HandoverInterchangeLoaderQ)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=HandoverInterchangeLoaderQ/config-properties=baseQueueManagerName:add(value=MQ.GREEN.QUEUE.MANAGER)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=HandoverInterfacingReplyQ:add(jndi-name=java:/jms/Other/HandoverInterfacingReplyQ,class-name=com.ibm.mq.connector.outbound.MQQueueProxy)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=HandoverInterfacingReplyQ/config-properties=baseQueueName:add(value=HandoverInterfacingReplyQ)
+/subsystem=resource-adapters/resource-adapter=wmq.jmsra.rar/admin-objects=HandoverInterfacingReplyQ/config-properties=baseQueueManagerName:add(value=MQ.GREEN.QUEUE.MANAGER)
+
+echo "configuring JNDI for OTHERQCF"
+/subsystem=naming/binding=java\:jboss\/exported\/jms\/OTHERQCF:add(binding-type=lookup,lookup=java:jboss/jms/OTHERQCF)
+/subsystem=naming/binding=java\:\/jms\/OTHERQCF:add(binding-type=lookup,lookup=java:jboss/jms/OTHERQCF)
+/subsystem=naming/binding=java\:jboss\/exported\/jms\/otherqcf:add(binding-type=lookup,lookup=java:jboss/jms/OTHERQCF)
+/subsystem=naming/binding=java\:\/jms\/otherqcf:add(binding-type=lookup,lookup=java:jboss/jms/OTHERQCF)
+/subsystem=naming/binding=java\:jboss\/exported\/jms\/Other\/HandoverInterchangeLoaderQ:add(binding-type=lookup,lookup=java:/jms/Other/HandoverInterchangeLoaderQ)
+/subsystem=naming/binding=java\:jboss\/exported\/jms\/Other\/HandoverInterfacingReplyQ:add(binding-type=lookup,lookup=java:/jms/Other/HandoverInterfacingReplyQ)
+
+echo "configuring JNDI for QCF1,QCF2,QCF3,QCF4"
+/subsystem=naming/binding=java\:\/jms\/QCF1:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+/subsystem=naming/binding=java\:\/jms\/qcf1:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+/subsystem=naming/binding=java\:\/jms\/QCF2:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+/subsystem=naming/binding=java\:\/jms\/qcf2:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+/subsystem=naming/binding=java\:\/jms\/QCF3:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+/subsystem=naming/binding=java\:\/jms\/qcf3:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+/subsystem=naming/binding=java\:\/jms\/QCF4:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+/subsystem=naming/binding=java\:\/jms\/qcf4:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+
+echo "configuring JNDI for QCFSWIFTAGI1,QCFSWIFTAGI2"
+/subsystem=naming/binding=java\:\/jms\/QCFSWIFTAGI1:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+/subsystem=naming/binding=java\:\/jms\/qcfswiftagi1:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+/subsystem=naming/binding=java\:\/jms\/QCFSWIFTAGI2:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+/subsystem=naming/binding=java\:\/jms\/qcfswiftagi2:add(binding-type=lookup,lookup=java:jboss/jms/QCF)
+
+# configure tcpip rar
+/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar:add(archive=tcpip-jms-rar.rar)
+
+echo "start defining IST queue-connection-factory"
+/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/connection-definitions=ISTQCF:add(jndi-name=java:jboss/jms/ISTQCF, class-name=com.clear2pay.jca.tcpip.jms.out.TcpIpManagedConnectionFactory)
+
+echo "start defining IST sender queue"
+/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/admin-objects=ISTSenderQ:add(jndi-name=java:/jms/ISTSenderQ, class-name=com.clear2pay.jca.tcpip.jms.out.TcpIpOutQueueImpl)
+/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/admin-objects=ISTSenderQ/config-properties=hostname:add(value=localhost)
+/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/admin-objects=ISTSenderQ/config-properties=port:add(value=9027)
+/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/admin-objects=ISTSenderQ/config-properties=connectionLengthSize:add(value=2)
+/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/admin-objects=ISTSenderQ/config-properties=connectionProtocol:add(value=UNIQUE_CLIENT_SOCKET)
+#/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/admin-objects=ISTSenderQ/config-properties=sslTruststoreLocation:add(value=/tmp/security/ist.server.jks)
+#/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/admin-objects=ISTSenderQ/config-properties=sslTruststorePassword:add(value=password)
+#/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/admin-objects=ISTSenderQ/config-properties=sslKeystoreLocation:add(value=/tmp/security/ist.client.jks)
+#/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/admin-objects=ISTSenderQ/config-properties=sslKeystorePassword:add(value=password)
+
+echo "defining TCP/IP IST activation-specs"
+/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/admin-objects=ISTInterchangeLoaderQ:add(jndi-name=java:/jms/ISTInterchangeLoaderQ, class-name=com.clear2pay.jca.tcpip.jms.in.TcpIpInQueueImpl)
+/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/admin-objects=ISTInterchangeLoaderQ/config-properties=hostname:add(value=localhost)
+/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/admin-objects=ISTInterchangeLoaderQ/config-properties=port:add(value=9027)
+/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/admin-objects=ISTInterchangeLoaderQ/config-properties=connectionLengthSize:add(value=2)
+/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/admin-objects=ISTInterchangeLoaderQ/config-properties=messageType:add(value=bytes)
+/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/admin-objects=ISTInterchangeLoaderQ/config-properties=connectionProtocol:add(value=UNIQUE_CLIENT_SOCKET)
+#/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/admin-objects=ISTInterchangeLoaderQ/config-properties=sslTruststoreLocation:add(value=/tmp/security/ist.server.jks)
+#/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/admin-objects=ISTInterchangeLoaderQ/config-properties=sslTruststorePassword:add(value=password)
+#/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/admin-objects=ISTInterchangeLoaderQ/config-properties=sslKeystoreLocation:add(value=/tmp/security/ist.client.jks)
+#/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/admin-objects=ISTInterchangeLoaderQ/config-properties=sslKeystorePassword:add(value=password)
+/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/admin-objects=ISTInterchangeLoaderQ/config-properties=channelControllerList:add(value="com.clear2pay.jca.tcpip.iso8583.IsoLogonLogoffInitiator, com.clear2pay.jca.tcpip.iso8583.IsoEchoResponder, com.clear2pay.jca.tcpip.iso8583.IsoEchoInitiator")
+/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/admin-objects=ISTInterchangeLoaderQ/config-properties=isoEncoding:add(value="bitmaps=hex")
+/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar/admin-objects=ISTInterchangeLoaderQ/config-properties=isoLogonAdditionalData:add(value="0176011001112M003602")
+
+
+/subsystem=resource-adapters/resource-adapter=tcpip-jms-rar.rar:activate
+
+echo "configuring JNDI for ISTQCF, ISTSenderQ, ISTInterchangeLoaderQ"
+/subsystem=naming/binding=java\:jboss\/exported\/jms\/ISTQCF:add(binding-type=lookup,lookup=java:jboss/jms/ISTQCF)
+/subsystem=naming/binding=java\:\/jms\/ISTQCF:add(binding-type=lookup,lookup=java:jboss/jms/ISTQCF)
+/subsystem=naming/binding=java\:\/jms\/istqcf:add(binding-type=lookup,lookup=java:jboss/jms/ISTQCF)
+/subsystem=naming/binding=java\:jboss\/exported\/jms\/ISTSenderQ:add(binding-type=lookup,lookup=java:/jms/ISTSenderQ)
+/subsystem=naming/binding=java\:jboss\/exported\/jms\/ISTInterchangeLoaderQ:add(binding-type=lookup,lookup=java:/jms/ISTInterchangeLoaderQ)
+
+:reload

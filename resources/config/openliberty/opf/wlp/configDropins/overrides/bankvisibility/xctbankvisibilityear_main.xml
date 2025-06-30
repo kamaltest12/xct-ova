@@ -1,0 +1,6 @@
+<server>   
+   <enterpriseApplication id="BankVisibilityEAR" location="/ears/XCTBankVisibilityEAR-16.6.5-61808-00da7a5a.ear" name="XCTBankVisibilityEAR">
+       <classloader commonLibraryRef="libext"/>
+   </enterpriseApplication>
+</server>
+

@@ -1,0 +1,2 @@
+db:
+  url: jdbc:oracle:thin:@sahorheldb11u-scan.systems.sa.hsbc:2022/DVPAYHUB

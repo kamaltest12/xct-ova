@@ -1,0 +1,21 @@
+batch
+
+echo "configuring MQ qcf2"
+/subsystem=resource-adapters/resource-adapter=mq-resource-adapter.rar/connection-definitions=qcf2:add(jndi-name=java:jboss/jms/QCF2, class-name=com.ibm.mq.connector.outbound.ManagedQueueConnectionFactoryImpl)
+/subsystem=resource-adapters/resource-adapter=mq-resource-adapter.rar/connection-definitions=qcf2/config-properties=port:add(value=1414)
+/subsystem=resource-adapters/resource-adapter=mq-resource-adapter.rar/connection-definitions=qcf2/config-properties=hostName:add(value=mq2)
+/subsystem=resource-adapters/resource-adapter=mq-resource-adapter.rar/connection-definitions=qcf2/config-properties=channel:add(value=channel1)
+/subsystem=resource-adapters/resource-adapter=mq-resource-adapter.rar/connection-definitions=qcf2/config-properties=username:add(value=mqm)
+/subsystem=resource-adapters/resource-adapter=mq-resource-adapter.rar/connection-definitions=qcf2/config-properties=password:add(value=password)
+/subsystem=resource-adapters/resource-adapter=mq-resource-adapter.rar/connection-definitions=qcf2/config-properties=transportType:add(value=CLIENT)
+/subsystem=resource-adapters/resource-adapter=mq-resource-adapter.rar/connection-definitions=qcf2/config-properties=queueManager:add(value=MQ.QUEUE.MANAGER)
+
+echo "configuring MQ queue2"
+/subsystem=resource-adapters/resource-adapter=mq-resource-adapter.rar/admin-objects=Queue2:add(jndi-name=java:/jms/Queue2, class-name=com.clear2pay.mq.connector.ConnectionAwareQueueProxy)
+/subsystem=resource-adapters/resource-adapter=mq-resource-adapter.rar/admin-objects=Queue2/config-properties=connectionFactoryJndiName:add(value=java:jboss/jms/QCF2)
+/subsystem=resource-adapters/resource-adapter=mq-resource-adapter.rar/admin-objects=Queue2/config-properties=baseQueueName:add(value=Queue2)
+/subsystem=resource-adapters/resource-adapter=mq-resource-adapter.rar/admin-objects=Queue2/config-properties=baseQueueManagerName:add(value=MQ.QUEUE.MANAGER)
+
+# Execute and reload
+:reload
+run-batch

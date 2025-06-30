@@ -1,0 +1,15 @@
+# Default values for opf-nfs-server.
+deployment:
+  replicasCount: 1
+  image:
+    name: "k8s.gcr.io/volume-nfs"
+    tag: "0.8"
+    pullPolicy: IfNotPresent
+  volumeMountPath: "/exports"
+  service:
+    ports:
+      nfs: 2049
+      mountd: 20048
+      rpcbind: 111
+  persistentVolume:
+    localPath: "/tmp/opf/nfs"

@@ -1,0 +1,44 @@
+<server>
+    <jmsQueue id="jms/CoralBOEQ" jndiName="jms/CoralBOEQ">
+        <properties.dbra
+                tableName="CoralBOEQ"
+                columnType="BYTES"
+                partitionsCount="${db.jms.partitionsPerQueue}"
+        />
+    </jmsQueue>
+    <jmsQueue id="jms/Urgency8BPELInvokerQ" jndiName="jms/Urgency8BPELInvokerQ">
+        <properties.dbra
+                tableName="Urgency8BPELInvokerQ"
+                columnType="BYTES"
+                partitionsCount="${db.jms.partitionsPerQueue}"
+        />
+    </jmsQueue>
+    <jmsQueue id="jms/Urgency8ParserQ" jndiName="jms/Urgency8ParserQ">
+        <properties.dbra
+                tableName="Urgency8ParserQ"
+                columnType="BYTES"
+                partitionsCount="${db.jms.partitionsPerQueue}"
+        />
+    </jmsQueue>
+    <jmsQueue id="jms/Urgency8InterchangeLoaderQ" jndiName="jms/Urgency8InterchangeLoaderQ">
+        <properties.dbra
+                tableName="Urgency8InterchangeLoaderQ"
+                columnType="BYTES"
+                partitionsCount="${db.jms.partitionsPerQueue}"
+        />
+    </jmsQueue>
+    <jmsQueue id="jms/CoralDummyTechExceptionTesterQ" jndiName="jms/CoralDummyTechExceptionTesterQ">
+        <properties.dbra
+                tableName="CoralDummyTechExceptionTesterQ"
+                columnType="BYTES"
+                partitionsCount="${db.jms.partitionsPerQueue}"
+        />
+    </jmsQueue>
+    <jmsQueue id="jms/SenderFallbackQ" jndiName="jms/SenderFallbackQ">
+        <properties.dbra
+                tableName="SenderFallbackQ"
+                columnType="BYTES"
+                partitionsCount="${db.jms.partitionsPerQueue}"
+        />
+    </jmsQueue>
+</server>

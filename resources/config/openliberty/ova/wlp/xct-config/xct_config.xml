@@ -1,0 +1,3 @@
+<server>
+    <include location="xctovaear_main.xml" onConflict="Merge" optional="false"/>
+</server>

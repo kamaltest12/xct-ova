@@ -1,0 +1,22 @@
+{{- if .Values.volumes.interchanges.enabled }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ include "opf-dev-chart.fullname" . }}-opf-fs-interchanges
+  labels:
+    app.kubernetes.io/name: {{ include "opf-dev-chart.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "opf-dev-chart.chart" $ }}
+spec:
+  volumeMode: Filesystem
+  storageClassName: opf-fs-interchanges
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Recycle
+  hostPath:
+    path: "{{ .Values.volumes.interchanges.localPath }}"
+{{- end }}

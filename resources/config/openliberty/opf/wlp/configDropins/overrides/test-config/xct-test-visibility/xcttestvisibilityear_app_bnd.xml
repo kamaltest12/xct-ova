@@ -1,0 +1,13 @@
+<server>
+    <enterpriseApplication id="XCTTestVisibilityEAR">
+        <application-bnd>
+            <security-role name="customeruser">
+                <group name="customeruser"/>
+            </security-role>
+            <security-role name="bankuser">
+                <group name="bankuser"/>
+            </security-role>
+        </application-bnd>
+    </enterpriseApplication>
+</server>
+

@@ -1,0 +1,11 @@
+<server>
+    <variable name="opf.services.ear" value="XCTEAR" />
+    <variable name="opf.services.locator.module" value="XCTLocatorService" />
+    <enterpriseApplication id="OPFServicesEAR" location="/ears/XCTEAR-16.6.5-61808-00da7a5a.ear" name="XCTEAR">
+        <classloader commonLibraryRef="libext, libext-jaxb" />
+    </enterpriseApplication>
+
+    <library id="rardeps">
+        <fileset dir="/libext/" includes="commons-logging.jar" />
+    </library>
+</server>

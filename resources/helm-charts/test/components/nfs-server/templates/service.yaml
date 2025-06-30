@@ -1,0 +1,22 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ include "nfs-server.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "nfs-server.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "nfs-server.chart" $ }}
+spec:
+  clusterIP: {{ .Values.deployment.service.clusterIP }}
+  ports:
+    - name: nfs
+      port: {{ .Values.deployment.service.ports.nfs }}
+    - name: mountd
+      port: {{ .Values.deployment.service.ports.mountd }}
+    - name: rpcbind
+      port: {{ .Values.deployment.service.ports.rpcbind }}
+  selector:
+    app.kubernetes.io/name: {{ include "nfs-server.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}

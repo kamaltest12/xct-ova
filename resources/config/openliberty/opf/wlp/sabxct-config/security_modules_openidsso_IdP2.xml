@@ -1,0 +1,28 @@
+<server>
+    <jaasLoginModule id="openIdLoginModuleIdp2"
+                     className="com.clear2pay.bph.security.openid.OpenIdLoginModule"
+                     controlFlag="OPTIONAL" libraryRef="libext">
+        <options 
+                identityClaim="${openid.idp2.identity.claim}"
+                bvaRegEx="${jaas.openid.idp2.regex}"
+        />
+    </jaasLoginModule>
+    <jaasLoginModule id="opfIdentityTrustLoginModuleIdp2"
+                     className="com.clear2pay.bph.security.identification.login.OPFIdentityTrustLoginModule"
+                     controlFlag="OPTIONAL" libraryRef="libext">
+        <options
+                bvaRegEx="${jaas.openid.idp2.regex}"
+                groupPath="${openid.idp2.identity.bankGroupPath}"
+                userGroupPath="${openid.idp2.identity.userGroupPath}"
+                bankPath="${openid.idp2.identity.bankPath}"
+                bankingEntityPath="${openid.idp2.identity.bankingEntityPath}"
+                bankUserNamePath="${openid.idp2.identity.bankUserNamePath}"
+                rolesPath="${openid.idp2.identity.rolesPath}"
+                bankRolesPath="${openid.idp2.identity.bankRolesPath}"
+                bankingEntityRolesPath="${openid.idp2.identity.bankingEntityRolesPath}"
+        />
+    </jaasLoginModule>
+    <!-- To support both openIdsso and basic authentication  openIdLogin, personRegistryLoginModule,opfIdentityTrustLoginModule modules are optional -->
+    <jaasLoginContextEntry id="system.WEB_INBOUND" name="system.WEB_INBOUND"
+                           loginModuleRef="openIdLoginModule,openIdLoginModuleIdp2,personRegistryLoginModule,opfIdentityTrustLoginModule,opfIdentityTrustLoginModuleIdp2,subjectCredentialsPropagationLoginModule, postAuthenticationLoginModule, hashtable, userNameAndPassword, token" />
+</server>

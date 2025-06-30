@@ -1,0 +1,17 @@
+<server>   
+    <jmsQueue id="jms/SOInitiationQ" jndiName="jms/SOInitiationQ">
+        <properties.wmqjmsra
+                baseQueueName="SOInitiationQ"
+                baseQueueManagerName="MQ.QUEUE.MANAGER"/>
+    </jmsQueue>
+    <jmsQueue id="jms/InterchangeLoaderReplyToQ" jndiName="jms/InterchangeLoaderReplyToQ">
+        <properties.wmqjmsra
+                baseQueueName="InterchangeLoaderReplyToQ"
+                baseQueueManagerName="MQ.QUEUE.MANAGER"/>
+    </jmsQueue>
+    <jmsQueue id="jms/OutgoingInitiationQ" jndiName="jms/OutgoingInitiationQ">
+        <properties.wmqjmsra
+                baseQueueName="OutgoingInitiationQ"
+                baseQueueManagerName="MQ.QUEUE.MANAGER"/>
+    </jmsQueue>
+</server>

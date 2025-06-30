@@ -1,0 +1,209 @@
+external-db:
+  enabled: true
+base-oracle:
+  enabled: false
+postgresql-ha:
+  enabled: false
+base-mq:
+  enabled: false
+  deployment:
+    image:
+      repository: docker.clear2pay.com/c2p-base
+      name: base-mq
+      pullPolicy: IfNotPresent
+    resources:
+      memory:
+        request: "1Gi"
+        limit: "1Gi"
+      cpu:
+        request: "100m"
+        limit: "1"
+    persistentVolume:
+      enabled: false
+  configuration:
+    useCustomIni: false
+    provisioning:
+      configMap:
+        name: opf-dev-chart-mqconfig
+kafka:
+  enabled: false
+  resources:
+    requests:
+      cpu: 200m
+      memory: 1Gi
+    limits:
+      cpu: 2
+      memory: 1Gi
+  zookeeper:
+    enabled: false
+    resources:
+      limits:
+        memory: 750Mi
+        cpu: 1
+      requests:
+        memory: 750Mi
+        cpu: 100m
+    persistence:
+      enabled: false
+    auth:
+      enabled: false
+    metrics:
+      enabled: false
+  persistence:
+    enabled: false
+  listeners:
+    - INTERNAL://:9092
+    - CLIENT://:9093
+  advertisedListeners:
+    - INTERNAL://$(MY_POD_NAME):9092
+    - CLIENT://$(MY_POD_NAME).dev-kafka-headless.sabxct.svc.cluster.local:9093
+  listenerSecurityProtocolMap: INTERNAL:SSL, CLIENT:SSL
+  allowPlaintextListener: yes
+  auth:
+    clientProtocol: tls
+    interBrokerProtocol: tls
+    tlsEndpointIdentificationAlgorithm: ""
+    tls:
+      type: jks
+      password: password
+      existingSecrets:
+        - opf-dev-chart-tls-secrets
+      jksKeystoreSAN: kafka.server.keystore.jks
+      jksTruststore: kafka.server.truststore.jks
+      endpointIdentificationAlgorithm: ""
+nfs-server:
+  enabled: false
+  deployment:
+    service:
+      clusterIP: "10.43.180.1"
+base-keycloak:
+  enabled: true
+  configuration:
+    provisioning:
+      configMap:
+        name: opf-dev-chart-keycloakconfig
+  security:
+    keystore:
+      configMap:
+        name: opf-dev-chart-tls-secrets
+      password: "password"
+  deployment:
+    resources:
+      enabled: true
+    ingress:
+      enabled: false
+hashicorp-vault:
+  enabled: false
+opf-dev-chart:
+  service-account:
+    enabled: false
+  volumes:
+    interchanges:
+      enabled: false
+  secrets:
+    enabled: true
+    opf:
+      messaging:
+        mq:
+          username: mqm
+          password: password
+        kafka:
+          sslKeystorePassword: password
+          sslKeyPassword: password
+          sslTruststorePassword: password
+      serverConfig:
+        admin:
+          username: admin
+          password: password
+        jmx:
+          username: jmx
+          password: password
+      externalSystems:
+        cbis:
+          username: cbis
+          password: password
+        fsis:
+          username: fsis
+          password: password
+        sanctionsCheck:
+          username: sanctions_check
+          password: password
+        paymentUploadPush:
+          username: payment_upload_push
+          password: password
+        universalExecutionCallback:
+          username: universal_execution_callback
+          password: password
+        universalExecution:
+          username: universal_execution
+          password: password
+        CHANNELS:
+          username: admin
+          password: password
+        xctFxs:
+          username: fxs
+          password: password
+        xctPcs:
+          username: pcs
+          password: password
+        POM:
+          username: admin
+          password: password
+        nacas:
+          username: nacas
+          password: password
+      openid:
+        opf:
+          clientId: opfrest
+          clientSecret: "07720bc0-d1b0-44aa-93da-9ac9cb85a6b4"
+        bva:
+          clientId: bva
+          clientSecret: "011f14e2-11f8-4237-95d3-45d0b9202daf"
+        opfIdp2:
+          clientId: opfrest
+          clientSecret: "07720bc0-d1b0-44aa-93da-9ac9cb85a6b4"
+      tls:
+        keystore:
+          password: password
+        truststore:
+          password: password
+  keystores:
+    opf-server-keystore.jks: jks/opf-server/opf-server-keystore.jks
+    opf-server-truststore.jks: jks/opf-server/opf-server-truststore.jks
+    kafka.server.keystore.jks: jks/kafka/broker/kafka.server.keystore.jks
+    kafka.server.truststore.jks: jks/kafka/broker/kafka.server.truststore.jks
+    kafka.client.keystore.jks: jks/kafka/client/kafka.client.keystore.jks
+    kafka.client.truststore.jks: jks/kafka/client/kafka.client.truststore.jks
+    ist.client.keystore.jks: jks/ist/client/ist.client.keystore.jks
+    ist.client.truststore.jks: jks/ist/client/ist.client.truststore.jks
+    saa.keystore.jceks: jks/swift/saa.keystore.jceks
+    server-keystore.jks: jks/keycloak/keycloak-server.jks
+  mqConfigs:
+    mqConfigFiles:
+      - mqconfig/sabxct_k8s.yaml
+    mqConfigScripts:
+      - mqconfig/opf_mq_75_compat.mqsc
+ova-dev-chart:
+  service-account:
+    enabled: false
+  secrets:
+    enabled: true
+    ova:
+      serverConfig:
+        admin:
+          username: admin
+          password: password
+      openid:
+        clientId: ova
+        clientSecret: "b1048aae-f242-4ed8-bec2-2c6b12053c75"
+      tls:
+        keystore:
+          password: password
+        truststore:
+          password: password
+influxdb:
+  enabled: false
+prometheus:
+  enabled: false
+grafana:
+  enabled: false

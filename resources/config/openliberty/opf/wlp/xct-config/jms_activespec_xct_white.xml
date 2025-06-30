@@ -1,0 +1,123 @@
+<server>
+    <jmsActivationSpec id="eis/FromSWIFTQPort">
+        <properties.wmqjmsra
+                destinationType="javax.jms.Queue"
+                destination="${mq.FromSWIFTQ.baseQueueName}"
+                transportType="CLIENT"
+                hostName="${mq.qcf.hostName}"
+                port="${mq.qcf.port}"
+                channel="${mq.qcf.channel}"
+                queueManager="${mq.qcf.queueManager}"
+                username="${mq.qcf.username}"
+                password="${mq.qcf.password}"/>
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/FromSWIFTAckQPort">
+        <properties.wmqjmsra
+                destinationType="javax.jms.Queue"
+                destination="${mq.FromSWIFTAckQ.baseQueueName}"
+                transportType="CLIENT"
+                hostName="${mq.qcf.hostName}"
+                port="${mq.qcf.port}"
+                channel="${mq.qcf.channel}"
+                queueManager="${mq.qcf.queueManager}"
+                username="${mq.qcf.username}"
+                password="${mq.qcf.password}"/>
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/PublishRateQPort">
+        <properties.wmqjmsra
+                destinationType="javax.jms.Queue"
+                destination="${mq.PublishRateQ.baseQueueName}"
+                transportType="CLIENT"
+                hostName="${mq.qcf.hostName}"
+                port="${mq.qcf.port}"
+                channel="${mq.qcf.channel}"
+                queueManager="${mq.qcf.queueManager}"
+                username="${mq.qcf.username}"
+                password="${mq.qcf.password}"/>
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/ManualReconciliationQPort">
+        <properties.wmqjmsra
+                destinationType="javax.jms.Queue"
+                destination="${mq.ManualReconciliationQ.baseQueueName}"
+                transportType="CLIENT"
+                hostName="${mq.qcf.hostName}"
+                port="${mq.qcf.port}"
+                channel="${mq.qcf.channel}"
+                queueManager="${mq.qcf.queueManager}"
+                username="${mq.qcf.username}"
+                password="${mq.qcf.password}"/>
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/GPIEndOfDayConfirmationQPort">
+        <properties.wmqjmsra
+                destinationType="javax.jms.Queue"
+                destination="${mq.GPIEndOfDayConfirmationQ.baseQueueName}"
+                transportType="CLIENT"
+                hostName="${mq.qcf.hostName}"
+                port="${mq.qcf.port}"
+                channel="${mq.qcf.channel}"
+                queueManager="${mq.qcf.queueManager}"
+                username="${mq.qcf.username}"
+                password="${mq.qcf.password}"/>
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/GPIEndOfDayConfirmationCandidateQPort">
+        <properties.wmqjmsra
+                destinationType="javax.jms.Queue"
+                destination="${mq.GPIEndOfDayConfirmationCandidateQ.baseQueueName}"
+                transportType="CLIENT"
+                hostName="${mq.qcf.hostName}"
+                port="${mq.qcf.port}"
+                channel="${mq.qcf.channel}"
+                queueManager="${mq.qcf.queueManager}"
+                username="${mq.qcf.username}"
+                password="${mq.qcf.password}"/>
+    </jmsActivationSpec>
+
+    <jmsActivationSpec id="eis/AMHReceiverMTQPort">
+        <properties.wmqjmsra
+                destinationType="javax.jms.Queue"
+                destination="${mq.AMHReceiverMTQ.baseQueueName}"
+                transportType="CLIENT"
+                hostName="${mq.qcf.hostName}"
+                port="${mq.qcf.port}"
+                channel="${mq.qcf.channel}"
+                queueManager="${mq.qcf.queueManager}"
+                username="${mq.qcf.username}"
+                password="${mq.qcf.password}"/>
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/AMHReceiverMXQPort">
+        <properties.wmqjmsra
+                destinationType="javax.jms.Queue"
+                destination="${mq.AMHReceiverMXQ.baseQueueName}"
+                transportType="CLIENT"
+                hostName="${mq.qcf.hostName}"
+                port="${mq.qcf.port}"
+                channel="${mq.qcf.channel}"
+                queueManager="${mq.qcf.queueManager}"
+                username="${mq.qcf.username}"
+                password="${mq.qcf.password}"/>
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/AMHReceiverAckMTQPort">
+        <properties.wmqjmsra
+                destinationType="javax.jms.Queue"
+                destination="${mq.AMHReceiverAckMTQ.baseQueueName}"
+                transportType="CLIENT"
+                hostName="${mq.qcf.hostName}"
+                port="${mq.qcf.port}"
+                channel="${mq.qcf.channel}"
+                queueManager="${mq.qcf.queueManager}"
+                username="${mq.qcf.username}"
+                password="${mq.qcf.password}"/>
+    </jmsActivationSpec>
+    <jmsActivationSpec id="eis/AMHReceiverAckMXQPort">
+        <properties.wmqjmsra
+                destinationType="javax.jms.Queue"
+                destination="${mq.AMHReceiverAckMXQ.baseQueueName}"
+                transportType="CLIENT"
+                hostName="${mq.qcf.hostName}"
+                port="${mq.qcf.port}"
+                channel="${mq.qcf.channel}"
+                queueManager="${mq.qcf.queueManager}"
+                username="${mq.qcf.username}"
+                password="${mq.qcf.password}"/>
+    </jmsActivationSpec>
+</server>

@@ -1,0 +1,10 @@
+-Dcom.clear2pay.ova.client.api.url=https://xct:9443/xctrest/webapi
+
+# security configuration OpenId Single Sign On
+-Dcom.clear2pay.ova.authentication.openid.target.relying.party=opfrest
+-Dcom.clear2pay.ova.authentication.openid.oidc.discovery.endpoint=https://keycloak:8543/auth/realms/xctsso/.well-known/openid-configuration
+-Dcom.clear2pay.ova.authentication.openid.ova.secret=b1048aae-f242-4ed8-bec2-2c6b12053c75
+
+# deployment
+-Dcom.clear2pay.ova.osgi.frameworkReadinessRetryLimit=600
+-Dcom.clear2pay.ova.cache.service.operation.ttl=5

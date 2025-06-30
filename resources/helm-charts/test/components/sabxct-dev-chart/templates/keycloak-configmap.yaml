@@ -1,0 +1,17 @@
+{{/* # @formatter:off */}}
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ include "opf-dev-chart.name" . }}-keycloakconfig
+  labels:
+    app.kubernetes.io/name: {{ include "opf-dev-chart.name" . }}
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "opf-dev-chart.chart" $ }}
+data:
+  startup.sh: |-{{ .Files.Get "keycloakconfig/startup.sh" | nindent 4 }}
+  keystore.cli: |-{{ .Files.Get "keycloakconfig/keystore.cli" | nindent 4 }}
+  keycloak-provisioning.sh: |-{{ .Files.Get "keycloakconfig/keycloak-provisioning.sh" | nindent 4 }}
+  ovasso.json: |-{{ .Files.Get "keycloakconfig/ovasso.json" | nindent 4 }}
+  xctsso.json: |-{{ .Files.Get "keycloakconfig/xctsso.json" | nindent 4 }}

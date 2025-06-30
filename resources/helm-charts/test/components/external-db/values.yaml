@@ -1,0 +1,7 @@
+# Default values for db.
+deployment:
+  service:
+    port: 1521
+  endpoint:
+    ip: 172.17.0.2
+    port: 1521
